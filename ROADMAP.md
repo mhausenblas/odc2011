@@ -24,14 +24,13 @@ http://opendatachallenge.org/
 
 ## Next steps
 
-ACTION: Michael to investigate availability of a company register with Tim
-ACTION: Michael to check back with data.gov.uk re vocab
-ACTION: Michael to deploy initial setup (GAE+rdflib)
-
-OPEN: a cool, catchy name and logo
-OPEN: data import
-OPEN: UI/UX
-OPEN: more ideas re scenarios
+* OPEN: Michael to investigate availability of a company register with Tim
+* OPEN: Michael to check back with data.gov.uk re vocab
+* OPEN: Michael to deploy initial setup (GAE+rdflib)
+* OPEN: a cool, catchy name and logo
+* OPEN: data import
+* OPEN: UI/UX
+* OPEN: more ideas re scenarios
 
 ## License
 
