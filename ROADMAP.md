@@ -24,8 +24,6 @@ http://opendatachallenge.org/
 
 ## Next steps
 
-ACTION: Tim to share info about planning apps in Ireland (for Michael to investigate sources) - IPLAN
-ACTION: Dominic to provide APAS sources
 ACTION: Michael to investigate availability of a company register with Tim
 ACTION: Michael to check back with data.gov.uk re vocab
 ACTION: Michael to deploy initial setup (GAE+rdflib)
