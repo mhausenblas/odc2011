@@ -32,6 +32,8 @@ http://opendatachallenge.org/
 * OPEN: UI/UX
 * OPEN: more ideas re scenarios
 
+At the ODH on 14 May we had a look at the GPlan data. Turns out that the only sensible usage scenario is the notification app. We will focus on this one for the submission (with a target coverage for as many as possible counties/cities).
+
 ## License
 
 This software is Public Domain.
