@@ -24,6 +24,7 @@ http://opendatachallenge.org/
 
 ## Next steps
 
+* OPEN: Michael to do Twitter integration
 * OPEN: Michael to investigate availability of a company register with Tim
 * OPEN: Michael to check back with data.gov.uk re vocab
 * OPEN: Michael to deploy initial setup (GAE+rdflib)
