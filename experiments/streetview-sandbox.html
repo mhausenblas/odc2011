@@ -3,43 +3,68 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>ODC2011 - All-Ireland planning application</title>
+	<style type="text/css" media="screen">
+		#map { height: 300px; width: 400px; float: left; }
+		#sv { height: 300px; width: 600px; }
+	</style>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript">
-var map;
-var data = [];
+	var map;
+	var data = [
+		{appref:'a',lat:53.2618366284,lng:-9.11291010806},
+		{appref:'b',lat:53.2792999821,lng:-9.10471349549},
+		{appref:'c',lat:53.259691855,lng:-9.09123077706},
+		{appref:'d',lat:53.2624452194,lng:-9.10059230577},
+		{appref:'e',lat:53.2709685486,lng:-9.12317509867}
+	];
 
-function makemap()
-{
-    var mapOptions = { "zoom": 13,
-                       "center": new google.maps.LatLng(53.27465, -9.05170),
-                       "mapTypeId": google.maps.MapTypeId.HYBRID
-                     };
-    map = new google.maps.Map(document.getElementById("map"), mapOptions);
-/*    
-for (i=0; i < data.length; i++) {
-        addMarker(data[i]);
-    }
-}
-*/
+	function makemap() {
+		var mapCenter = new google.maps.LatLng(53.2618366284, -9.11291010806);
 
-function addMarker(record)
-{
-    pos = new google.maps.LatLng(record.lat, record.lng);
-    marker = new google.maps.Marker({position:pos, map:map});
-    (function(j) {
-        google.maps.event.addListener(j.marker, "click", function() {
-            document.location = '#_' + j.appref;
-        });
-    })({'marker':marker, 'appref':record.appref});
-}
+		var mapOptions = { 
+			"zoom": 13,
+			"center": mapCenter,
+			"mapTypeId": google.maps.MapTypeId.HYBRID
+		};
 
-$(function() { makemap(); });
+		var panoramaOptions = {
+			position: mapCenter,
+			pov: {
+				heading: 34,
+				pitch: 10,
+				zoom: 1
+			}
+		};
 
-    </script>
+		map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+		for (i=0; i < data.length; i++) {
+			addMarker(data[i]);
+		}
+		var panorama = new  google.maps.StreetViewPanorama(document.getElementById("sv"), panoramaOptions);
+	
+		map.setStreetView(panorama);
+	
+
+	}
+
+
+	function addMarker(record) {
+		pos = new google.maps.LatLng(record.lat, record.lng);
+		marker = new google.maps.Marker({position:pos, map:map});
+		(function(j) {
+			google.maps.event.addListener(j.marker, "click", function() {
+				document.location = '#_' + j.appref;
+			});
+		})({'marker':marker, 'appref':record.appref});
+	}
+
+	$(function() { makemap(); });
+</script>
 </head>
 
 <body>
-	<div id="map"></div>
+	<div id="map"></div><div id="sv"></div>
 </body>
 </html>
