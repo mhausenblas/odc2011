@@ -28,7 +28,8 @@
 		#yearpan { width: 100%; margin: 0 0 0 310px;}
 		#map { height: 290px; width: 600px; text-align: right;}
 		#yearrange { margin: 1em; width: 500px;}
-		#yearsel { background: #f0f0f0; font-size: 300%; border: 0; width: 500px; text-align: center;}
+		#yearsel { background: #f0f0f0; font-size: 300%; border: 0; width: 500px; text-align: center; float: left;}
+		#viewsel {}
 		.singlepa { margin: 10px;}
 	</style>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
@@ -64,6 +65,7 @@
 	];
 	
 	function fitMap(){
+		$("#mappan").height($(window).height()*0.9);
 		$("#map").width($(window).width()*0.7);
 		$("#map").height($(window).height()*0.6);
 	}
@@ -186,6 +188,9 @@
 		<div id="yearpan">
 			<div id="yearrange"></div>
 			<input id="yearsel" />
+		</div>
+		<div id="viewsel">
+			STREET VIEW | MAP 
 		</div>
 	</div>
 	<div id="debug"></div>
