@@ -23,13 +23,32 @@
 		}
 	
 		body { font-family: Verdana,Arial,sans-serif;}
-		#mappan { width: 100%; background: #f0f0f0; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px ; border: 1px solid #a0a0a0;}
-		#palist { width: 310px; font-size: 80%; padding: .5em; float: left;}
-		#yearpan { width: 100%; margin: 0 0 0 310px;}
-		#map { height: 290px; width: 600px; text-align: right;}
-		#yearrange { margin: 1em; width: 500px;}
-		#yearsel { background: #f0f0f0; font-size: 300%; border: 0; width: 500px; text-align: center; float: left;}
-		#viewsel {}
+		#mappan {  background: #f0f0f0; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; border: 1px solid #a0a0a0;}
+		#palist { width: 300px; font-size: 80%; padding: .5em; float: left;}
+		#mainpan { margin: 0 0 0 320px;}
+		#map { text-align: right;}
+		#yearpan { width: 40%; float: left;}
+		#yearrange { margin: 1em; width: 90%;}
+		#yearsel {  width: 100%; background: #f0f0f0; font-size: 200%; border: 0; text-align: center; float: left;}
+		#viewselpan { width: 100%; text-align: right; }
+		.viewsel-tab { font-size: 200%; 
+			padding: 0 1em .5em 1em;
+			border: 1px solid #a0a0a0; 
+			-webkit-border-bottom-right-radius: 4px;
+			-webkit-border-bottom-left-radius: 4px;
+			-moz-border-radius-bottomright: 4px;
+			-moz-border-radius-bottomleft: 4px;
+			border-bottom-right-radius: 4px;
+			border-bottom-left-radius: 4px;
+			background: #f0f0f0;
+			color: #a0a0a0;
+			cursor: pointer;
+		}
+		.viewsel-tab-selected {
+			border: 1px solid black; 
+			background: white;
+			color: black;
+		}
 		.singlepa { margin: 10px;}
 	</style>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
@@ -40,7 +59,7 @@
     <script type="text/javascript">
 
 	var map;
-	var svmap;
+	var mapCenter = new google.maps.LatLng(53.27, -9.104);
 	var currentMarkers = new Array();
 
 	// GPlan status based on GPlan_ApplicationStatus.txt
@@ -65,13 +84,12 @@
 	];
 	
 	function fitMap(){
-		$("#mappan").height($(window).height()*0.9);
-		$("#map").width($(window).width()*0.7);
+		$("#mainpan").height($(window).height()*0.9);
+		$("#map").width($(window).width()-340);
 		$("#map").height($(window).height()*0.6);
 	}
 
-	function makemap() {
-		var mapCenter = new google.maps.LatLng(53.27, -9.104);
+	function makemap() {	
 
 		var mapOptions = { 
 			zoom: 19,
@@ -84,22 +102,32 @@
 			}
 		};
 
-		var panoramaOptions = {
-			position: mapCenter,
-			pov: {
-				heading: 170,
-				pitch: 10,
-				zoom: 1
-			}
-		};
-
 		map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 		for (i=0; i < data.length; i++) {
 			addMarker(data[i]);
-		}
-		
+		}	
 	}
+	
+	function showSV() {
+		var svmap = map.getStreetView();
+		svmap.setPosition(mapCenter);
+		svmap.setPov({
+			heading: 170,
+			zoom: 1,
+			pitch: 0
+		});
+		svmap.setVisible(true);
+		$("#show-map").removeClass('viewsel-tab-selected');
+		$("#show-sv").addClass('viewsel-tab-selected');
+	}
+	
+	function showMap() {
+		map.getStreetView().setVisible(false);
+		$("#show-sv").removeClass('viewsel-tab-selected');
+		$("#show-map").addClass('viewsel-tab-selected');
+	}
+	
 
 	function addMarker(record) {
 		var pos =  getDisplayPosition(record.lat, record.lng);
@@ -178,21 +206,34 @@
 		$(window).resize(function() {
 			fitMap(); 
 		});
+		
+		$("#show-map").click(function() {
+			showMap();
+		});
+		
+		$("#show-sv").click(function() {
+			showSV();
+		});	
+		
+		
 	});
 </script>
 </head>
 
 <body>
 	<div id="mappan">
-		<div id="palist"></div><div id="map"></div>
-		<div id="yearpan">
-			<div id="yearrange"></div>
-			<input id="yearsel" />
+		<div id="palist"></div>
+		<div id="mainpan">
+			<div id="map"></div>
+			<div id="yearpan">
+				Years:
+				<div id="yearrange"></div>
+				<input id="yearsel" />
+			</div>
+			<div id="viewselpan">
+				<span id="show-map" class="viewsel-tab viewsel-tab-selected">map</span> <span id="show-sv" class="viewsel-tab">street view</span>  
+			</div>
 		</div>
-		<div id="viewsel">
-			STREET VIEW | MAP 
-		</div>
-	</div>
-	<div id="debug"></div>
+	</div>	
 </body>
 </html>
