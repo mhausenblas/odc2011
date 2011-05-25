@@ -27,10 +27,11 @@ http://opendatachallenge.org/
 ## Next steps
 
 * OPEN: Anja to do Twitter integration
-* OPEN: Michael to do Google Maps streetview concept
+* OPEN: Michael to do Google Maps street view concept
 * OPEN: Sarven to do data import
-* OPEN: word cloud
-* OPEN: catchy stats
+* OPEN: Michael to do word cloud
+* OPEN: Gofran to do overall page (Irland map select)
+* OPEN: catchy stats (?) - high level
 * OPEN: a cool, catchy name and logo
 
 At the ODH on 14 May we had a look at the GPlan data. Turns out that the only sensible usage scenario is the notification app. We will focus on this one for the submission (with a target coverage for as many as possible counties/cities).
