@@ -14,6 +14,9 @@
 			font-weight: 300;
 		}
 	
+		table{ border-style:solid; background: #a0a0a0; float: right;}
+		td { padding:0px; }
+		th {font-size: 80%;}
 		body { font-family: Verdana,Arial,sans-serif;}
 		#mappan {  background: #f0f0f0; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px; border-left: 1px solid #000;}
 		#palist { width: 300px; font-size: 80%; padding: .5em; float: left;}
@@ -26,6 +29,8 @@
 			}
 		#yearpan { width: 40%; float: left; padding: .2em;}
 		#yearrange { margin: 1em; width: 90%;}
+		#legends{padding: .7em;}
+		#legendslabel { font-size: 50%; margin: 1em; color: #000000;}
 		#yearsel {  width: 100%; background: #fff; font-size: 200%; border: 0; text-align: center; float: left;}
 		#viewselpan { text-align: right; margin-right: 1px;}
 		.viewsel-tab { font-size: 200%; 
@@ -229,6 +234,8 @@ var MARKER_COLOR = {
 
 function drawDataURL(year,status){
 
+			year = year.toString();
+			year = year.substring(2);
 			var canvas = document.getElementById("dynamarker");
           	var context = canvas.getContext("2d");
           	context.font = "15pt Tahoma";
@@ -236,7 +243,7 @@ function drawDataURL(year,status){
           	context.fillRect(0, 0, 50, 30);
           	context.strokeStyle = "WHITE";
           	context.fillStyle = "WHITE";
-          	context.strokeText(year, 2.5, 22);
+          	context.strokeText(year, 14, 22);
           	
           	return canvas.toDataURL("image/png");
 
@@ -288,6 +295,106 @@ $("#palist-vis").html("&laquo;");
 </div>
 <div id="viewselpan">
 <span id="show-sv" class="viewsel-tab">street view</span> <span id="show-map" class="viewsel-tab viewsel-tab-selected">map</span>
+</div>
+<div id="legends">
+<table>
+	<tr>
+		<th>
+			Color
+		</th>
+		<th>
+			Application Status
+		</th>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#006666;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			INCOMPLETED APPLICATION
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#006600;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			NEW APPLICATION
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#00E000;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			FURTHER INFORMATION
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#000066;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			DECISION MADE
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#663300;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			LEAVE TO APPEAL
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#660000;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			APPEALED
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#FF0000;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			WITHDRAWN
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#000000;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			APPLICATION FINALISED
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#66FF00;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			PRE-VALIDATION
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#FF9900;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			DEEMED WITHDRAWN
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div style="background-color:#A30000;width:40px;height:10px;border:1px">
+		</td>
+		<td id="legendslabel">
+			APPEALED FINANCIAL
+		</td>
+	</tr>
+</table>
 </div>
 </div>
 </div> 
