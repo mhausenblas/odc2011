@@ -1,0 +1,14 @@
+##
+#
+# @author Sarven Capadisli <sarven.capadisli@deri.org>
+#
+# Some scripts to clean and load CSV data into MySQL database.
+#
+# Run gplan.sql to create database and tables
+#
+# Place the CSV files in data/ and make sure they are readable by all users (o+r)
+#
+# Run PHP CLI to load CSV data into MySQL database with corresponding table names:
+# e.g., $php loadDataToMySQL.php
+#
+##
