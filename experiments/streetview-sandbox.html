@@ -51,7 +51,12 @@
 			-webkit-box-shadow: 3px 3px 4px #000;
 			box-shadow: 3px 3px 4px #000;
 		}
-		.singlepa { margin: 10px;}
+		.singlepa {
+			margin: 10px 0 5px 15px;
+			padding: 5px;
+			cursor: pointer;
+			border-bottom: 1px dotted #fff;
+		}
 		.yearsellabel {
 			text-align: center;
 			color: #606060;
@@ -86,15 +91,15 @@
 	// this is dummy data, I made it up based on exitings PA, but the schema should be used:
 	var data = [
 		{appref:'a',lat:53.270,lng:-9.104,appdate:2000,appstatus:8, appdesc:'construct an extension to house'},
-		{appref:'b',lat:53.270,lng:-9.104,appdate:2001,appstatus:3, appdesc:'construct extension to house, again'},
-		{appref:'c',lat:53.2701,lng:-9.104,appdate:2000,appstatus:8, appdesc:'another construct'},
+		{appref:'b',lat:53.270,lng:-9.104,appdate:2001,appstatus:8, appdesc:'construct extension to house, again'},
+		{appref:'c',lat:53.270,lng:-9.104,appdate:2002,appstatus:3, appdesc:'another construct'},
 		{appref:'d',lat:53.2702,lng:-9.104,appdate:2001,appstatus:3, appdesc:'testing'},
-		{appref:'e',lat:53.270,lng:-9.1041,appdate:2000,appstatus:8, appdesc:'blah blah'},
-		{appref:'f',lat:53.2701,lng:-9.1039,appdate:2001,appstatus:3, appdesc:'dunno'},
-		{appref:'g',lat:53.2702,lng:-9.1039,appdate:2000,appstatus:8, appdesc:'construct an extension to house'},
-		{appref:'h',lat:53.2703,lng:-9.104,appdate:2001,appstatus:3, appdesc:'construct extension to house, again'},
-		{appref:'i',lat:53.270,lng:-9.103,appdate:2001,appstatus:8, appdesc:'construct an extension to house'},
-		{appref:'j',lat:53.270,lng:-9.103,appdate:2001,appstatus:3, appdesc:'construct extension to house, again'}
+		{appref:'e',lat:53.2702,lng:-9.1041,appdate:2002,appstatus:3, appdesc:'blah blah'},
+		{appref:'f',lat:53.2695,lng:-9.1039,appdate:2001,appstatus:3, appdesc:'dunno'},
+		{appref:'g',lat:53.2702,lng:-9.1039,appdate:2002,appstatus:3, appdesc:'got it!'},
+		{appref:'h',lat:53.2703,lng:-9.104,appdate:2002,appstatus:8, appdesc:'nah, next time'},
+		{appref:'i',lat:53.270,lng:-9.103,appdate:2000,appstatus:8, appdesc:'fail fail fail'},
+		{appref:'j',lat:53.270,lng:-9.103,appdate:2001,appstatus:3, appdesc:'yey, I did it'}
 
 		
 	];
@@ -105,10 +110,10 @@
 		$("#map").height($(window).height()*0.6);
 	}
 
-	function makemap() {	
+	function makemap() {
 
 		var mapOptions = { 
-			zoom: 19,
+			zoom: 18,
 			center: mapCenter,
 			mapTypeId: google.maps.MapTypeId.HYBRID,
 			overviewMapControl: true,
@@ -164,7 +169,7 @@
 			});
 			
 			currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
-			$("#palist-content").append("<div class='singlepa'><a href='#" + r.appref + "'>" + record.appdesc + "</a> - " + APPLICATION_STATUS[r.appstatus] + "</div>");
+			$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + record.appdesc + "</a> - " + APPLICATION_STATUS[r.appstatus] + "</div>");
 			
 		})({'appyear':record.appdate, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
 	}
@@ -239,6 +244,26 @@
 			$("#palist-vis").html("&laquo;");
 		});
 		
+		$(".singlepa").live('mouseenter', function() {
+			var thispa = $(this).attr('id');
+			for (var i = 0; i < currentMarkers.length; i++){
+				var paid = 'pa_' + currentMarkers[i].id;
+				
+				if(thispa == paid){
+					currentMarkers[i].marker.setAnimation(google.maps.Animation.BOUNCE);
+				}
+				else {
+					currentMarkers[i].marker.setAnimation(null);
+				}
+			}
+		});
+		
+		$("#palist").mouseout(function() {
+
+			for (var i = 0; i < currentMarkers.length; i++){
+					currentMarkers[i].marker.setAnimation(null);
+			}
+		});
 		
 		
 	});
