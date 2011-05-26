@@ -83,9 +83,31 @@
 	 "12":"APPEALED FINANCIAL"
 	};
 
+var MARKER_COLOR = {
+	 "0":"#006666",
+	 "1":"#006600",
+	 "2":"#00E000",
+	 "3":"#000066",
+	 "4":"#663300",
+	 "5":"#660000",
+	 "8":"#FF0000",
+	 "9":"#000000",
+	 "10":"#66FF00",
+	 "11":"#FF9900",
+	 "12":"#A30000"
+	};
 	// this is dummy data, I made it up based on exitings PA, but the schema should be used:
 	var data = [
-		{appref:'a',lat:53.270,lng:-9.104,appdate:2000,appstatus:8, appdesc:'construct an extension to house'}
+		{appref:'a',lat:53.270,lng:-9.104,appdate:2000,appstatus:0, appdesc:'construct an extension to house'},
+		{appref:'b',lat:53.270,lng:-9.104,appdate:2001,appstatus:1, appdesc:'construct extension to house, again'},
+		{appref:'c',lat:53.2701,lng:-9.104,appdate:2000,appstatus:2, appdesc:'another construct'},
+		{appref:'d',lat:53.2702,lng:-9.104,appdate:2001,appstatus:3, appdesc:'testing'},
+		{appref:'e',lat:53.270,lng:-9.1041,appdate:2000,appstatus:4, appdesc:'blah blah'},
+		{appref:'f',lat:53.2701,lng:-9.1039,appdate:2001,appstatus:5, appdesc:'dunno'},
+		{appref:'g',lat:53.2702,lng:-9.1039,appdate:2000,appstatus:8, appdesc:'construct an extension to house'},
+		{appref:'h',lat:53.2703,lng:-9.104,appdate:2001,appstatus:9, appdesc:'construct extension to house, again'},
+		{appref:'i',lat:53.270,lng:-9.103,appdate:2001,appstatus:10, appdesc:'construct an extension to house'},
+		{appref:'j',lat:53.270,lng:-9.103,appdate:2001,appstatus:11, appdesc:'construct extension to house, again'}
 		
 		
 	];
@@ -141,7 +163,7 @@
 	
 		(function(r) {
 			// marker size is 30x32
-					var yMarkerImage = new google.maps.MarkerImage(drawDataURL());
+					var yMarkerImage = new google.maps.MarkerImage(drawDataURL(r.appyear,r.appstatus));
 
 			marker = new google.maps.Marker({
 				position: pos,
@@ -205,17 +227,21 @@
 	}
 	
 
-function drawDataURL(){
+function drawDataURL(year,status){
 
-var canvas = document.getElementById("test");
-          var context = canvas.getContext("2d");
-          context.fillStyle = "red";
-          context.fillRect(50, 50, 50, 50);
-          // no argument defaults to image/png; image/jpeg, etc also work on some
-          // implementations -- image/png is the only one that must be supported per spec.
-          return canvas.toDataURL("image/png");
+			var canvas = document.getElementById("dynamarker");
+          	var context = canvas.getContext("2d");
+          	context.font = "15pt Tahoma";
+          	context.fillStyle = MARKER_COLOR[status];
+          	context.fillRect(0, 0, 50, 30);
+          	context.strokeStyle = "WHITE";
+          	context.fillStyle = "WHITE";
+          	context.strokeText(year, 2.5, 22);
+          	
+          	return canvas.toDataURL("image/png");
 
 }
+
 	$(function() { 
 
 $("#palist-content").append("<h2>Planning Applications</h2>");
@@ -265,7 +291,7 @@ $("#palist-vis").html("&laquo;");
 </div>
 </div>
 </div> 
-<canvas id="test" style="display:none">
+<canvas id="dynamarker" width="50" height="30" style="display:none"> 
 </canvas>
 </body>
 </html>
