@@ -233,7 +233,8 @@ var MARKER_COLOR = {
 	
 
 function drawDataURL(year,status){
-
+/*
+			// old code with rectangular marker
 			year = year.toString();
 			year = year.substring(2);
 			var canvas = document.getElementById("dynamarker");
@@ -246,8 +247,39 @@ function drawDataURL(year,status){
           	context.strokeText(year, 14, 22);
           	
           	return canvas.toDataURL("image/png");
+*/
 
+			year = year.toString();
+			year = year.substring(2);
+			var canvas = document.getElementById("dynamarker");
+          	var context = canvas.getContext('2d');
+          	context.font = "10pt Tahoma";
+          	
+          	// create the semi-circle shape
+			context.beginPath();
+			context.arc(29,25,18,0,Math.PI,true);
+			context.closePath();
+			context.fillStyle = MARKER_COLOR[status];
+			context.fill();
+			
+			// create the triangle shape
+    		context.beginPath();
+			context.moveTo(20,25);
+    		context.lineTo(38,25);
+    		context.lineTo(29,64);
+    		context.closePath();
+			context.fillStyle = MARKER_COLOR[status];
+          	context.fill();
+
+          	// display year on the marker
+          	context.strokeStyle = "WHITE";
+          	context.fillStyle = "WHITE";
+          	context.strokeText(year, 22, 22);
+	
+			return canvas.toDataURL("image/png");
 }
+
+
 
 	$(function() { 
 
@@ -398,7 +430,7 @@ $("#palist-vis").html("&laquo;");
 </div>
 </div>
 </div> 
-<canvas id="dynamarker" width="50" height="30" style="display:none"> 
+<canvas id="dynamarker" width="50" height="65" style="display:none"> 
 </canvas>
 </body>
 </html>
