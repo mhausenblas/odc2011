@@ -188,9 +188,24 @@
 				title: APPLICATION_STATUS[r.appstatus]
 			});
 			
-			google.maps.event.addListener(marker, "click", function() {
-				$("#pa_"+ r.appref).addClass('active-pa');
+			
+			google.maps.event.addListener(marker, "mouseover", function() {
+				
+				
+				if(!$("#pa_"+ r.appref).hasClass("active-pa")){                            
+				  $("#pa_"+ r.appref).addClass('active-pa');
+				 }
+
+				
 			});
+			
+			google.maps.event.addListener(marker, "mouseout", function() {
+				
+
+				$("#pa_"+ r.appref).removeClass('active-pa');	
+				
+			});
+			
 			
 			currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
 			$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + record.appdesc + "</a> - " + APPLICATION_STATUS[r.appstatus] + "</div>");
@@ -283,7 +298,6 @@
 		});
 		
 		$("#palist").mouseout(function() {
-
 			for (var i = 0; i < currentMarkers.length; i++){
 					currentMarkers[i].marker.setAnimation(null);
 			}
