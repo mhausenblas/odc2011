@@ -4,9 +4,12 @@
 #
 # Some scripts to clean and load CSV data into MySQL database.
 #
-# Run gplan.sql to create database and tables
+# Run gplan.sql to create database and tables.
 #
 # Place the CSV files in data/ and make sure they are readable by all users (o+r)
+#
+# If the CSV files in data/ are already clean (contents of GPlan_Data.tar from Dropbox)
+# there is no need to run cleanCSV.php.
 #
 # Run PHP CLI to load CSV data into MySQL database with corresponding table names:
 # e.g., $php loadDataToMySQL.php

@@ -16,8 +16,9 @@
 	
 		body { font-family: Verdana,Arial,sans-serif;}
 		#mappan {  background: #f0f0f0; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px; border-left: 1px solid #000;}
-		#palist { width: 300px; font-size: 80%; padding: .5em; float: left;}
+		#palist { width: 300px; font-size: 80%; padding: .5em; float: left; }
 		#palist-vis { font-size: 120%; color: #a0a0a0; cursor: pointer;}
+		#palist-content { overflow: auto;}
 		#mainpan { margin: 0 0 0 320px; background: #fff; border-bottom: 1px solid #f0f0f0;}
 		#map { text-align: right; border: 1px solid #c0c0c0; border-right: 1px solid #000;
 			-webkit-border-top-right-radius: 8px;
@@ -52,7 +53,7 @@
 			box-shadow: 3px 3px 4px #000;
 		}
 		.singlepa {
-			margin: 10px 0 5px 15px;
+			margin: 10px 5px 5px 15px;
 			padding: 5px;
 			cursor: pointer;
 			border-bottom: 1px dotted #fff;
@@ -60,6 +61,9 @@
 		.yearsellabel {
 			text-align: center;
 			color: #606060;
+		}
+		.active-pa {
+			border: 1px dotted red;
 		}
 	</style>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
@@ -70,7 +74,7 @@
     <script type="text/javascript">
 
 	var map;
-	var mapCenter = new google.maps.LatLng(53.27, -9.104);
+	var mapCenter = new google.maps.LatLng(53.27, -9.102);
 	var currentMarkers = new Array();
 
 	// GPlan status based on GPlan_ApplicationStatus.txt
@@ -91,23 +95,43 @@
 	// this is dummy data, I made it up based on exitings PA, but the schema should be used:
 	var data = [
 		{appref:'a',lat:53.270,lng:-9.104,appdate:2000,appstatus:8, appdesc:'construct an extension to house'},
-		{appref:'b',lat:53.270,lng:-9.104,appdate:2001,appstatus:8, appdesc:'construct extension to house, again'},
-		{appref:'c',lat:53.270,lng:-9.104,appdate:2002,appstatus:3, appdesc:'another construct'},
-		{appref:'d',lat:53.2702,lng:-9.104,appdate:2001,appstatus:3, appdesc:'testing'},
+		{appref:'b',lat:53.2701,lng:-9.102,appdate:2001,appstatus:8, appdesc:'construct extension to house, again'},
+		{appref:'c',lat:53.2703,lng:-9.104,appdate:2002,appstatus:3, appdesc:'another construct'},
+		{appref:'d',lat:53.2702,lng:-9.103,appdate:2001,appstatus:3, appdesc:'testing'},
 		{appref:'e',lat:53.2702,lng:-9.1041,appdate:2002,appstatus:3, appdesc:'blah blah'},
 		{appref:'f',lat:53.2695,lng:-9.1039,appdate:2001,appstatus:3, appdesc:'dunno'},
 		{appref:'g',lat:53.2702,lng:-9.1039,appdate:2002,appstatus:3, appdesc:'got it!'},
 		{appref:'h',lat:53.2703,lng:-9.104,appdate:2002,appstatus:8, appdesc:'nah, next time'},
-		{appref:'i',lat:53.270,lng:-9.103,appdate:2000,appstatus:8, appdesc:'fail fail fail'},
-		{appref:'j',lat:53.270,lng:-9.103,appdate:2001,appstatus:3, appdesc:'yey, I did it'}
-
-		
+		{appref:'i',lat:53.2703,lng:-9.103,appdate:2000,appstatus:8, appdesc:'fail fail fail'},
+		{appref:'j',lat:53.270,lng:-9.102,appdate:2001,appstatus:3, appdesc:'yey, I did it'},
+		{appref:'k',lat:53.2702,lng:-9.102,appdate:2002,appstatus:8, appdesc:'oh oh'},
+		{appref:'l',lat:53.2705,lng:-9.1,appdate:2000,appstatus:8, appdesc:'more here'},
+		{appref:'m',lat:53.2701,lng:-9.102,appdate:2001,appstatus:3, appdesc:'sdfsdf'},
+		{appref:'n',lat:53.2703,lng:-9.103,appdate:2002,appstatus:8, appdesc:'ffffff'},
+		{appref:'o',lat:53.2702,lng:-9.101,appdate:2000,appstatus:8, appdesc:'fas fdsdfsd dfsdfsd sdfsdfsd sdfsdfs '},
+		{appref:'p',lat:53.27,lng:-9.1,appdate:2001,appstatus:3, appdesc:'yfff '},
+		{appref:'q',lat:53.2703,lng:-9.101,appdate:2002,appstatus:8, appdesc:'fsdfff  ffffff'},
+		{appref:'r',lat:53.2698,lng:-9.106,appdate:2001,appstatus:8, appdesc:'fffffff fdsfdffsdnlkndsfl dsfnsdlkfn dskfnsd'},
+		{appref:'s',lat:53.2697,lng:-9.102,appdate:2001,appstatus:3, appdesc:'yuu'},
+		{appref:'t',lat:53.2699,lng:-9.102,appdate:2002,appstatus:8, appdesc:'vsdv'},
+		{appref:'u',lat:53.2698,lng:-9.101,appdate:2000,appstatus:8, appdesc:'abcl'},
+		{appref:'v',lat:53.2697,lng:-9.103,appdate:2001,appstatus:3, appdesc:'123 abbbb fddfff///'},
+		{appref:'w',lat:53.2698,lng:-9.102,appdate:2002,appstatus:8, appdesc:'? >'},
+		{appref:'x',lat:53.2701,lng:-9.103,appdate:2000,appstatus:8, appdesc:'.....'},
+		{appref:'y',lat:53.2699,lng:-9.104,appdate:2001,appstatus:3, appdesc:'mmmmm'},
+		{appref:'z',lat:53.2703,lng:-9.102,appdate:2002,appstatus:8, appdesc:'.o(bah)'},
+		{appref:'1',lat:53.270,lng:-9.103,appdate:2000,appstatus:8, appdesc:'x.x.x.x.x.x.'},
+		{appref:'2',lat:53.2701,lng:-9.103,appdate:2001,appstatus:3, appdesc:'. . . . . .    ...     '},
+		{appref:'3',lat:53.2698,lng:-9.104,appdate:2002,appstatus:8, appdesc:'this is a very very very long description to test how far we can go if at all, don\'t look here'},
+		{appref:'4',lat:53.2704,lng:-9.101,appdate:2000,appstatus:8, appdesc:'fail fail sdfffffffffff'},
+		{appref:'5',lat:53.2704,lng:-9.103,appdate:2001,appstatus:3, appdesc:'LAST'}		
 	];
 	
 	function fitMap(){
 		$("#mainpan").height($(window).height()*0.9);
 		$("#map").width($(window).width()-340);
 		$("#map").height($(window).height()*0.6);
+		$("#palist-content").height($(window).height()*0.85);
 	}
 
 	function makemap() {
@@ -165,7 +189,7 @@
 			});
 			
 			google.maps.event.addListener(marker, "click", function() {
-				document.location = '#_' + r.appref;
+				$("#pa_"+ r.appref).addClass('active-pa');
 			});
 			
 			currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
