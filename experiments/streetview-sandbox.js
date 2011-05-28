@@ -72,13 +72,12 @@ $(function() {
 	// tab switches (map view vs. street view)
 	$("#show-map").click(function() {
 		showMap();
-	});
-	
+	});	
 	$("#show-sv").click(function() {
 		showSV();
 	});
 	
-	// geo-code address
+	// geo-code address - look up address as soon as ENTER is hit
 	$("#target-address").keypress(function(e) {
 		var code = (e.keyCode ? e.keyCode : e.which);
 		var address = "";
@@ -89,13 +88,19 @@ $(function() {
 					var latitude = data.Placemark[0].Point.coordinates[1];  
 					var longitude = data.Placemark[0].Point.coordinates[0];  
 					console.log("got lat:" + latitude + " long: " + longitude + " for address: " + address);
-					map.setCenter(new google.maps.LatLng(latitude, longitude));
+					if(latitude && longitude) {
+						map.setCenter(new google.maps.LatLng(latitude, longitude));
+						if(map.getStreetView().getVisible()){ // the SV is currently visible
+							showSV();
+						}
+					}
+				}
+				else {
+					alert("Sorry, I didn't find the address you've provided. Try again, please ...");
 				}
 			});
 		}
 	});
-	
-	
 	
 	// highlighting marker of selected PA
 	$(".singlepa").live('mouseenter', function() {
@@ -128,7 +133,7 @@ $(function() {
 
 function fitPAAWidgets(){
 //	$("#mainpan").height($(window).height()*0.7);
-	$("#map").width($(window).width()-340);
+	$("#map").width($(window).width()-355);
 	$("#map").height($(window).height()*0.6);
 //	$("#palist-content").height($(window).height()*0.85);
 }
@@ -219,21 +224,21 @@ function addMarker(record) {
 			title: APPLICATION_STATUS[r.appstatus]
 		});
 		
-		google.maps.event.addListener(marker, "mouseover", function() {
-			if(!$("#pa_"+ r.appref).hasClass("active-pa")){                            
-			  $("#pa_"+ r.appref).addClass('active-pa');
-			 }
+		google.maps.event.addListener(marker, "click", function() {
+			if(map.getStreetView().getVisible()){ // the SV is currently visible
+				// TODO: implement TOP-k listing by distance
+			}
+			else {
+				$("#palist-content").html("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
+			}
 		});
-		
-		google.maps.event.addListener(marker, "mouseout", function() {
-			$("#pa_"+ r.appref).removeClass('active-pa');	
-		});
+		$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
+	
 		
 		currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
 		
-		$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + record.appdesc + "</a> - " + APPLICATION_STATUS[r.appstatus] + "</div>");
 		
-	})({'appyear':record.appdate, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
+	})({'appyear':record.appdate, 'decision':record.decision, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
 }
 
 
