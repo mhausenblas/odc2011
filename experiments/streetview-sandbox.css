@@ -7,6 +7,16 @@ h2 {
 
 body { font-family: Verdana,Arial,sans-serif;}
 
+#addresspan {
+	text-align: center;
+	padding: 10px;
+}
+
+#target-address {
+	font-size: 200%;
+	
+}
+
 #dynamarker { display: none; }
 
 #mappan {  background: #f0f0f0; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px; border-left: 1px solid #000;}

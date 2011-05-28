@@ -1,7 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////// 
 //  PA archive view globals
 //
-
 var map;
 var mapCenter = new google.maps.LatLng(53.270, -9.104);
 var mapInitialZoomFactor = 18;
@@ -88,6 +87,25 @@ $(function() {
 		showSV();
 	});
 	
+	// geo-code address
+	$("#target-address").keypress(function(e) {
+		var code = (e.keyCode ? e.keyCode : e.which);
+		var address = "";
+		if (code == 13) {
+			address = $("#target-address").val();
+			$.getJSON("http://maps.google.com/maps/geo?q="+ address+"&sensor=false&output=json&callback=?", function(data, textStatus){
+				if(data.Status.code==200) {  
+					var latitude = data.Placemark[0].Point.coordinates[1];  
+					var longitude = data.Placemark[0].Point.coordinates[0];  
+					console.log("got lat:" + latitude + " long: " + longitude + " for address: " + address);
+					map.setCenter(new google.maps.LatLng(latitude, longitude));
+				}
+			});
+		}
+	});
+	
+	
+	
 	// highlighting marker of selected PA
 	$(".singlepa").live('mouseenter', function() {
 		var thispa = $(this).attr('id');
@@ -118,10 +136,10 @@ $(function() {
 //
 
 function fitPAAWidgets(){
-	$("#mainpan").height($(window).height()*0.9);
+//	$("#mainpan").height($(window).height()*0.7);
 	$("#map").width($(window).width()-340);
 	$("#map").height($(window).height()*0.6);
-	$("#palist-content").height($(window).height()*0.85);
+//	$("#palist-content").height($(window).height()*0.85);
 }
 
 function makemap() {
