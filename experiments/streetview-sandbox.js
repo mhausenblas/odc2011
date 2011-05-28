@@ -80,6 +80,11 @@ var data = [
 $(function() { 
 	
 	makemap(); // create the Google Map
+	
+	$.each(MARKER_COLOR, function(index, val){
+		$("#legendpan").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
+	});	
+	
 	yearsel(); // create the year selection slider
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
 	
@@ -200,7 +205,6 @@ function addMarker(record) {
 	var pos =  getDisplayPosition(record.lat, record.lng);
 
 	(function(r) {
-
 		var yMarkerImage = new google.maps.MarkerImage(drawMarker(r.appyear,r.appstatus));
 
 		marker = new google.maps.Marker({
@@ -210,26 +214,18 @@ function addMarker(record) {
 			title: APPLICATION_STATUS[r.appstatus]
 		});
 		
-		
 		google.maps.event.addListener(marker, "mouseover", function() {
-			
-			
 			if(!$("#pa_"+ r.appref).hasClass("active-pa")){                            
 			  $("#pa_"+ r.appref).addClass('active-pa');
 			 }
-
-			
 		});
 		
 		google.maps.event.addListener(marker, "mouseout", function() {
-			
-
 			$("#pa_"+ r.appref).removeClass('active-pa');	
-			
 		});
 		
-		
 		currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
+		
 		$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + record.appdesc + "</a> - " + APPLICATION_STATUS[r.appstatus] + "</div>");
 		
 	})({'appyear':record.appdate, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
@@ -268,8 +264,6 @@ function drawMarker(year,status){
 	return canvas.toDataURL("image/png");
 }
 
-
-
 function getDisplayPosition(lat, lng){
 	var pos = new google.maps.LatLng(lat, lng);
 	var apos;
@@ -297,7 +291,6 @@ function yearsel(){
 			filterPA(ui.values[0], ui.values[1]);
 		}
 	});
-	
 	$("#yearsel").val($("#yearrange").slider("values", 0) + " - " + $("#yearrange").slider("values", 1 ));
 	$("#yearsel").attr('readonly', true);
 	

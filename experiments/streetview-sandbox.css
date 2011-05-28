@@ -17,11 +17,12 @@ body { font-family: Verdana,Arial,sans-serif;}
 	-moz-border-radius-topright: 8px;
 	border-top-right-radius: 8px;
 	}
-#yearpan { width: 40%; float: left; padding: .2em;}
+#yearpan { margin: 5px 0 0 0; width: 40%; float: left; padding: .2em;}
 #yearrange { margin: 1em; width: 90%;}
 #yearsel {  width: 100%; background: #fff; font-size: 200%; border: 0; text-align: center; float: left;}
+#legendpan { cursor: pointer; text-align: center; margin: 20px 0 0 0; float: left; font-size: 80%; border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
 #viewselpan { text-align: right; margin-right: 1px;}
-.viewsel-tab { font-size: 200%; 
+.viewsel-tab { font-size: 150%; 
 	padding: 0 1em .2em 1em;
 	border: 1px solid #a0a0a0; 
 	-webkit-border-bottom-right-radius: 4px;
