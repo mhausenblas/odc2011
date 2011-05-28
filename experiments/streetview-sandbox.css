@@ -6,6 +6,7 @@ h2 {
 }
 
 body { font-family: Verdana,Arial,sans-serif;}
+#dynamarker { display: none; }
 #mappan {  background: #f0f0f0; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px; border-left: 1px solid #000;}
 #palist { width: 300px; font-size: 80%; padding: .5em; float: left; }
 #palist-vis { font-size: 120%; color: #a0a0a0; cursor: pointer;}
