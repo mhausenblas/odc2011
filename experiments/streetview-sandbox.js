@@ -60,19 +60,10 @@ var data = [
 $(function() { 
 	
 	makemap(); // create the Google Map
-
-	$.each(DECISION_CODE, function(index, val){
-		$("#decision-legend").append("<div style='padding: 2px;'>" + val.toLowerCase() + "</div>");	
-	});
-
-	
-	$.each(MARKER_COLOR, function(index, val){
-		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
-	});
-	
-	
+	makelegend(); // create the legend
 	yearsel(); // create the year selection slider
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
+	showSV(); // show SV initially
 	
 	$(window).resize(function() { // whenever window is resized, adapt size of widgets
 		fitPAAWidgets(); 
@@ -174,10 +165,19 @@ function makemap() {
 	}	
 }
 
+function makelegend(){
+	$.each(DECISION_CODE, function(index, val){
+		$("#decision-legend").append("<div style='padding: 2px;'>" + val.toLowerCase() + "</div>");	
+	});
+	$.each(MARKER_COLOR, function(index, val){
+		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
+	});	
+}
+
 function showSV() {
 	var svmap = map.getStreetView();
 	var panoOptions = {
-		position: mapCenter,
+		position: map.getCenter(),
 			pov: {
 			heading: 170,
 			pitch: 0,
