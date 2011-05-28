@@ -107,7 +107,6 @@ $(function() {
 		var thispa = $(this).attr('id');
 		for (var i = 0; i < currentMarkers.length; i++){
 			var paid = 'pa_' + currentMarkers[i].id;
-			
 			if(thispa == paid){
 				currentMarkers[i].marker.setAnimation(google.maps.Animation.BOUNCE);
 			}
@@ -119,10 +118,9 @@ $(function() {
 	
 	$("#palist").mouseout(function() {
 		for (var i = 0; i < currentMarkers.length; i++){
-				currentMarkers[i].marker.setAnimation(null);
+			currentMarkers[i].marker.setAnimation(null);
 		}
 	});
-	
 	
 });
 
@@ -201,6 +199,14 @@ function showSV() {
 
 	svmap.setOptions(panoOptions);
 	svmap.setVisible(true);
+	
+	$("#palist-content").html("");
+	for (var i = 0; i < currentMarkers.length; i++){
+		
+		$("#palist-content").append("<div class='singlepa' id='pa_" + currentMarkers[i].id  +"'>" + currentMarkers[i].year +": <a href='#" + currentMarkers[i].id + "'>" + currentMarkers[i].desc + "</a></div>");
+	}
+	
+	
 	$("#show-map").removeClass('viewsel-tab-selected');
 	$("#show-sv").addClass('viewsel-tab-selected');
 }
@@ -209,36 +215,31 @@ function showMap() {
 	map.getStreetView().setVisible(false);
 	$("#show-sv").removeClass('viewsel-tab-selected');
 	$("#show-map").addClass('viewsel-tab-selected');
+	$("#palist-content").html("");
 }
 
 function addMarker(record) {
 	(function(r) {
-		var pos =  getDisplayPosition(record.lat, record.lng);
+		var pos = getDisplayPosition(record.lat, record.lng);
 		var yMarkerImage = new google.maps.MarkerImage(drawMarker(r.appyear,r.appstatus));
-
 		var marker = new google.maps.Marker({
 			position: pos,
 			map: map,
 			icon: yMarkerImage,
 			title: APPLICATION_STATUS[r.appstatus]
 		});
-
-		currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker, latitude:record.lat, longitude:record.lng });
+		// remember the marker
+		currentMarkers.push({ id:r.appref, year:r.appyear, desc: r.appdesc, marker:marker});
 		
 		google.maps.event.addListener(marker, "click", function() {
-			if(map.getStreetView().getVisible()){ // the SV is currently visible
-				// TODO: implement TOP-k listing by distance
-			}
-			else {
-				$("#palist-content").html("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
+			if(!map.getStreetView().getVisible()){ // the SV is not visible
+				$("#palist-content").html("<div class='singlepa' id='pa_" + r.appref  +"'>" + r.appyear + ": <a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
 			}
 		});
-
-		$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
 	})({'appyear':record.appdate, 'decision':record.decision, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
 }
 
-
+// render marker dynamically, based on year and status
 function drawMarker(year, status){
 	// see http://www.html5canvastutorials.com and http://diveintohtml5.org/canvas.html for more tricks ...
 	year = year.toString().substring(2); // only take last two digits into account
