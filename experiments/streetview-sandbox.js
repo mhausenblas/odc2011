@@ -212,17 +212,18 @@ function showMap() {
 }
 
 function addMarker(record) {
-	var pos =  getDisplayPosition(record.lat, record.lng);
-
 	(function(r) {
+		var pos =  getDisplayPosition(record.lat, record.lng);
 		var yMarkerImage = new google.maps.MarkerImage(drawMarker(r.appyear,r.appstatus));
 
-		marker = new google.maps.Marker({
+		var marker = new google.maps.Marker({
 			position: pos,
 			map: map,
 			icon: yMarkerImage,
 			title: APPLICATION_STATUS[r.appstatus]
 		});
+
+		currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker, latitude:record.lat, longitude:record.lng });
 		
 		google.maps.event.addListener(marker, "click", function() {
 			if(map.getStreetView().getVisible()){ // the SV is currently visible
@@ -232,17 +233,13 @@ function addMarker(record) {
 				$("#palist-content").html("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
 			}
 		});
+
 		$("#palist-content").append("<div class='singlepa' id='pa_" + r.appref  +"'><a href='#" + r.appref + "'>" + r.appdesc + "</a> - " + DECISION_CODE[r.decision] + " - "  + APPLICATION_STATUS[r.appstatus] + "</div>");
-	
-		
-		currentMarkers.push({ id:r.appref, year:r.appyear, marker:marker });
-		
-		
 	})({'appyear':record.appdate, 'decision':record.decision, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
 }
 
 
-function drawMarker(year,status){
+function drawMarker(year, status){
 	// see http://www.html5canvastutorials.com and http://diveintohtml5.org/canvas.html for more tricks ...
 	year = year.toString().substring(2); // only take last two digits into account
 	var canvas = document.getElementById("dynamarker");
@@ -274,20 +271,22 @@ function drawMarker(year,status){
 	return canvas.toDataURL("image/png");
 }
 
+// makes sure that no two markers are on the exact same location (by scanning marker list and randomly shuffling around)
 function getDisplayPosition(lat, lng){
 	var pos = new google.maps.LatLng(lat, lng);
-	var apos;
-	/*
+	//console.log("CURRENT position:" + pos);
 	if(currentMarkers.length > 0) {
 		for (var i = 0; i < currentMarkers.length; i++){
-			apos = currentMarkers[i].marker.getPosition();
-			if(pos.equals(apos)) {
-				return new google.maps.LatLng(record.lat + 0.00001, record.lng + 0.00001);
+			var takenpos =  currentMarkers[i].marker.getPosition();
+			if(pos.equals(takenpos)){//(lat == takenlat) && (lng == takenlng)) { // compare each component manually - I don't trust the rounding stuff from LatLng
+				lat += 0.00001 * Math.random();
+				lng += 0.00001 * Math.random();
+				//console.log("MATCH! using new position with lat=" + lat + " lng=" + lng);
+				return new google.maps.LatLng(lat, lng);
 			}
 		}
 	}
-	*/
-	return pos;
+	return new google.maps.LatLng(lat, lng);
 }
 
 function yearsel(){
