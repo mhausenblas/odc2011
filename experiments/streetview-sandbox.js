@@ -1,9 +1,14 @@
+/////////////////////////////////////////////////////////////////////////////// 
+//  PA archive view globals
+//
 
 var map;
 var mapCenter = new google.maps.LatLng(53.27, -9.102);
+var mapInitialZoomFactor = 18;
+
 var currentMarkers = new Array();
 
-// GPlan status based on GPlan_ApplicationStatus.txt
+// GPlan status - based on GPlan_ApplicationStatus.txt
 var APPLICATION_STATUS = {
  "0":"INCOMPLETED APPLICATION",
  "1":"NEW APPLICATION",
@@ -53,7 +58,59 @@ var data = [
 	{appref:'5',lat:53.2704,lng:-9.103,appdate:2001,appstatus:3, appdesc:'LAST'}		
 ];
 
-function fitMap(){
+/////////////////////////////////////////////////////////////////////////////// 
+//  PA archive view main event loop
+//
+
+$(function() { 
+	
+	makemap(); // create the Google Map
+	yearsel(); // create the year selection slider
+	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
+	
+	$(window).resize(function() { // whenever window is resized, adapt size of widgets
+		fitPAAWidgets(); 
+	});
+	
+	// tab switches (map view vs. street view)
+	$("#show-map").click(function() {
+		showMap();
+	});
+	
+	$("#show-sv").click(function() {
+		showSV();
+	});
+	
+	// highlighting marker of selected PA
+	$(".singlepa").live('mouseenter', function() {
+		var thispa = $(this).attr('id');
+		for (var i = 0; i < currentMarkers.length; i++){
+			var paid = 'pa_' + currentMarkers[i].id;
+			
+			if(thispa == paid){
+				currentMarkers[i].marker.setAnimation(google.maps.Animation.BOUNCE);
+			}
+			else {
+				currentMarkers[i].marker.setAnimation(null);
+			}
+		}
+	});
+	
+	$("#palist").mouseout(function() {
+		for (var i = 0; i < currentMarkers.length; i++){
+				currentMarkers[i].marker.setAnimation(null);
+		}
+	});
+	
+	
+});
+
+
+/////////////////////////////////////////////////////////////////////////////// 
+//  PA archive view library
+//
+
+function fitPAAWidgets(){
 	$("#mainpan").height($(window).height()*0.9);
 	$("#map").width($(window).width()-340);
 	$("#map").height($(window).height()*0.6);
@@ -61,9 +118,8 @@ function fitMap(){
 }
 
 function makemap() {
-
 	var mapOptions = { 
-		zoom: 18,
+		zoom: mapInitialZoomFactor,
 		center: mapCenter,
 		mapTypeId: google.maps.MapTypeId.HYBRID,
 		overviewMapControl: true,
@@ -73,8 +129,21 @@ function makemap() {
 		}
 	};
 
+	// create the map with options from above
 	map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	
+	google.maps.event.addListener(map.getStreetView(), 'visible_changed', function() {	
+		if(map.getStreetView().getVisible()){ // the SV is currently visible make sure the tabs are respectively selected
+			$("#show-sv").addClass('viewsel-tab-selected');
+			$("#show-map").removeClass('viewsel-tab-selected');
+		}
+		else {
+			$("#show-sv").removeClass('viewsel-tab-selected');
+			$("#show-map").addClass('viewsel-tab-selected');
+		}
+	});
 
+	// add the markers based on the data we get from the PA service
 	for (i=0; i < data.length; i++) {
 		addMarker(data[i]);
 	}	
@@ -82,12 +151,25 @@ function makemap() {
 
 function showSV() {
 	var svmap = map.getStreetView();
-	svmap.setPosition(mapCenter);
-	svmap.setPov({
-		heading: 170,
-		zoom: 1,
-		pitch: 0
-	});
+	var panoOptions = {
+		position: mapCenter,
+			pov: {
+			heading: 200,
+			pitch: 0,
+			zoom: 1
+		},
+		addressControlOptions: {
+			position: google.maps.ControlPosition.BOTTOM
+		},
+		linksControl: true,
+		panControl: true,
+		zoomControlOptions: {
+			style: google.maps.ZoomControlStyle.SMALL
+		},
+		enableCloseButton: false
+	};
+
+	svmap.setOptions(panoOptions);
 	svmap.setVisible(true);
 	$("#show-map").removeClass('viewsel-tab-selected');
 	$("#show-sv").addClass('viewsel-tab-selected');
@@ -99,12 +181,11 @@ function showMap() {
 	$("#show-map").addClass('viewsel-tab-selected');
 }
 
-
 function addMarker(record) {
 	var pos =  getDisplayPosition(record.lat, record.lng);
 
 	(function(r) {
-		// marker size is 30x32
+
 		var yMarkerImage = new google.maps.MarkerImage("img/year-marker-"+ r.appstatus +"-"+ r.appyear +".png");
 
 		marker = new google.maps.Marker({
@@ -182,52 +263,3 @@ function filterPA(miny, maxy){
 		}
 	}
 }
-
-
-$(function() { 
-	$("#palist-content").append("<h2>Planning Applications</h2>");
-	makemap(); 
-	yearsel();
-	fitMap();
-	$(window).resize(function() {
-		fitMap(); 
-	});
-	
-	$("#show-map").click(function() {
-		showMap();
-	});
-	
-	$("#show-sv").click(function() {
-		showSV();
-	});
-	
-	$("#palist-vis").toggle(function() {
-		$("#palist").slideDown("slow");
-		$("#palist-vis").html("&raquo;");
-	}, function() {
-		$("#palist").slideUp("slow");
-		$("#palist-vis").html("&laquo;");
-	});
-	
-	$(".singlepa").live('mouseenter', function() {
-		var thispa = $(this).attr('id');
-		for (var i = 0; i < currentMarkers.length; i++){
-			var paid = 'pa_' + currentMarkers[i].id;
-			
-			if(thispa == paid){
-				currentMarkers[i].marker.setAnimation(google.maps.Animation.BOUNCE);
-			}
-			else {
-				currentMarkers[i].marker.setAnimation(null);
-			}
-		}
-	});
-	
-	$("#palist").mouseout(function() {
-		for (var i = 0; i < currentMarkers.length; i++){
-				currentMarkers[i].marker.setAnimation(null);
-		}
-	});
-	
-	
-});
