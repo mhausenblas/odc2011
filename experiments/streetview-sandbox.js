@@ -3,12 +3,12 @@
 //
 
 var map;
-var mapCenter = new google.maps.LatLng(53.27, -9.102);
+var mapCenter = new google.maps.LatLng(53.270, -9.104);
 var mapInitialZoomFactor = 18;
 
 var currentMarkers = new Array();
 
-// GPlan status - based on GPlan_ApplicationStatus.txt
+// GPlan application status - based on GPlan_ApplicationStatus.txt
 var APPLICATION_STATUS = {
  "0":"INCOMPLETED APPLICATION",
  "1":"NEW APPLICATION",
@@ -23,54 +23,35 @@ var APPLICATION_STATUS = {
  "12":"APPEALED FINANCIAL"
 };
 
+// GPlan decision code - based on GPlan_DecisionCodes.txt
+var DECISION_CODE = {
+	"N":"UNKNOWN",
+	"C":"CONDITIONAL",
+	"U":"UNCONDITIONAL",
+	"R":"REFUSED"
+};
+
 // color-coded marker corresponding to the GPlan status above
 var MARKER_COLOR = {
-	 "0":"#006666",
+	 "0":"#303030",
 	 "1":"#006600",
-	 "2":"#00E000",
+	 "2":"#336633",
 	 "3":"#000066",
-	 "4":"#663300",
-	 "5":"#660000",
-	 "8":"#FF0000",
-	 "9":"#000000",
-	 "10":"#66FF00",
-	 "11":"#FF9900",
-	 "12":"#A30000"
-	};
+	 "4":"#333060",
+	 "5":"#363666",
+	 "8":"#600",
+	 "9":"#661122",
+	 "10":"#603",
+	 "11":"#663300",
+	 "12":"#633"
+};
 
 // this is dummy data, I made it up based on exitings PA, but the schema should be used:
 var data = [
-	{appref:'a',lat:53.270,lng:-9.104,appdate:2000,appstatus:0, appdesc:'construct an extension to house'},
-	{appref:'b',lat:53.2701,lng:-9.102,appdate:2001,appstatus:0, appdesc:'construct extension to house, again'},
-	{appref:'c',lat:53.2703,lng:-9.104,appdate:2003,appstatus:1, appdesc:'another construct'},
-	{appref:'d',lat:53.2702,lng:-9.103,appdate:2004,appstatus:2, appdesc:'testing'},
-	{appref:'e',lat:53.2702,lng:-9.1041,appdate:2005,appstatus:2, appdesc:'blah blah'},
-	{appref:'f',lat:53.2695,lng:-9.1039,appdate:2001,appstatus:3, appdesc:'dunno'},
-	{appref:'g',lat:53.2702,lng:-9.1039,appdate:2006,appstatus:5, appdesc:'got it!'},
-	{appref:'h',lat:53.2703,lng:-9.104,appdate:2007,appstatus:8, appdesc:'nah, next time'},
-	{appref:'i',lat:53.2703,lng:-9.103,appdate:2010,appstatus:2, appdesc:'fail fail fail'},
-	{appref:'j',lat:53.270,lng:-9.102,appdate:2001,appstatus:3, appdesc:'yey, I did it'},
-	{appref:'k',lat:53.2702,lng:-9.102,appdate:2002,appstatus:9, appdesc:'oh oh'},
-	{appref:'l',lat:53.2705,lng:-9.1,appdate:2000,appstatus:8, appdesc:'more here'},
-	{appref:'m',lat:53.2701,lng:-9.102,appdate:2001,appstatus:3, appdesc:'sdfsdf'},
-	{appref:'n',lat:53.2703,lng:-9.103,appdate:2002,appstatus:8, appdesc:'ffffff'},
-	{appref:'o',lat:53.2702,lng:-9.101,appdate:2000,appstatus:8, appdesc:'fas fdsdfsd dfsdfsd sdfsdfsd sdfsdfs '},
-	{appref:'p',lat:53.27,lng:-9.1,appdate:2001,appstatus:3, appdesc:'yfff '},
-	{appref:'q',lat:53.2703,lng:-9.101,appdate:2002,appstatus:8, appdesc:'fsdfff  ffffff'},
-	{appref:'r',lat:53.2698,lng:-9.106,appdate:2003,appstatus:9, appdesc:'fffffff fdsfdffsdnlkndsfl dsfnsdlkfn dskfnsd'},
-	{appref:'s',lat:53.2697,lng:-9.102,appdate:2004,appstatus:3, appdesc:'yuu'},
-	{appref:'t',lat:53.2699,lng:-9.102,appdate:2005,appstatus:4, appdesc:'vsdv'},
-	{appref:'u',lat:53.2698,lng:-9.101,appdate:2003,appstatus:8, appdesc:'abcl'},
-	{appref:'v',lat:53.2697,lng:-9.103,appdate:2000,appstatus:3, appdesc:'123 abbbb fddfff///'},
-	{appref:'w',lat:53.2698,lng:-9.102,appdate:2002,appstatus:10, appdesc:'? >'},
-	{appref:'x',lat:53.2701,lng:-9.103,appdate:2009,appstatus:11, appdesc:'.....'},
-	{appref:'y',lat:53.2699,lng:-9.104,appdate:2008,appstatus:11, appdesc:'mmmmm'},
-	{appref:'z',lat:53.2703,lng:-9.102,appdate:2002,appstatus:12, appdesc:'.o(bah)'},
-	{appref:'1',lat:53.270,lng:-9.103,appdate:2005,appstatus:12, appdesc:'x.x.x.x.x.x.'},
-	{appref:'2',lat:53.2701,lng:-9.103,appdate:2006,appstatus:1, appdesc:'. . . . . .    ...     '},
-	{appref:'3',lat:53.2698,lng:-9.104,appdate:2007,appstatus:2, appdesc:'this is a very very very long description to test how far we can go if at all, don\'t look here'},
-	{appref:'4',lat:53.2704,lng:-9.101,appdate:2009,appstatus:11, appdesc:'fail fail sdfffffffffff'},
-	{appref:'5',lat:53.2704,lng:-9.103,appdate:2010,appstatus:3, appdesc:'LAST'}		
+	{appref:'a',lat:53.270,lng:-9.104,appdate:2000, decision:"R", appstatus:9, appdesc:'construct an extension to house'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"N", appstatus:8, appdesc:'construct extension to house, again'},
+	{appref:'c',lat:53.270,lng:-9.104,appdate:2003, decision:"C", appstatus:1, appdesc:'another construct'},
+	{appref:'d',lat:53.270,lng:-9.104,appdate:2004, decision:"U", appstatus:3, appdesc:'testing'}
 ];
 
 /////////////////////////////////////////////////////////////////////////////// 
@@ -80,10 +61,16 @@ var data = [
 $(function() { 
 	
 	makemap(); // create the Google Map
+
+	$.each(DECISION_CODE, function(index, val){
+		$("#decision-legend").append("<div style='padding: 2px;'>" + val.toLowerCase() + "</div>");	
+	});
+
 	
 	$.each(MARKER_COLOR, function(index, val){
-		$("#legendpan").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
-	});	
+		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
+	});
+	
 	
 	yearsel(); // create the year selection slider
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
@@ -174,7 +161,7 @@ function showSV() {
 	var panoOptions = {
 		position: mapCenter,
 			pov: {
-			heading: 200,
+			heading: 170,
 			pitch: 0,
 			zoom: 1
 		},

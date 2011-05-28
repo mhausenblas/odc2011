@@ -6,21 +6,33 @@ h2 {
 }
 
 body { font-family: Verdana,Arial,sans-serif;}
+
 #dynamarker { display: none; }
+
 #mappan {  background: #f0f0f0; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius:8px; border-left: 1px solid #000;}
+
 #palist { width: 300px; font-size: 80%; padding: .5em; float: left; }
+
 #palist-vis { font-size: 120%; color: #a0a0a0; cursor: pointer;}
+
 #palist-content { overflow: auto;}
+
 #mainpan { margin: 0 0 0 320px; background: #fff; border-bottom: 1px solid #f0f0f0;}
+
 #map { text-align: right; border: 1px solid #c0c0c0; border-right: 1px solid #000;
 	-webkit-border-top-right-radius: 8px;
 	-moz-border-radius-topright: 8px;
 	border-top-right-radius: 8px;
 	}
+
 #yearpan { margin: 5px 0 0 0; width: 40%; float: left; padding: .2em;}
 #yearrange { margin: 1em; width: 90%;}
 #yearsel {  width: 100%; background: #fff; font-size: 200%; border: 0; text-align: center; float: left;}
-#legendpan { cursor: pointer; text-align: center; margin: 20px 0 0 0; float: left; font-size: 80%; border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
+
+#legendpan { cursor: pointer; text-align: center; margin: 20px 0 0 0; float: left; font-size: 80%;}
+#decision-legend { margin: 2px; float: left;  border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
+#appstatus-legend { margin: 2px;  float: left; border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
+
 #viewselpan { text-align: right; margin-right: 1px;}
 .viewsel-tab { font-size: 150%; 
 	padding: 0 1em .2em 1em;
