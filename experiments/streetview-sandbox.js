@@ -50,7 +50,11 @@ var data = [
 	{appref:'a',lat:53.270,lng:-9.104,appdate:2000, decision:"R", appstatus:9, appdesc:'construct an extension to house'},
 	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"N", appstatus:8, appdesc:'construct extension to house, again'},
 	{appref:'c',lat:53.270,lng:-9.104,appdate:2003, decision:"C", appstatus:1, appdesc:'another construct'},
-	{appref:'d',lat:53.270,lng:-9.104,appdate:2004, decision:"U", appstatus:3, appdesc:'testing'}
+	{appref:'d',lat:53.270,lng:-9.104,appdate:2004, decision:"U", appstatus:3, appdesc:'testing'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2005, decision:"C", appstatus:8, appdesc:'construct extension to house, again'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2010, decision:"N", appstatus:4, appdesc:'construct extension to house, again'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"R", appstatus:2, appdesc:'demolish house'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2007, decision:"U", appstatus:8, appdesc:'construct extension to shed'}
 ];
 
 /////////////////////////////////////////////////////////////////////////////// 
@@ -131,7 +135,7 @@ $(function() {
 
 function fitPAAWidgets(){
 //	$("#mainpan").height($(window).height()*0.7);
-	$("#map").width($(window).width()-355);
+	$("#map").width($(window).width()*0.98);
 	$("#map").height($(window).height()*0.6);
 //	$("#palist-content").height($(window).height()*0.85);
 }
@@ -201,6 +205,7 @@ function showSV() {
 	svmap.setVisible(true);
 	
 	$("#palist-content").html("");
+	$("#palist-cloud").html("");
 	for (var i = 0; i < currentMarkers.length; i++){
 		
 		$("#palist-content").append("<div class='singlepa' id='pa_" + currentMarkers[i].id  +"'>" + currentMarkers[i].year +": <a href='#" + currentMarkers[i].id + "'>" + currentMarkers[i].desc + "</a></div>");
@@ -216,6 +221,25 @@ function showMap() {
 	$("#show-sv").removeClass('viewsel-tab-selected');
 	$("#show-map").addClass('viewsel-tab-selected');
 	$("#palist-content").html("");
+	
+	// tag cloud based on visible PAs:
+	$("#palist-cloud").html("");
+	$.each(currentMarkers, function(index, val){ // add the words from the visible PA descriptions to the cloud div
+		$.each(currentMarkers[index].desc.split(' '), function(windex, word){
+			word = word.replace(",", "");
+			// TODO: find a better filtering method for blacklisted words ...
+			if(word.trim() != "" && word.trim() != "an" && word.trim() != "to" ) {
+				if (index < currentMarkers.length - 1) $("#palist-cloud").append(word + " , ");
+				else $("#palist-cloud").append(word);
+			}
+		});
+	});
+	$("#palist-cloud").tagCloud({
+		separator: ',',
+		randomize: true,
+		sizefactor: 8
+	});
+	
 }
 
 function addMarker(record) {

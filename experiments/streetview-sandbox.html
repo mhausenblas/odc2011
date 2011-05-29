@@ -8,6 +8,7 @@
     <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	<script src="jquery/js/jquery-1.5.1.min.js"></script>
 	<script src="jquery/js/jquery-ui-1.8.13.custom.min.js"></script>
+	<script src="jquery/js/jimpl_cloud.js"></script>
     <script src="streetview-sandbox.js"></script>
 </head>
 
@@ -18,11 +19,16 @@
 	</div>
 	
 	<div id="mappan">
-		<div id="palist">
-			<div id="palist-content">Select a marker to learn more about planning applications in this area ...</div>
-		</div>
 		<div id="mainpan">
+			<div id="viewselpan">
+				<span id="show-sv" class="viewsel-tab viewsel-tab-selected">street view</span>  
+				<span id="show-map" class="viewsel-tab ">map</span> 
+			</div>
 			<div id="map"></div>
+			<div id="palist">
+				<div id="palist-content">Select a marker to learn more about planning applications in this area ...</div>
+				<div id="palist-cloud"></div>
+			</div>
 			<div id="yearpan">
 				<div id="yearrange"></div>
 				<div class="yearsellabel">show years:</div> 
@@ -31,10 +37,6 @@
 			<div id="legendpan">
 				<div id="decision-legend"></div>
 				<div id="appstatus-legend"></div>
-			</div>
-			<div id="viewselpan">
-				<span id="show-map" class="viewsel-tab ">map</span> 
-				<span id="show-sv" class="viewsel-tab viewsel-tab-selected">street view</span>  
 			</div>
 		</div>
 	</div>
