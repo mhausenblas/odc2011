@@ -28,8 +28,9 @@ http://opendatachallenge.org/
 
 * OPEN: Anja to do Twitter integration
 * OPEN: Michael to do Google Maps street view concept
+* OPEN: Michael to do word cloud for map view
+* OPEN: Michael to look into QR code for single-PA view
 * OPEN: Sarven to do data import
-* OPEN: Michael to do word cloud
 * OPEN: Gofran to do overall page (Irland map select)
 * OPEN: catchy stats (?) - high level
 * OPEN: a cool, catchy name and logo
