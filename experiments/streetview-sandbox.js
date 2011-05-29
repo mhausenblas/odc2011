@@ -155,6 +155,7 @@ function makemap() {
 	// create the map with options from above
 	map = new google.maps.Map(document.getElementById("map"), mapOptions);
 	
+	// handle SV visibility
 	google.maps.event.addListener(map.getStreetView(), 'visible_changed', function() {	
 		if(map.getStreetView().getVisible()){ // the SV is currently visible make sure the tabs are respectively selected
 			$("#show-sv").addClass('viewsel-tab-selected');
@@ -165,6 +166,22 @@ function makemap() {
 			$("#show-map").addClass('viewsel-tab-selected');
 		}
 	});
+	
+	// handle current position in SV
+	google.maps.event.addListener(map.getStreetView(), 'position_changed', function() {
+		var lat = Math.floor(map.getStreetView().getPosition().lat()*10000+1)/10000;
+		var lng = Math.floor(map.getStreetView().getPosition().lng()*10000+1)/10000;
+		$("#sv-current-pos").html("latitude: " + lat + " <span style ='color: #cfcfcf'>|</span> longitude: " + lng);
+	});
+
+
+	// handle point of view in SV
+	google.maps.event.addListener(map.getStreetView(), 'pov_changed', function() {
+		var heading = Math.floor(map.getStreetView().getPov().heading);
+		var pitch = Math.floor(map.getStreetView().getPov().pitch*100+1)/100;
+		$("#sv-pov").html("heading: " +  heading + " <span style ='color: #cfcfcf'>|</span> pitch: " + pitch);
+	});
+
 
 	// add the markers based on the data we get from the PA service
 	for (i=0; i < data.length; i++) {
@@ -221,6 +238,8 @@ function showMap() {
 	$("#show-sv").removeClass('viewsel-tab-selected');
 	$("#show-map").addClass('viewsel-tab-selected');
 	$("#palist-content").html("");
+	$("#sv-current-pos").html("");
+	$("#sv-pov").html("");
 	
 	// tag cloud based on visible PAs:
 	$("#palist-cloud").html("");

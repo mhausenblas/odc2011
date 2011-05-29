@@ -54,6 +54,14 @@ body { font-family: Verdana,Arial,sans-serif;}
 	box-shadow: 3px 3px 4px #000;
 }
 
+#sv-current-pos, #sv-pov {
+	padding: 0 0 0 20px;
+	font-size: 80%;
+	color: #6f6f6f;
+}
+
+
+
 #map {
 	text-align: right;
 	border: 1px solid #c0c0c0; 
