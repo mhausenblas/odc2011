@@ -61,10 +61,10 @@ DROP TABLE IF EXISTS `metadata`;
 CREATE TABLE `metadata` (
   `id` int(11) NOT NULL,
   `file_number` varchar(16) NOT NULL,
-  `geometry_xlo` double(18,15) NOT NULL,
-  `geometry_ylo` double(18,15) NOT NULL,
-  `geometry_xhi` double(18,15) NOT NULL,
-  `geometry_yhi` double(18,15) NOT NULL,
+  `geometry_xlo` double(13,10) NOT NULL,
+  `geometry_ylo` double(13,10) NOT NULL,
+  `geometry_xhi` double(13,10) NOT NULL,
+  `geometry_yhi` double(13,10) NOT NULL,
   `coords` text NOT NULL,
   `forename` varchar(255) NOT NULL,
   `surename` varchar(255) NOT NULL,
@@ -99,4 +99,4 @@ CREATE TABLE `townlands` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2011-05-26 03:25:20
+-- 2011-05-30 11:02:27
