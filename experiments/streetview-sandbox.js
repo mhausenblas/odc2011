@@ -45,16 +45,26 @@ var MARKER_COLOR = {
 	 "12":"#633"
 };
 
+// mapping of PA decision+status to color
+var PA_STATE = {
+	"incomplete or withdrawn" : "#9f9f9f",
+	"refused": "#660000",
+	"conditional" : "#333060",
+	"unconditional" : "#060",
+	"no data or decision" : "#000"
+};
+
+
 // this is dummy data, I made it up based on exitings PA, but the schema should be used:
 var data = [
 	{appref:'a',lat:53.270,lng:-9.104,appdate:2000, decision:"R", appstatus:9, appdesc:'construct an extension to house'},
-	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"N", appstatus:8, appdesc:'construct extension to house, again'},
-	{appref:'c',lat:53.270,lng:-9.104,appdate:2003, decision:"C", appstatus:1, appdesc:'another construct'},
+	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"R", appstatus:8, appdesc:'construct extension to house, again'},
+	{appref:'c',lat:53.270,lng:-9.104,appdate:2003, decision:"N", appstatus:1, appdesc:'another construct'},
 	{appref:'d',lat:53.270,lng:-9.104,appdate:2004, decision:"U", appstatus:3, appdesc:'testing'},
-	{appref:'b',lat:53.270,lng:-9.104,appdate:2005, decision:"C", appstatus:8, appdesc:'construct extension to house, again'},
-	{appref:'b',lat:53.270,lng:-9.104,appdate:2010, decision:"N", appstatus:4, appdesc:'construct extension to house, again'},
-	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"R", appstatus:2, appdesc:'demolish house'},
-	{appref:'b',lat:53.270,lng:-9.104,appdate:2007, decision:"U", appstatus:8, appdesc:'construct extension to shed'}
+	{appref:'e',lat:53.270,lng:-9.104,appdate:2005, decision:"C", appstatus:8, appdesc:'construct extension to house, again'},
+	{appref:'f',lat:53.270,lng:-9.104,appdate:2006, decision:"N", appstatus:11, appdesc:'construct extension to house, again'},
+	{appref:'g',lat:53.270,lng:-9.104,appdate:2007, decision:"R", appstatus:2, appdesc:'demolish house'},
+	{appref:'h',lat:53.270,lng:-9.104,appdate:2008, decision:"U", appstatus:0, appdesc:'construct extension to shed'}
 ];
 
 /////////////////////////////////////////////////////////////////////////////// 
@@ -190,12 +200,20 @@ function makemap() {
 }
 
 function makelegend(){
+	/*
 	$.each(DECISION_CODE, function(index, val){
 		$("#decision-legend").append("<div style='padding: 2px;'>" + val.toLowerCase() + "</div>");	
 	});
 	$.each(MARKER_COLOR, function(index, val){
 		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
-	});	
+	});
+	*/
+	$.each(PA_STATE, function(index, val){
+		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
+	});
+	
+	
+	
 }
 
 function showSV() {
@@ -223,14 +241,13 @@ function showSV() {
 	
 	$("#palist-content").html("");
 	$("#palist-cloud").html("");
-	for (var i = 0; i < currentMarkers.length; i++){
-		
-		$("#palist-content").append("<div class='singlepa' id='pa_" + currentMarkers[i].id  +"'>" + currentMarkers[i].year +": <a href='#" + currentMarkers[i].id + "'>" + currentMarkers[i].desc + "</a></div>");
-	}
-	
-	
 	$("#show-map").removeClass('viewsel-tab-selected');
 	$("#show-sv").addClass('viewsel-tab-selected');
+	
+	// TODO: implement TOP-k based on distance
+	for (var i = 0; i < currentMarkers.length; i++){
+		$("#palist-content").append("<div class='singlepa' id='pa_" + currentMarkers[i].id  +"'>" + currentMarkers[i].year +": <a href='#" + currentMarkers[i].id + "'>" + currentMarkers[i].desc + "</a></div>");
+	}	
 }
 
 function showMap() {
@@ -264,7 +281,7 @@ function showMap() {
 function addMarker(record) {
 	(function(r) {
 		var pos = getDisplayPosition(record.lat, record.lng);
-		var yMarkerImage = new google.maps.MarkerImage(drawMarker(r.appyear,r.appstatus));
+		var yMarkerImage = new google.maps.MarkerImage(drawMarker(r.appyear, r.decision, r.appstatus));
 		var marker = new google.maps.Marker({
 			position: pos,
 			map: map,
@@ -272,7 +289,7 @@ function addMarker(record) {
 			title: APPLICATION_STATUS[r.appstatus]
 		});
 		// remember the marker
-		currentMarkers.push({ id:r.appref, year:r.appyear, desc: r.appdesc, marker:marker});
+		currentMarkers.push({ id:r.appref, year:r.appyear, desc:r.appdesc, marker:marker});
 		
 		google.maps.event.addListener(marker, "click", function() {
 			if(!map.getStreetView().getVisible()){ // the SV is not visible
@@ -282,8 +299,8 @@ function addMarker(record) {
 	})({'appyear':record.appdate, 'decision':record.decision, 'appstatus':record.appstatus, 'appref':record.appref, 'appdesc': record.appdesc});
 }
 
-// render marker dynamically, based on year and status
-function drawMarker(year, status){
+// render marker dynamically, based on year and combination of decision and app status
+function drawMarker(year, decision, status){
 	// see http://www.html5canvastutorials.com and http://diveintohtml5.org/canvas.html for more tricks ...
 	year = year.toString().substring(2); // only take last two digits into account
 	var canvas = document.getElementById("dynamarker");
@@ -296,7 +313,7 @@ function drawMarker(year, status){
 	context.beginPath();
 	context.arc(25, 25, 18, 0, Math.PI, true);
 	context.closePath();
-	context.fillStyle = MARKER_COLOR[status];
+	context.fillStyle = colorCodePA(decision, status);
 	context.fill();
     context.stroke();
 
@@ -313,6 +330,36 @@ function drawMarker(year, status){
 	context.fillText(year, 18, 21);
 
 	return canvas.toDataURL("image/png");
+}
+
+function colorCodePA(decision, status){
+	if(decision == 'N' && inArray(status,['0', '2', '8', '11'])) { // incomplete or withdrawn PA, if decision is unknown
+		return '#9f9f9f';
+	}
+	else {
+		if(decision == 'R') { // refused PA
+			return '#660000';
+		}
+		else {
+			if(decision == 'C') { // conditional PA
+				return '#333060';
+			}
+			else {
+				if(decision == 'U') { // unconditional PA
+					return '#060';
+				}
+				else { // no data or decision
+					return '#000';
+				}
+			}
+		}
+	}
+}
+
+function inArray(element, alist) {
+	var aa = {};
+	for(var i=0;i<alist.length;i++) aa[alist[i]]='';
+	return element in aa;
 }
 
 // makes sure that no two markers are on the exact same location (by scanning marker list and randomly shuffling around)

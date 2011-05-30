@@ -116,5 +116,5 @@ body { font-family: Verdana,Arial,sans-serif;}
 }
 
 #legendpan { cursor: pointer; text-align: center; margin: 20px 0 0 0; float: left; font-size: 80%;}
-#decision-legend { margin: 2px; float: left;  border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
+#decision-legend { display: none; margin: 2px; float: left;  border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
 #appstatus-legend { margin: 2px;  float: left; border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
