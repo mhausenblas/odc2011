@@ -144,11 +144,18 @@ class GP {
                           .$LIMIT;
                 break;
 
+
+            // e.g., county/carlow
+            case 'county':
+                $query = 'SELECT *
+                          FROM counties LEFT JOIN metadata ON counties.id = metadata.county
+                          WHERE counties.name="'.$item.'"'
+                          .$LIMIT;
+                break;
+
+
 /*
 TODO:
-/county/carlow
-counties.name
-
 
 /decision/conditional
 decisioncodes.name
