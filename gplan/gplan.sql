@@ -48,7 +48,7 @@ CREATE TABLE `decisioncodes` (
 DROP TABLE IF EXISTS `localauthoritybounds`;
 CREATE TABLE `localauthoritybounds` (
   `contact_name` varchar(255) NOT NULL,
-  `local_authority` varchar(255) NOT NULL,
+  `authority` varchar(255) NOT NULL,
   `county` varchar(127) NOT NULL,
   `mi_style` varchar(127) NOT NULL,
   `mi_prinx` varchar(127) NOT NULL,
