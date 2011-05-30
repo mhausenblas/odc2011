@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>GoogleMap street-view image for the planning application</title>
+<link href="http://code.google.com/apis/maps/documentation/javascript/examples/default.css" rel="stylesheet" type="text/css" />
+<script src="http://maps.google.com/maps/api/js?sensor=false"
+            type="text/javascript"></script>
+            
+     <style type="text/css" media="screen">
+     	div{width: 125px; height: 145px};
+     </style>       
+<script type="text/javascript">
+
+  var map;
+  var panorama;
+  var Place1 = new google.maps.LatLng(53.2703,-9.101);
+  var Place2 = new google.maps.LatLng(53.2698,-9.104);
+  var Place3 = new google.maps.LatLng(53.01872248,-7.493079592);
+  var Place4 = new google.maps.LatLng(53.2699,-9.102);
+  var Place5 = new google.maps.LatLng(53.01023847, -7.137592888);
+  var Place6 = new google.maps.LatLng(53.0403756648758, -7.30628273697082);
+  var Place7 = new google.maps.LatLng(52.9390022115974, -7.63631618943728);
+  var Place8 = new google.maps.LatLng(53.01245007,-9.1039);
+  var Place9 = new google.maps.LatLng(53.0020207763741, -7.46981979248731);
+  var Place10 = new google.maps.LatLng(53.2698,-9.104);
+  var Place11 = new google.maps.LatLng(53.01872248,-7.493079592);
+  var Place12 = new google.maps.LatLng(52.8246477710934,-9.104);
+  
+function initialize(){
+
+	loadMap(document.getElementById('map_canvas1'),Place1);
+	loadMap(document.getElementById('map_canvas2'),Place2);
+	loadMap(document.getElementById('map_canvas3'),Place3);
+	loadMap(document.getElementById('map_canvas4'),Place4);
+	loadMap(document.getElementById('map_canvas5'),Place5);
+	loadMap(document.getElementById('map_canvas6'),Place6);
+	loadMap(document.getElementById('map_canvas7'),Place7);
+	loadMap(document.getElementById('map_canvas8'),Place8);
+	loadMap(document.getElementById('map_canvas9'),Place9);
+	loadMap(document.getElementById('map_canvas10'),Place10);
+	loadMap(document.getElementById('map_canvas11'),Place11);
+	loadMap(document.getElementById('map_canvas12'),Place12);
+	
+}
+
+  function loadMap(id, place) {
+/*
+    // Set up the map
+    var mapOptions = {
+      center: place,
+      zoom: 18,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      streetViewControl: false
+      
+    };
+    map = new google.maps.Map(id,
+        mapOptions);
+
+    
+    panorama = map.getStreetView();
+    panorama.setPosition(place);
+    panorama.setPov({
+      heading: 170,
+      zoom:1,
+      pitch:0}
+      //addressControl: false 
+    );
+    
+    panorama.setVisible(true);
+*/
+
+
+    var mapOptions = {
+      center: place,
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(
+        id, mapOptions);
+    var panoramaOptions = {
+      position: place,
+      pov: {
+        heading: 170,
+        pitch: 10,
+        zoom: 1
+      },
+      scrollwheel: false,
+      addressControl: false,
+      zoomControl: false,
+      linksControl: false,
+      panControl: false
+    };
+    var panorama = new  google.maps.StreetViewPanorama(id,panoramaOptions);
+    map.setStreetView(panorama);
+ 
+  }
+
+</script>
+</head>
+<body onload="initialize()">
+  
+  <table>
+  <tr>
+  	<td>
+  		<div id="map_canvas1" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas2" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas3" style="position:relative;"></div>
+  	</td>
+  </tr>
+  <tr>
+  	<td>
+  		<div id="map_canvas4" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas5" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas6" style="position:relative;"></div>
+  	</td>
+  </tr>
+    <tr>
+  	<td>
+  		<div id="map_canvas7" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas8" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas9" style="position:relative;"></div>
+  	</td>
+  </tr>
+    <tr>
+  	<td>
+  		<div id="map_canvas10" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas11" style="position:relative;"></div>
+  	</td>
+  	<td>
+  		<div id="map_canvas12" style="position:relative;"></div>
+  	</td>
+  </tr>
+  
+  </table>
+  
+</body>
+</html>
