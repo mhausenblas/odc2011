@@ -122,6 +122,7 @@ class GP {
         // Consider case sensitivity
         // Use ORDER
         // Reconsider use of LIMIT
+        // Add more JOINs
 
         $LIMIT = ' LIMIT 1000';
 
@@ -153,6 +154,14 @@ class GP {
                           .$LIMIT;
                 break;
 
+
+            // e.g., application/001
+            case 'application':
+                $query = 'SELECT *
+                          FROM metadata
+                          WHERE file_number="'.$item.'"
+                          LIMIT 1';
+                break;
 
 /*
 TODO:
