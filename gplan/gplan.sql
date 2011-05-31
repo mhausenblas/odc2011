@@ -146,6 +146,18 @@ CREATE TABLE `metadata` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `planning`;
+CREATE TABLE `planning` (
+  `id` varchar(16) NOT NULL,
+  `registration_date` datetime NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `url` varchar(2048) NOT NULL,
+  `coords` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `townlands`;
 CREATE TABLE `townlands` (
   `townland` varchar(127) NOT NULL,
@@ -159,4 +171,4 @@ CREATE TABLE `townlands` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2011-05-30 12:22:22
+-- 2011-05-30 20:31:06
