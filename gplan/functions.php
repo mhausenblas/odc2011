@@ -22,6 +22,9 @@ class GP {
     function __construct() {
         $this->dataDirectory = '/var/www/gplan/data/';
 
+        //TODO:
+        // Until the DB schema uses primary keys, comment out the lines
+        // below to avoid duplicates in table when running loadDataToMySQL.php.
         $this->data = array(
                 'GPlan_ApplicationStatus.csv' => 'applicationstatus',
                 'GPlan_Authorities.csv' => 'authorities',
@@ -29,7 +32,8 @@ class GP {
                 'GPlan_DecisionCodes.csv' => 'decisioncodes',
                 'GPlan_LocalAuthorityBounds.csv' => 'localauthoritybounds',
                 'GPlan_Metadata.csv' => 'metadata',
-                'GPlan_Townlands.csv' => 'townlands'
+                'GPlan_Townlands.csv' => 'townlands',
+                'Planning_Applications_Fingal.csv' => 'planning'
         );
     }
 
@@ -94,12 +98,16 @@ class GP {
     {
         echo "\nLoading $file into table: $tableName";
 
-        $query = "
+        //TODO: Bring back the column names for GPlan*.csv , then use IGNORE 1 LINES in query
+        //XXX:
+        // Use ENCLOSED BY '"' below for Planning_Applications_Fingal.csv until
+        // GPlan*.csv encloses its strings with " and uses proper escaping for ,
+        $query = <<<EOD
                   LOAD DATA LOCAL INFILE '$file'
                   INTO TABLE $tableName
                   FIELDS TERMINATED BY ','
                   LINES TERMINATED BY '\r\n'
-                 ";
+EOD;
         $result = mysql_query($query) or die(mysql_error());
 
         if ($result == 1) {
