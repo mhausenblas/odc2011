@@ -233,7 +233,7 @@ localauthoritybounds.authority
         $i = 0;
         while ($i < mysql_num_fields($result)) {
             $meta = mysql_fetch_field($result, $i);
-            echo '<th>'.$meta->name.'</th>';
+            $s .= '<th>'.$meta->name.'</th>';
             $i++;
         }
         $s .= '</tr>';
