@@ -32,7 +32,7 @@ class GP {
                 'GPlan_Counties.csv' => 'counties',
                 'GPlan_DecisionCodes.csv' => 'decisioncodes',
                 'GPlan_LocalAuthorityBounds.csv' => 'localauthoritybounds',
-                'GPlan_applications.csv' => 'applications',
+                'GPlan_Metadata.csv' => 'applications',
                 'GPlan_Townlands.csv' => 'townlands'
         );
 

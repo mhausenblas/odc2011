@@ -9,7 +9,11 @@ include 'functions.php';
 $GP = new GP();
 
 foreach($GP->data as $data => $tableName) {
-    $GP->loadDataToMySQL($GP->dataDirectory.$data, $tableName);
+    $file = $GP->dataDirectory.$data;
+
+    if (is_readable($file)) {
+        $GP->loadDataToMySQL($GP->dataDirectory.$data, $tableName);
+    }
 }
 
 ?>
