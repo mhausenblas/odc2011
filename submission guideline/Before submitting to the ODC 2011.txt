@@ -4,18 +4,18 @@ Rules for the challenge
 =======================
 
  - Data must be open, freely re-usable from local, regional or national public bodies
- - Application must be available for access free of cost during the competition and further    for six months after the competion.
+ - Application must be available for access free of cost during the competition and further for six months after the competion.
  - Multiple applications to the competition is allowed.
 
 
 What helps us in winning the competition
 ========================================
 
- - Collaborations between individuals or organisations in different EU member states is        encouraged.
+ - Collaborations between individuals or organisations in different EU member states is encouraged.
  - Re-usability : An app which can be used with data from London, Paris etc.
- - Open license for code, content and data entered as part of the competition is highly        encouraged.
+ - Open license for code, content and data entered as part of the competition is highly encouraged.
  - Public bodies opening up new datasets for the competition.
- - Share your entry with the world through blogging,tweeting and tell people about your        entry to the Open Data Challenge. Use hashtag "#opendatachallenge" and tag             "opendatachallenge" on social web services.
+ - Share your entry with the world through blogging,tweeting and tell people about your entry to the Open Data Challenge. Use hashtag "#opendatachallenge" and tag "opendatachallenge" on social web services.
 
 
 Few important things to know in advance while submitting an application
