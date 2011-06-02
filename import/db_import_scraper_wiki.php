@@ -16,29 +16,8 @@ function setup_database() {
   mysql_select_db($MYSQL_DATABASE, $db_connection);
   mysql_set_charset("utf8");
 
-  $table_creation_query = "CREATE TABLE IF NOT EXISTS applications (app_ref varchar(20) NOT NULL,
-council_id int(2) NOT NULL,
-received_date date DEFAULT NULL,
-decision_date date DEFAULT NULL,
-url text DEFAULT NULL,
-address text DEFAULT NULL,
-address1 text DEFAULT NULL,
-address2 text DEFAULT NULL,
-address3 text DEFAULT NULL,
-address4 text DEFAULT NULL,
-applicant text DEFAULT NULL,
-applicant1 text DEFAULT NULL,
-applicant2 text DEFAULT NULL,
-applicant3 text DEFAULT NULL,
-details text DEFAULT NULL,
-decision text DEFAULT NULL,
-status text DEFAULT NULL,
-lat varchar(25) DEFAULT NULL,
-lng varchar(25) DEFAULT NULL,
-coordinates varchar(50) DEFAULT NULL,
-tweet_id varchar(25) DEFAULT NULL,
-KEY council_id (app_ref,council_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+  $table_creation_query = file_get_contents("applications.sql");
+
   mysql_query($table_creation_query) or die(mysql_error());
 }
 
@@ -53,7 +32,7 @@ function db_prep($data)
 
 $scraper_wikis = array("2ndeplan41_1", "irish_planning_applications");
 
-$row_inserted = 0;
+$rows_inserted = 0;
 
 foreach ($scraper_wikis as $scraper_wiki) {
   $max_age_days = 14;
@@ -103,7 +82,7 @@ foreach ($scraper_wikis as $scraper_wiki) {
     if (!mysql_query($query)) {
       echo "= DB INSERT ERROR =".PHP_EOL.$query.PHP_EOL.mysql_error().PHP_EOL;
     } else {
-      $row_inserted += 1;
+      $rows_inserted += 1;
     }
   }
 }
