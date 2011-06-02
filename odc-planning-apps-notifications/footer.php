@@ -1,0 +1,1 @@
+	<div id="footer">      <div id="deri-logo"><a href="http://www.deri.ie/"><img src="images/deri-logo-100px.png" alt="DERI Galway" /></a></div>      <table>	  <tr>	  <td>	  <a href="">about</a>	  </td>	  <td>	  <a href="">wiki</a>	  </td>	  <td>	   <a href="">contact us</a>	  </td>	  </tr>    </div>

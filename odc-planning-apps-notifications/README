@@ -1,6 +1,0 @@
-this is a MVC application for Ireland planning applications notifications 
-It displays planning applications from Irish local council planning departments, scraped via ScraperWiki.
-
-DEPLOYMENT 
-just copy the folder odc-planning-apps-notifications into the htdocs of your Apache server 
-PHP >5 is required 
