@@ -1,6 +1,11 @@
 <?php
 
+if (!file_exists("config.inc.php")) {
+  die("Copy config.inc.php.sample to config.inc.php first and insert your parameters.");
+}
+
 date_default_timezone_set('Eire');
+
 setup_database();
 
 function setup_database() {
