@@ -1,10 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////// 
 //  PA archive view globals
 //
-var map;
-var mapCenter = new google.maps.LatLng(53.270, -9.104);
-var mapInitialZoomFactor = 18;
 
+// configure the archive widget here:
+var mapCenter = new google.maps.LatLng(53.270, -9.104);
+var mapInitialZoomFactor = 18; // the default zoom factor
+var mapWidth = 0.6; // the preferred width of the map
+var mapHeight = 0.8; // the preferred height of the map
+
+
+// internal globals -  don't touch:
+var map;
 var currentMarkers = new Array();
 
 // GPlan application status - based on GPlan_ApplicationStatus.txt
@@ -144,9 +150,9 @@ $(function() {
 //
 
 function fitPAAWidgets(){
-//	$("#mainpan").height($(window).height()*0.7);
-	$("#map").width($(window).width()*0.98);
-	$("#map").height($(window).height()*0.6);
+	$("#map").width($(window).width()*mapWidth);
+	$("#controlpan").width($(window).width()*(1 - mapWidth - 0.05));
+	$("#map").height($(window).height()*mapHeight);
 //	$("#palist-content").height($(window).height()*0.85);
 }
 
@@ -200,20 +206,9 @@ function makemap() {
 }
 
 function makelegend(){
-	/*
-	$.each(DECISION_CODE, function(index, val){
-		$("#decision-legend").append("<div style='padding: 2px;'>" + val.toLowerCase() + "</div>");	
-	});
-	$.each(MARKER_COLOR, function(index, val){
-		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + MARKER_COLOR[index] +";'>" + APPLICATION_STATUS[index].toLowerCase() + "</div>");	
-	});
-	*/
 	$.each(PA_STATE, function(index, val){
 		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
-	});
-	
-	
-	
+	});	
 }
 
 function showSV() {
