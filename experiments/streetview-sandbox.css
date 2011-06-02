@@ -1,10 +1,3 @@
-h2 {
-	text-shadow: 2px 2px 2px #aaa;
-	margin: 10px;
-	border-bottom: 1px solid #fff;
-	font-weight: 300;
-}
-
 body { font-family: Verdana,Arial,sans-serif;}
 
 #addresspan {
@@ -14,16 +7,11 @@ body { font-family: Verdana,Arial,sans-serif;}
 
 #target-address {
 	font-size: 200%;
-	
 }
 
 #dynamarker { display: none; }
 
-#mappan {  
-	background: #f0f0f0;
-}
-
-#mainpan {
+#archive-widget {
 	background: #fff;
 }
 
@@ -60,9 +48,8 @@ body { font-family: Verdana,Arial,sans-serif;}
 	color: #6f6f6f;
 }
 
-
-
 #map {
+	float: left;
 	text-align: right;
 	border: 1px solid #c0c0c0; 
 	-webkit-border-bottom-right-radius: 4px;
@@ -73,10 +60,85 @@ body { font-family: Verdana,Arial,sans-serif;}
 	border-bottom-left-radius: 4px;
 }
 
+#controlpan {
+	float: left;
+	margin: 0 0 0 10px;
+	padding: 0;
+}
+
+#controlpan h2 {
+	text-shadow: 2px 2px 2px #aaa;
+	margin: 0;
+	padding: 3px 0 5px 10px;
+	border: 1px solid #e0e0e0;
+	font-weight: normal;
+}
+
+.controlfield {
+	border-left: 1px dotted #e0e0e0;
+	border-right: 1px dotted #e0e0e0;
+	border-bottom: 1px dotted #e0e0e0;
+	-webkit-border-bottom-right-radius: 4px;
+	-webkit-border-bottom-left-radius: 4px;
+	-moz-border-radius-bottomright: 4px;
+	-moz-border-radius-bottomleft: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+.vseparator {
+	clear: both;
+	height: 20px;
+}
+
+.hseparator {
+	float: left;
+	width: 20px;
+	height: 100%;
+	border: 1px solid #fff;
+}
+
+#filterpan {
+	padding: .5em;
+	height: 200px;
+}
+
+.filterlabel {
+	text-align: left;
+	color: #606060;
+	font-size: 12pt;
+	margin: 0 0 10px 0;
+}
+
+#yearpan {
+	width: 60%;
+	float: left;
+}
+
+#yearrange {
+	margin: 1em; 
+}
+
+#yearsel {
+	width: 100%;
+	background: #fff;
+	font-size: 200%;
+	border: 0;
+	text-align: center;
+}
+
+
+#legendpan {
+	width: 30%;
+	float: left;
+	cursor: pointer;
+	text-align: center;
+	font-size: 80%;
+}
+
 #palist { 
-	width: 300px; 
+
 	padding: .5em; 
-	float: left; 
 }
 
 #palist-content {
@@ -106,15 +168,3 @@ body { font-family: Verdana,Arial,sans-serif;}
 .active-pa {
 	border: 1px dotted red;
 }
-
-#yearpan { margin: 5px 0 0 0; width: 40%; float: left; padding: .2em;}
-#yearrange { margin: 1em; width: 90%;}
-#yearsel {  width: 100%; background: #fff; font-size: 200%; border: 0; text-align: center; float: left;}
-.yearsellabel {
-	text-align: center;
-	color: #606060;
-}
-
-#legendpan { cursor: pointer; text-align: center; margin: 20px 0 0 0; float: left; font-size: 80%;}
-#decision-legend { display: none; margin: 2px; float: left;  border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}
-#appstatus-legend { margin: 2px;  float: left; border: 1px solid #0f0f0f; border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius:4px;}

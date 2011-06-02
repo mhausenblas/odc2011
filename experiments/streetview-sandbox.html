@@ -18,27 +18,39 @@
 		<input type="text" size="50" value="Hawthorn Place, Galway, Co. Galway" id="target-address" />
 	</div>
 	
-	<div id="mappan">
-		<div id="mainpan">
-			<div id="viewselpan">
-				<span id="show-sv" class="viewsel-tab viewsel-tab-selected">street view</span>  
-				<span id="show-map" class="viewsel-tab ">map</span>
-				<span id="sv-current-pos"></span>
-				<span id="sv-pov"></span>
+	<div id="archive-widget">
+		<!-- the tabs and status information -->
+		<div id="viewselpan">
+			<span id="show-sv" class="viewsel-tab viewsel-tab-selected">street view</span>  
+			<span id="show-map" class="viewsel-tab ">map</span>
+			<span id="sv-current-pos"></span>
+			<span id="sv-pov"></span>
+		</div>
+
+		<!-- the map itself -->
+		<div id="map"></div>
+	
+		<!-- the control panel -->
+		<div id="controlpan">
+			<h2>Filters</h2>
+			<div id="filterpan" class="controlfield"> 
+				<div id="yearpan">
+					<div class="filterlabel">by year ...</div> 
+					<div id="yearrange"></div>
+					<input id="yearsel" />
+				</div>
+				<div class="hseparator"></div>
+				<div id="legendpan">
+					<div class="filterlabel">by status ...</div> 
+					<div id="decision-legend"></div>
+					<div id="appstatus-legend"></div>
+				</div>
 			</div>
-			<div id="map"></div>
-			<div id="palist">
+			<div class="vseparator"></div>
+			<h2>Info</h2>
+			<div id="palist" class="controlfield">
 				<div id="palist-content">Select a marker to learn more about planning applications in this area ...</div>
 				<div id="palist-cloud"></div>
-			</div>
-			<div id="yearpan">
-				<div id="yearrange"></div>
-				<div class="yearsellabel">show years:</div> 
-				<input id="yearsel" />
-			</div>
-			<div id="legendpan">
-				<div id="decision-legend"></div>
-				<div id="appstatus-legend"></div>
 			</div>
 		</div>
 	</div>
