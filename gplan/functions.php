@@ -27,18 +27,13 @@ class GP {
         // Until the DB schema uses primary keys, comment out the lines
         // below to avoid duplicates in table when running loadDataToMySQL.php.
         $this->data = array(
-/*
                 'GPlan_ApplicationStatus.csv' => 'applicationstatus',
                 'GPlan_Authorities.csv' => 'authorities',
                 'GPlan_Counties.csv' => 'counties',
                 'GPlan_DecisionCodes.csv' => 'decisioncodes',
                 'GPlan_LocalAuthorityBounds.csv' => 'localauthoritybounds',
-*/
-                'GPlan_Metadata.csv' => 'metadata'
-/*
-                'GPlan_Townlands.csv' => 'townlands',
-                'Planning_Applications_Fingal.csv' => 'planning'
-*/
+                'GPlan_applications.csv' => 'applications',
+                'GPlan_Townlands.csv' => 'townlands'
         );
 
         //Using arrays for query paramaters for extensibility
@@ -186,7 +181,7 @@ EOD;
                     $lng_hi = mysql_real_escape_string($bounds[3]);
 
                     $query = 'SELECT *
-                              FROM metadata
+                              FROM applications
                               WHERE (lat >= '.$lat_lo.' and lat <= '.$lat_hi.') and
                                     (lng >= '.$lng_lo.' and lng <= '.$lng_hi.')
                               ORDER BY received_date DESC
@@ -220,7 +215,7 @@ EOD;
                     $lng_hi = mysql_real_escape_string($bounds[3]);
 
                     $query = 'SELECT *
-                              FROM metadata
+                              FROM applications
                               WHERE (lat >= '.$lat_lo.' and lat <= '.$lat_hi.') and
                                     (lng >= '.$lng_lo.' and lng <= '.$lng_hi.')
                               LIMIT 250';
@@ -254,7 +249,7 @@ EOD;
                     $y = '('.$lng.'-lng)';
 
                     $query = 'SELECT *, sqrt('.$x.'*'.$x.' + '.$y.'*'.$y.') AS distance
-                              FROM metadata
+                              FROM applications
                               ORDER BY distance ASC
                               LIMIT 50';
                 }
