@@ -2,6 +2,10 @@
 
 $url = "http://data.fingal.ie/datasets/csv/Planning_Applications.csv";
 
+if (!file_exists("config.inc.php")) {
+  die("Copy config.inc.php.sample to config.inc.php first and insert your parameters.");
+}
+
 setup_database();
 
 function setup_database() {

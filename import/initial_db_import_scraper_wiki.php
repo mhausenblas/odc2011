@@ -56,9 +56,12 @@ $scraper_wikis = array("2ndeplan41_1", "irish_planning_applications");
 $row_inserted = 0;
 
 foreach ($scraper_wikis as $scraper_wiki) {
-  $max_age_days = 14;
+  /*
+  $max_age_days = 28;
+  $max_entries = 10;
   $start = date('Y-m-d', time() - $max_age_days * 24 * 60 * 60);
-  $query = "SELECT county, appref, date, url, address, applicant, details, lat, lng FROM swdata WHERE date >= '$start'";
+  */
+  $query = "SELECT county, appref, date, url, address, applicant, details, lat, lng FROM swdata";
   $data_url = 'http://api.scraperwiki.com/api/1.0/datastore/sqlite?format=jsondict&name='.$scraper_wiki.'&query=' . urlencode($query);
   $data = json_decode(file_get_contents($data_url));
 
