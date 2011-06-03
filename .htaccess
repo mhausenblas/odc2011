@@ -7,3 +7,9 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(latest|all|near) index.php [L,NC,QSA]
+
+# Hide private-ish stuff
+Redirect 404 /setup
+Redirect 404 /templates
+Redirect 404 /lib
+Redirect 404 /jobs

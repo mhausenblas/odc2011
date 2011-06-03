@@ -7,3 +7,5 @@ $MYSQL_DATABASE = '';
 
 $BITLY_USERNAME = '';
 $BITLY_API_KEY = '';
+
+$config['site_base'] = 'http://planning-apps.opendata.ie/';
