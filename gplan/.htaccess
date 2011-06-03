@@ -1,8 +1,11 @@
 Options -Indexes
-AddHandler application/x-httpd-php5 .php
+#AddHandler application/x-httpd-php5 .php
 AddDefaultCharset UTF-8
 
 RewriteEngine On
+
+# let's CORS-enable the API:
+Header set Access-Control-Allow-Origin "*" 
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
