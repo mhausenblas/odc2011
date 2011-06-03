@@ -25,6 +25,20 @@ This software is Public Domain.
     import-scraperwiki.php
 
 
+## API documentation
+
+Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54.429541,-4.03653
+
+Get TOP 50 applications near a point
+http://localhost:8888/gplan/near?center=53.270,-9.104
+
+Get all applications in area (limited to 250):
+http://localhost:8888/gplan/all?bounds=53.25,-9.1,53.5,-7
+
+Get latest applications in area:
+http://localhost:8888/gplan/latest?bounds=53.25,-9.1,53.5,-7
+
+
 ## Database schema documentation
 
 Table of applications statuses and decision codes
