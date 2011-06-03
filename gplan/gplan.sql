@@ -5,10 +5,10 @@ SET foreign_key_checks = 0;
 SET time_zone = 'SYSTEM';
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-CREATE DATABASE `gplan` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE IF NOT EXISTS `gplan` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `gplan`;
 
-CREATE TABLE `applications` (
+CREATE TABLE IF NOT EXISTS `applications` (
   `app_ref` varchar(20) NOT NULL,
   `lat` varchar(25) DEFAULT NULL,
   `lng` varchar(25) DEFAULT NULL,
@@ -34,14 +34,14 @@ CREATE TABLE `applications` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `applicationstatus` (
+CREATE TABLE IF NOT EXISTS `applicationstatus` (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `authorities` (
+CREATE TABLE IF NOT EXISTS `authorities` (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `description` text,
@@ -51,7 +51,7 @@ CREATE TABLE `authorities` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `counties` (
+CREATE TABLE IF NOT EXISTS `counties` (
   `id` tinyint(4) NOT NULL,
   `name` varchar(127) DEFAULT NULL,
   `description` varchar(127) DEFAULT NULL,
@@ -59,14 +59,14 @@ CREATE TABLE `counties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `decisioncodes` (
+CREATE TABLE IF NOT EXISTS `decisioncodes` (
   `id` varchar(127) NOT NULL,
   `name` varchar(127) DEFAULT NULL,
   `description` varchar(127) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `localauthoritybounds` (
+CREATE TABLE IF NOT EXISTS `localauthoritybounds` (
   `contact_name` varchar(255) NOT NULL,
   `authority` varchar(255) NOT NULL,
   `county` varchar(127) NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE `localauthoritybounds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `townlands` (
+CREATE TABLE IF NOT EXISTS `townlands` (
   `townland` varchar(127) NOT NULL,
   `id` int(11) NOT NULL,
   `geometry_xlo` double(13,10) DEFAULT NULL,
