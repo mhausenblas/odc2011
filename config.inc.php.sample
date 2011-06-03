@@ -4,3 +4,6 @@ $MYSQL_SERVER = '';
 $MYSQL_USER = '';
 $MYSQL_PASSWORD = '';
 $MYSQL_DATABASE = '';
+
+$BITLY_USERNAME = '';
+$BITLY_API_KEY = '';
