@@ -25,14 +25,14 @@
         <![endif]-->
       <body>
         <div id="page">
-          <?php include("header.php"); ?>
+          <?php include("templates/header.php"); ?>
           <div class="window">
            
-              <?php include("cocolist.php"); ?>
+              <?php include("templates/cocolist.php"); ?>
            
           </div>
 		  <div class="recenttwits">     
-              <?php include("twits.php"); ?>
+              <?php include("templates/twits.php"); ?>
           </div>
           <table id="contianer">
             <tr>
@@ -42,8 +42,8 @@
                   usemap="#ireland">
                     <tr>
                       <td>
-                        <?php include("footer.php"); ?>
-						<?php include("map.php"); ?>
+                        <?php include("templates/footer.php"); ?>
+						<?php include("templates/map.php"); ?>
                       </td>
                     </tr>
                   </img>

@@ -21,18 +21,6 @@ class GP {
     var $requestedData;
 
     function __construct() {
-        $this->dataDirectory = '/var/www/odc2011/gplan/data/';
-
-        $this->data = array(
-                'GPlan_ApplicationStatus.csv' => 'applicationstatus',
-                'GPlan_Authorities.csv' => 'authorities',
-                'GPlan_Counties.csv' => 'counties',
-                'GPlan_DecisionCodes.csv' => 'decisioncodes',
-                'GPlan_LocalAuthorityBounds.csv' => 'localauthoritybounds',
-                'GPlan_Metadata.csv' => 'applications',
-                'GPlan_Townlands.csv' => 'townlands'
-        );
-
         //Using arrays for query paramaters for extensibility
         $this->apiElements = array(
             'latest' => array('bounds'),
@@ -40,76 +28,6 @@ class GP {
             'near' => array('center') //How about we use en-uk's "centre"?
         );
     }
-
-
-    function cleanCSV()
-    {
-        foreach($this->data as $data => $tableName) {
-            $badRows = $goodRows = 0;
-
-            if (($handle = fopen($this->dataDirectory.$data, "r")) !== FALSE) {
-                $query = 'SHOW COLUMNS FROM '.$tableName;
-                $result = mysql_query($query) or die(mysql_error());
-
-                if (mysql_num_rows($result) > 0) {
-                    $fieldNames = array();
-
-                    while ($row = mysql_fetch_assoc($result)) {
-                        $fieldNames[] = $row['Field'];
-                    }
-
-                    $fp = fopen($this->dataDirectory.$data.'.clean.csv', 'w');
-                    echo "\nCleaning: ".$this->dataDirectory.$data;
-
-                    while (($dataRow = fgetcsv($handle, 0, ",")) !== FALSE) {
-
-                        if (count($fieldNames) != count($dataRow)) {
-                            $badRows++;
-                        }
-
-                        else {
-                            fwrite($fp, implode(',', $dataRow)."\r\n");
-                            $goodRows++;
-                        }
-                    }
-                    fclose($fp);
-                }
-
-                fclose($handle);
-            }
-
-            echo "\nBad rows:  ".$badRows.' in '.$this->dataDirectory.$data;
-            echo "\nGood rows: ".$goodRows.' in '.$this->dataDirectory.$data;
-        }
-
-    }
-
-    function loadDataToMySQL($file, $tableName)
-    {
-        echo "\nLoading $file into table: $tableName";
-
-        //TODO: Bring back the column names for GPlan*.csv , then use IGNORE 1 LINES in query
-        //XXX:
-        // Use ENCLOSED BY '"' below for Planning_Applications_Fingal.csv until
-        // GPlan*.csv encloses its strings with " and uses proper escaping for ,
-        $query = <<<EOD
-                  LOAD DATA LOCAL INFILE '$file'
-                  INTO TABLE $tableName
-                  FIELDS TERMINATED BY ','
-                         OPTIONALLY ENCLOSED BY '"'
-                  LINES TERMINATED BY '\n'
-                  IGNORE 1 LINES
-EOD;
-        $result = mysql_query($query) or die(mysql_error());
-
-        if ($result == 1) {
-            echo "\n".'LOAD DATA: SUCCESS :)';
-        }
-        else {
-            echo "\n".'LOAD DATA: FAIL :(';
-        }
-    }
-
 
     function sendAPIResponse()
     {
@@ -337,52 +255,6 @@ EOD;
         }
 
         echo $s;
-    }
-
-
-    function showPage()
-    {
-        $table = $this->getDataTable();
-
-        $page = '';
-        $page .= $table;
-
-        echo $page;
-    }
-
-
-    function getDataTable()
-    {
-        $s = '';
-        $result = $this->requestedData;
-
-        //TODO: Move this style out to external CSS file.
-        $s .= "\n<style>table { border-collapse:collapse; } td, th { border:1px solid #eee; padding:2px; }</style>";
-        $s .= "\n".'<table>';
-        $s .= "\n".'<caption>GPlan Data</caption>';
-        $s .= "\n".'<tbody>';
-
-        $s .= '<tr>';
-        $i = 0;
-        while ($i < mysql_num_fields($result)) {
-            $meta = mysql_fetch_field($result, $i);
-            $s .= '<th>'.$meta->name.'</th>';
-            $i++;
-        }
-        $s .= '</tr>';
-
-        while($row = mysql_fetch_assoc($result)) {
-            $s .= "\n".'<tr>';
-            foreach($row as $key=>$value) {
-                $s .= "\n".'<td>'.$value.'</td>';
-            }
-            $s .= "\n".'</tr>';
-        }
-
-        $s .= "\n".'</tbody>';
-        $s .= "\n".'</table>';
-
-        return $s;
     }
 }
 
