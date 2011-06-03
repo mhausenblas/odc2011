@@ -1,0 +1,159 @@
+body{
+font-family: Gill Sans, Arial, sans-serif;
+}
+
+#page {
+
+background: white;
+margin: 0px auto 20px;
+width: 100%;
+}
+#contianer
+{
+float:right;
+width:100%;
+padding-top:100px;
+}
+
+
+.map {
+float:right;
+}
+
+div.title {
+
+
+font-weight: bold;
+
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+position: absolute;
+top: 20px;
+z-index: 2;
+height: 100px;
+text-align:center;
+margin:auto;
+width:100%;
+
+}
+
+input.sreach {
+margin-right:10px;
+float:right;
+}
+input.sreachbtn {
+margin-right:50px;
+float:right;
+}
+.title a  {
+font-weight:bold;
+color:#3b5999;
+margin-left: 150px;
+margin-top: -100px;
+text-decoration:none;
+font-family: Gill Sans, Arial, sans-serif;
+}
+
+div.cocolist {
+font-weight: bold;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+z-index: 2;
+background-color:#F5F5F5;
+}
+
+div.window {
+padding: 10px;
+position: absolute;
+left: 90px;
+top: 150px;
+z-index: 1;
+height: 500px;
+width: 30%;
+overflow:scroll;
+
+}
+
+div.recenttwits{
+padding: 10px;
+position: absolute;
+left: 90px;
+top: 650px;
+z-index: 1;
+height: 300px;
+width: 30%;
+background-color:#c3c3c3;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+}
+div.cocoitem{
+font-weight: bold;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+z-index: 3;
+height: auto;
+
+
+
+}
+
+div.cocotitle {
+height: 20px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-top:1px solid white;
+border-left:1px solid white;
+border-right:1px solid white;
+padding:5px;
+text-decoration:none;
+font-family: Gill Sans, Arial, sans-serif;
+color:#3b5999;
+text-align:left;
+font-size:0.8em;
+}
+div.cocotitle span{
+text-align:left;
+cursor:pointer;
+}
+
+div.cocotitle span a{
+text-decoration:none;
+color:#3b5999;
+}
+div.cocotitle .rssicon {
+height:20px;
+width :20px;
+float:right;
+padding-left:10px;
+display:none;
+}
+
+div.cocotitle .twiticon {
+height:20px;
+width :20px;
+float:right;
+display:none;
+}
+
+div.cocolatestPA{
+
+z-index: 3;
+height: auto;
+
+display:none;
+}
+div.cocolist p {
+font-weight:bold;
+color:#3b5999;
+font-family:tahoma;
+
+
+}
+
+#galway-logo { float: left; margin: 0 1em 1em 0; }
+#footer { clear: left; border-top: 1px solid #bbb; padding-top: 0.3em; margin-bottom: 1.4em; }
+#footer a {text-decoration:none;font-size:1em;}
+#footer td{padding:10px;}
+#deri-logo { float: right; }
+
+
