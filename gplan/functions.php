@@ -247,6 +247,7 @@ EOD;
 
                     $query = 'SELECT *, sqrt('.$x.'*'.$x.' + '.$y.'*'.$y.') AS distance
                               FROM applications
+                              WHERE lat IS NOT NULL or lng IS NOT NULL
                               ORDER BY distance ASC
                               LIMIT 50';
                 }
