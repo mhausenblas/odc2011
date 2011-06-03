@@ -23,9 +23,6 @@ class GP {
     function __construct() {
         $this->dataDirectory = '/var/www/odc2011/gplan/data/';
 
-        //TODO:
-        // Until the DB schema uses primary keys, comment out the lines
-        // below to avoid duplicates in table when running loadDataToMySQL.php.
         $this->data = array(
                 'GPlan_ApplicationStatus.csv' => 'applicationstatus',
                 'GPlan_Authorities.csv' => 'authorities',
