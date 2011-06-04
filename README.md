@@ -25,23 +25,32 @@ This software is Public Domain.
     import-scraperwiki.php
 
 
+## Permalinks
+
+http://planning-apps.opendata.ie/{council_short}#{appref}
+
+{council_short} is a value from the councils.short_name table. See table below.
+
+
 ## API documentation
 
 Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54.429541,-4.03653
 
 Get TOP 50 applications near a point
-http://localhost:8888/gplan/near?center=53.270,-9.104
+http://planning-apps.opendata.ie/near?center=53.270,-9.104
 
 Get all applications in area (limited to 250):
-http://localhost:8888/gplan/all?bounds=53.25,-9.1,53.5,-7
+http://planning-apps.opendata.ie/all?bounds=53.25,-9.1,53.5,-7
+http://planning-apps.opendata.ie/all?bounds=53.266971,-9.05961,53.27213,-9.043968
 
 Get latest applications in area:
-http://localhost:8888/gplan/latest?bounds=53.25,-9.1,53.5,-7
+http://planning-apps.opendata.ie/latest?bounds=53.25,-9.1,53.5,-7
+http://planning-apps.opendata.ie/latest?bounds=53.266971,-9.05961,53.27213,-9.043968
 
 
 ## Database schema documentation
 
-Table of applications statuses and decision codes
+### Table of applications statuses and decision codes
 
 These explain the resepective columns of the application table.
 
@@ -70,6 +79,50 @@ These explain the resepective columns of the application table.
     | U  | ACCEPTED UNCONDITIONAL          |
     | D  | DECISION MADE BUT UNKNOWN TO US |
     +----+---------------------------------+
+
+### Table of all councils
+
+    +----+--------------+---------------------------------------+-----------+
+    | id | short_name   | name                                  | county    |
+    +----+--------------+---------------------------------------+-----------+
+    |  2 | CorkCity     | Cork City Council                     | Cork      |
+    |  3 | DublinCity   | Dublin City Council                   | Dublin    |
+    |  4 | GalwayCity   | Galway City Council                   | Galway    |
+    |  5 | LimerickCity | Limerick City Council                 | Limerick  |
+    |  6 | Waterford    | Waterford City Council                | Waterford |
+    |  7 | Carlow       | Carlow County Council                 | Carlow    |
+    |  8 | Cavan        | Cavan County Council                  | Cavan     |
+    |  9 | Clare        | Clare County Council                  | Clare     |
+    | 10 | CorkCo       | Cork County Council                   | Cork      |
+    | 14 | Donegal      | Donegal County Council                | Donegal   |
+    | 15 | SouthDublin  | South Dublin County Council           | Dublin    |
+    | 16 | DunLaoghaire | Dun Laoghaire Rathdown County Council | Dublin    |
+    | 17 | Fingal       | Fingal County Council                 | Dublin    |
+    | 18 | GalwayCo     | Galway County Council                 | Galway    |
+    | 19 | Kerry        | Kerry County Council                  | Kerry     |
+    | 20 | Kildare      | Kildare County Council                | Kildare   |
+    | 21 | Kilkenny     | Kilkenny County Council               | Kilkenny  |
+    | 22 | Laois        | Laois County Council                  | Laois     |
+    | 23 | Leitrim      | Leitrim County Council                | Leitrim   |
+    | 24 | LimerickCo   | Limerick County Council               | Limerick  |
+    | 25 | Longford     | Longford County Council               | Longford  |
+    | 26 | Louth        | Louth County Council                  | Louth     |
+    | 27 | Mayo         | Mayo County Council                   | Mayo      |
+    | 28 | Meath        | Meath County Council                  | Meath     |
+    | 29 | Monaghan     | Monaghan County Council               | Monaghan  |
+    | 30 | Offaly       | Offaly County Council                 | Offaly    |
+    | 31 | Roscommon    | Roscommon County Council              | Roscommon |
+    | 32 | Sligo        | Sligo County Council                  | Sligo     |
+    | 33 | NTipperary   | North Tipperary County Council        | Tipperary |
+    | 34 | STipperary   | South Tipperary County Council        | Tipperary |
+    | 35 | WaterfordCo  | Waterford County Council              | Waterford |
+    | 36 | Westmeath    | Westmeath County Council              | Meath     |
+    | 37 | Wexford      | Wexford County Council                | Wexford   |
+    | 38 | Wicklow      | Wicklow County Council                | Wicklow   |
+    | 39 | Letterkenny  | Letterkenny Council                   | Donegal   |
+    | 40 | Bundoran     | Bundoran Town Council                 | Donegal   |
+    | 41 | Buncrana     | Buncrana Town Council                 | Donegal   |
+    +----+--------------+---------------------------------------+-----------+
 
 
 ## What's in here?
