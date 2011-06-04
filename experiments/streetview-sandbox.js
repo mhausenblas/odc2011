@@ -9,14 +9,19 @@ var SV_DETAIL_MODE = 2; // showing nearest PAs, control panel visible
 
 
 // globally configure the PA map widget here:
-var pam = SV_DETAIL_MODE; // the selected mode
-var mapCenterLat = 53.2796;
-var mapCenterLng = -8.0392;
-var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
-var mapInitialZoomFactor = 16; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
+var pam = ARCHIVE_MODE; // the selected mode
+var mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
+var mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
+var mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
+var mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
+var mapCenterLat = 53.2796; // for SV_DETAIL_MODE
+var mapCenterLng = -8.0392; // for SV_DETAIL_MODE
+var mapInitialZoomFactor = 7; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
-var mapDefaultIsStreetView = true; // start in street view mode or not
+var mapDefaultIsStreetView = false; // start in street view mode or not
+var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
+
 
 var filterMinYear = 1970; // min. value for the filter-by-year
 var filterMaxYear = 2010; // max. value for the filter-by-year
@@ -37,8 +42,7 @@ var currentMinYear = -1; // filter-by-year
 var currentMaxYear = -1; // filter-by-year
 
 // the planning application (PA) data a list of PA objects, 
-// filled dynamically via the JSON API - each PA object has the following layout:
-// {council:4,appref:'a',lat:53.270,lng:-9.104,appdate:2000, decision:"R", appstatus:9, appdesc:'construct an extension to house'},
+// filled dynamically via the JSON API
 var paData = new Array();
 
 // GPlan application status - based on GPlan_ApplicationStatus.txt
@@ -95,19 +99,19 @@ var PA_STATE = {
 $(function() { 
 		
 	if(pam == OVERVIEW_MODE) {
-		getLatestPAsIn(53.1,-8.2,53.2,-8, function(data, textStatus){
+		getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 			loadCouncils(function() {
 				fillPAData(data);
-				initUI();
+				initUI(false);
 			});
 		});
 	}
 	
 	if(pam == ARCHIVE_MODE) {
-		getAllPAsIn(52,-9,53.5,-8, function(data, textStatus){
+		getAllPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 			loadCouncils(function() {
 				fillPAData(data);
-				initUI();
+				initUI(true);
 			});
 		});
 	}
@@ -116,7 +120,8 @@ $(function() {
 		getNearestPAs(mapCenterLat, mapCenterLng, function(data, textStatus){
 			loadCouncils(function() {
 				fillPAData(data);
-				initUI();
+				mapDefaultIsStreetView = true;
+				initUI(true);
 			});
 		});
 	}
@@ -190,12 +195,19 @@ $(function() {
 //  PA map widget view library
 //
 
-function initUI(startAddress){
+function initUI(showControlPanel){
 	makemap(); // create the Google Map
-	makelegend(); // create the legend
-	yearsel(filterMinYear, filterMaxYear); // create the year selection slider
+	if(showControlPanel) {
+		makelegend(); // create the legend
+		yearsel(filterMinYear, filterMaxYear); // create the year selection slider
+	}
+	else {
+		$("#controlpan").html("");
+		$("#viewselpan").html("");
+		mapWidth = 0.95;
+	}
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
-	showSV(); // show SV initially
+	if(mapDefaultIsStreetView) showSV(); // show SV initially
 }
 
 function fitPAAWidgets(){
