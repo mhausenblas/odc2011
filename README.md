@@ -35,17 +35,23 @@ http://planning-apps.opendata.ie/{council_short}#{appref}
 
 Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54.429541,-4.03653
 
-Get TOP 50 applications near a point
-http://planning-apps.opendata.ie/near?center=53.270,-9.104
+### Get TOP 50 applications near a point
 
-Get all applications in area (limited to 250):
-http://planning-apps.opendata.ie/all?bounds=53.25,-9.1,53.5,-7
-http://planning-apps.opendata.ie/all?bounds=53.266971,-9.05961,53.27213,-9.043968
+    http://planning-apps.opendata.ie/near?center=53.270,-9.104
 
-Get latest applications in area:
-http://planning-apps.opendata.ie/latest?bounds=53.25,-9.1,53.5,-7
-http://planning-apps.opendata.ie/latest?bounds=53.266971,-9.05961,53.27213,-9.043968
+### Get all applications in area (limited to 250):
 
+    http://planning-apps.opendata.ie/all?bounds=53.25,-9.1,53.5,-7
+    http://planning-apps.opendata.ie/all?bounds=53.266971,-9.05961,53.27213,-9.043968
+
+### Get latest applications in area:
+
+    http://planning-apps.opendata.ie/latest?bounds=53.25,-9.1,53.5,-7
+    http://planning-apps.opendata.ie/latest?bounds=53.266971,-9.05961,53.27213,-9.043968
+
+### Get list of all councils as JSON
+
+    http://planning-apps.opendata.ie/councils
 
 ## Database schema documentation
 
