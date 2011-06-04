@@ -1,2 +1,3 @@
 *.pyc
 config.inc.php
+config_twitter.inc.php
