@@ -2,6 +2,9 @@
 //  PA archive view globals
 //
 
+// configure the PA API here:
+var PA_API_BASE_URI = "http://localhost:8888/gplan/";
+
 // configure the archive widget here:
 var mapCenter = new google.maps.LatLng(53.270, -9.104);
 var mapInitialZoomFactor = 18; // the default zoom factor
@@ -62,7 +65,8 @@ var PA_STATE = {
 
 
 // this is dummy data, I made it up based on exitings PA, but the schema should be used:
-var data = [
+var paData = new Array();
+/*
 	{appref:'a',lat:53.270,lng:-9.104,appdate:2000, decision:"R", appstatus:9, appdesc:'construct an extension to house'},
 	{appref:'b',lat:53.270,lng:-9.104,appdate:2001, decision:"R", appstatus:8, appdesc:'construct extension to house, again'},
 	{appref:'c',lat:53.270,lng:-9.104,appdate:2003, decision:"N", appstatus:1, appdesc:'another construct'},
@@ -72,18 +76,35 @@ var data = [
 	{appref:'g',lat:53.270,lng:-9.104,appdate:2007, decision:"R", appstatus:2, appdesc:'demolish house'},
 	{appref:'h',lat:53.270,lng:-9.104,appdate:2008, decision:"U", appstatus:0, appdesc:'construct extension to shed'}
 ];
+*/
 
 /////////////////////////////////////////////////////////////////////////////// 
 //  PA archive view main event loop
 //
 
 $(function() { 
+
+	getNearestPAs(53.270, -9.104, function(data, textStatus){
+		if(data.applications) {  
+			for(pa in data.applications){
+				var appref = data.applications[pa].app_ref;
+				var lat = data.applications[pa].lat;
+				var lng = data.applications[pa].lng;
+				var year = (new Date(Date.parse(data.applications[pa].received_date))).getFullYear();
+				var decision = data.applications[pa].decision;
+				var status = data.applications[pa].status;
+		 		var details = data.applications[pa].details;
+				console.log("got lat:" + lat + " long: " + lng + " with details: " + details);
+				paData.push({appref:appref,lat:lat,lng:lng,appdate:year,decision:decision,appstatus:9,appdesc:details});
+			}
+		}
+		makemap(); // create the Google Map
+		makelegend(); // create the legend
+		yearsel(); // create the year selection slider
+		fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
+		showSV(); // show SV initially		
+	});
 	
-	makemap(); // create the Google Map
-	makelegend(); // create the legend
-	yearsel(); // create the year selection slider
-	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
-	showSV(); // show SV initially
 	
 	$(window).resize(function() { // whenever window is resized, adapt size of widgets
 		fitPAAWidgets(); 
@@ -153,7 +174,6 @@ function fitPAAWidgets(){
 	$("#map").width($(window).width()*mapWidth);
 	$("#controlpan").width($(window).width()*(1 - mapWidth - 0.05));
 	$("#map").height($(window).height()*mapHeight);
-//	$("#palist-content").height($(window).height()*0.85);
 }
 
 function makemap() {
@@ -200,8 +220,8 @@ function makemap() {
 
 
 	// add the markers based on the data we get from the PA service
-	for (i=0; i < data.length; i++) {
-		addMarker(data[i]);
+	for (i=0; i < paData.length; i++) {
+		addMarker(paData[i]);
 	}	
 }
 
@@ -259,7 +279,7 @@ function showMap() {
 		$.each(currentMarkers[index].desc.split(' '), function(windex, word){
 			word = word.replace(",", "");
 			// TODO: find a better filtering method for blacklisted words ...
-			if(word.trim() != "" && word.trim() != "an" && word.trim() != "to" ) {
+			if(word.trim() != "" && word.trim() != "an" && word.trim() != "to"  && word.trim() != "and"  && word.trim() != "of" ) {
 				if (index < currentMarkers.length - 1) $("#palist-cloud").append(word + " , ");
 				else $("#palist-cloud").append(word);
 			}
@@ -400,4 +420,12 @@ function filterPA(miny, maxy){
 			currentMarkers[i].marker.setVisible(false);
 		}
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////// 
+//  PA data API calls
+//
+
+function getNearestPAs(lat, lng, callback) {
+	$.getJSON(PA_API_BASE_URI + "near?center=" + lat + "," + lng, callback);
 }
