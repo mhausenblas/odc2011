@@ -71,6 +71,12 @@ class Response {
         die();
     }
 
+    function json($data) {
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        die();
+    }
+
     function status($code) {
         header("HTTP/1.0 " . $this->get_status_message($code));
     }
@@ -91,11 +97,11 @@ class Response {
             $$varname = $value;
         }
         if ($as_page) {
-            include("templates/header.php");
+            include("templates/site-header.php");
         }
         include("templates/$template.php");
         if ($as_page) {
-            include("templates/footer.php");
+            include("templates/site-footer.php");
         }
     }
 

@@ -53,7 +53,7 @@ class Request {
         if (!empty($required_get_params)) {
             foreach ($required_get_params as $param) {
                 if (!isset($_GET[$param])) {
-                    return false;
+                    throw new HTTPException(400, array('message' => 'Missing GET parameter: “' . $param . '”'));
                 }
                 $match[$param] = $_GET[$param];
             }

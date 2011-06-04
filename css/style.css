@@ -1,0 +1,30 @@
+body { color: #330; margin: 1.5em 2em; font-family: Georgia; background-image:url('/images/beta.jpeg'); background-repeat: no-repeat; background-position: 53em 58px; }
+body { background-position: -3px -12px; }
+h1 { font-size: 180%; font-weight: normal; margin: 0 0 0.5em; }
+h2 { font-size: 130%; font-weight: normal; margin: 0 0 0.7em 0; padding-top: 1em; }
+a { color: #338; text-decoration: none; }
+a:visited { color: #636; text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:active { color: red; }
+p { margin: 0.7em 0; }
+a img { border: none; }
+h1 small { color: #885; font-size: 50%; }
+#content p { max-width: 50em; }
+.application { clear: left; }
+.minimap { float: left; margin-right: 0.7em; width: 200px; height: 200px; border: 1px solid #330; }
+.minimap.na { color: #885; font-size: 70%; text-align: center; padding: 2.9em 0; height: auto; }
+.application p { margin-left: 212px; }
+.details a, #content a { text-decoration: underline; }
+img.inline { position: relative; top: 2px; }
+#map { height: 500px; }
+#feedicon { float: right; }
+#galway-logo { float: left; margin: 0 1em 1em 0; }
+#footer { clear: left; border-top: 1px solid #bbb; padding-top: 0.3em; margin: 1.4em 0; }
+#deri-logo { float: right; }
+.stats td, .stats th { border: 1px solid #bbb; padding: 0.2em 0.4em; white-space: nowrap; }
+.stats th { font-weight: normal; text-align: left; }
+.stats td { text-align: right; }
+.stats tr { height: 1.7em; }
+.stats { border-collapse: collapse; }
+.stats .coordinates td { border-bottom: none; color: #575; }
+.stats .no-coordinates td { border-top: none; color: #f99; }

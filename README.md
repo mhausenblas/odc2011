@@ -22,8 +22,7 @@ This software is Public Domain.
     mysql -u root gplan < import-lgcsb-applications.sql
     # Run the Fingal importer once
     php ../jobs/import_fingal_csv.php
-    php initial_import_scraperwiki_csv.php
-    php ../jobs/import_scraperwiki.php
+    php ../jobs/import_scraperwiki.php --initial
 
 ## Permalinks
 
@@ -150,10 +149,6 @@ import-lgcsb-applications.sql
   GPlan_Metadata.txt. It must be called applications.csv and
   be in the current directory.
 
-initial_import_scraperwiki.php
-  Imports all applications that ScraperWiki has scraped so
-  far.
-
 initial_tweeting.php
   Populates the Twitter accounts with a few tweets. This should
   never be run again!
@@ -168,7 +163,9 @@ import_fingal_csv.php
   Import the CSV dump from data.fingal.ie
 
 import_scraperwiki.php
-  Import the latest updates from ScraperWiki
+  Import the latest updates from ScraperWiki. If run with --initial
+  argument, it imports everything from the ScraperWiki data store.
+  This should be once as part of the application setup.
 
 send_tweets.php
   Send tweets for recently imported new applications

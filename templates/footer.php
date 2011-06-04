@@ -7,7 +7,7 @@
   <table>
     <tr>
       <td>
-        <a href="about.php">about</a>
+        <a href="about">about</a>
       </td>
       <td>
         <a href="wiki.php">wiki</a>

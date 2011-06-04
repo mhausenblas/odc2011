@@ -1,33 +1,47 @@
 <?php
 
 include dirname(__FILE__) . '/../config.inc.php';
-include dirname(__FILE__) . '/../lib/db.inc.php';
+include dirname(__FILE__) . '/../lib/db.class.php';
+include dirname(__FILE__) . '/../lib/planning.class.php';
+$db = new DB($config);
+$planning = new Planning($db);
 
 echo date("Y-m-d H:i:s")." # Importing Scraper Wiki\n";
 
 date_default_timezone_set('Eire');
 
-global $INITIAL_SCRAPERWIKI;
+if ($argc > 2 || ($argc == 2 && $argv[1] != '--initial')) {
+  echo "Usage: import_scraperwiki.php [--initial]\n";
+  echo "  By default, only recent applicaitons will be imported and\n";
+  echo "  will be set as tweetable.\n";
+  echo "  In --initial mode, all applications will be imported and set\n";
+  echo "  as untweetable.\n";
+}
+
+$initial_mode = ($argc == 2 && $argv[1] == '--initial');
+if ($initial_mode) {
+  echo "Running in Initial Mode\n";
+}
 
 $scraper_wikis = array("2ndeplan41_1", "irish_planning_applications");
 
 $rows_inserted = 0;
+$rows_skipped = 0;
 
-$whereClause = $tweetid = '';
-
-if (!$INITIAL_SCRAPERWIKI) {
+$query = "SELECT county, appref, date, url, address, applicant, details, lat, lng FROM swdata";
+if (!$initial_mode) {
   $max_age_days = 14;
   $start = date('Y-m-d', time() - $max_age_days * 24 * 60 * 60);
-  $whereClause = " WHERE date >= '$start'";
-  $tweetid = ' tweet_id = NULL';
+  $query .= " WHERE date >= '$start'";
 }
 
 foreach ($scraper_wikis as $scraper_wiki) {
-  $query = "SELECT county, appref, date, url, address, applicant, details, lat, lng FROM swdata".$whereClause;
   $data_url = 'http://api.scraperwiki.com/api/1.0/datastore/sqlite?format=jsondict&name='.$scraper_wiki.'&query=' . urlencode($query);
   $data = json_decode(file_get_contents($data_url));
 
   foreach ($data as $app) {
+    if (empty($app->appref)) continue;
+
     if ($app->county == "WaterfordCity") {
       $app->county = "Waterford";
     }
@@ -40,41 +54,35 @@ foreach ($scraper_wikis as $scraper_wiki) {
     if ($app->county == "North Tipperary") {
       $app->county = "NTipperary";
     }
-    $query = "SELECT id from councils WHERE short_name = ".db_prep($app->county);
-    $sql = mysql_query($query);
-    if (mysql_num_rows($sql) == 0) {
+
+    $council_id = $planning->get_council_id($app->county);
+    if (!$council_id) {
       echo date("Y-m-d H:i:s")." # Council not found: " .$app->county.PHP_EOL;
       continue;
     }
-    $result = mysql_fetch_object($sql);
-    $council_id = $result->id;
 
-    $query = "SELECT * from applications WHERE council_id = $council_id AND app_ref = ".db_prep($app->appref);
-    $sql = mysql_query($query);
-    if (mysql_num_rows($sql) > 0) {
+    $application = array(
+        'app_ref' => $app->appref,
+        'council_id' => $council_id,
+        'lat' => $app->lat,
+        'lng' => $app->lng,
+        'received_date' => $app->date,
+        'url' => $app->url,
+        'address1' => $app->address,
+        'applicant1' => $app->applicant,
+        'details' => $app->details,
+        'tweet_id' => $initial_mode ? 1 : null,
+    );
+    // @@@ TODO Should actually update the record
+    if ($planning->application_exists($application)) {
+      $rows_skipped++;
       continue;
     }
-
-    //We need to have at least app_ref.
-    if (!is_null($app->appref) && !empty($app->appref)) {
-      $query = "INSERT INTO applications SET
-           app_ref = ".db_prep($app->appref).",
-           council_id = ".db_prep($council_id).",
-           lat = ".db_prep($app->lat).",
-           lng = ".db_prep($app->lng).",
-           received_date = ".db_prep($app->date).",
-           url = ".db_prep($app->url).",
-           address1 = ".db_prep($app->address).",
-           applicant1 = ".db_prep($app->applicant).",
-           details = ".db_prep($app->details).
-           $tweetid;
-      if (!mysql_query($query)) {
-        echo "= DB INSERT ERROR =".PHP_EOL.$query.PHP_EOL.mysql_error().PHP_EOL;
-      } else {
-        $rows_inserted += 1;
-      }
+    if ($planning->add_application($application)) {
+      $rows_inserted += 1;
     }
   }
 }
 
 echo date("Y-m-d H:i:s")." # $rows_inserted applications inserted from ScraperWiki\n";
+echo date("Y-m-d H:i:s")." # $rows_skipped applications skipped from ScraperWiki\n";
