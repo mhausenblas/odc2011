@@ -1,11 +1,12 @@
 <?php
 
-$MYSQL_SERVER = '';
-$MYSQL_USER = '';
-$MYSQL_PASSWORD = '';
-$MYSQL_DATABASE = '';
+$config['site_base'] = 'http://planning-apps.opendata.ie/';
+
+$config['db_host'] = 'localhost';
+$config['db_user'] = 'root';
+$config['db_password'] = '';
+$config['db_name'] = 'gplan';
 
 $BITLY_USERNAME = '';
 $BITLY_API_KEY = '';
 
-$config['site_base'] = 'http://planning-apps.opendata.ie/';
