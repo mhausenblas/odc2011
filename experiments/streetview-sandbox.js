@@ -5,12 +5,15 @@
 // globally configure the PA map widget here:
 var mapCenterLat = 53.2791;
 var mapCenterLng = -8.0482;
-
 var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
 var mapInitialZoomFactor = 16; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
 var mapDefaultIsStreetView = false; // start in street view mode or not
+
+var filterMinYear = 1970; // min. value for the filter-by-year
+var filterMaxYear = 2010; // max. value for the filter-by-year
+
 
 // configure the PA API here:
 var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
@@ -20,8 +23,12 @@ var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
 // internal globals - don't touch:
 
 var map; // the Google map (both for overview and street view)
+var councils; // the council look-up table
 var currentMarkers = new Array(); // list of active markers in the viewport
-var pastateSelection = "inactive"; // if filter-by-status is active, overwrites filter-by-year
+var pastateSelection = "inactive"; // the filter-by-status 
+var currentMinYear = -1; // filter-by-year
+var currentMaxYear = -1; // filter-by-year
+
 
 // the planning application (PA) data a list of PA objects, 
 // filled dynamically via the JSON API - each PA object has the following layout:
@@ -82,8 +89,10 @@ var PA_STATE = {
 $(function() { 
 
 	getNearestPAs(mapCenterLat, mapCenterLng, function(data, textStatus){
-		fillPAData(data);
-		initUI();
+		loadCouncils(function() {
+			fillPAData(data);
+			initUI();
+		});
 	});
 	
 	// getAllPAsIn(52,-9,53.5,-8, function(data, textStatus){
@@ -124,12 +133,14 @@ $(function() {
 		}
 	});
 	
+	$("#reset-all-filters").click(function() {
+		resetAllFilters();
+	});
 	
 	// filter PAs by status
 	$("#appstatus-legend div").live('click', function() {
 		var targetState = $(this).text();
 		pastateSelection = targetState;
-		hideAllMarkers();
 		filterPAByState(targetState);
 		$("#appstatus-legend div").each(function(index) {
 			$(this).css("border", "0");
@@ -164,10 +175,10 @@ $(function() {
 //  PA archive view library
 //
 
-function initUI(startAddress, options){
+function initUI(startAddress){
 	makemap(); // create the Google Map
 	makelegend(); // create the legend
-	yearsel(1960, 2010); // create the year selection slider
+	yearsel(filterMinYear, filterMaxYear); // create the year selection slider
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
 	showSV(); // show SV initially
 }
@@ -427,11 +438,10 @@ function yearsel(starty, endy){
 			filterPAByYear(ui.values[0], ui.values[1]);
 		}
 	});
-	$("#yearsel").val($("#yearrange").slider("values", 0) + " - " + $("#yearrange").slider("values", 1 ));
+	$("#yearsel").val($("#yearrange").slider("values", 0) + " - " + $("#yearrange").slider("values", 1));
 	$("#yearsel").attr('readonly', true);
 	
 }
-
 
 function showAllMarkers(){
 	for(i in currentMarkers){
@@ -445,10 +455,46 @@ function hideAllMarkers(){
 	}
 }
 
+function isMarkerInSelectedState(marker, pastate){
+	if(pastate == 'incomplete or withdrawn') {
+		if((marker.d == 'N') && inArray(marker.s,['0', '2', '8', '11'])) {
+			return true;
+		}
+		else return false;
+	}
+	else {
+		if(pastate == 'refused'){
+			if(marker.d == 'R') {
+				return true;
+			}
+			else return false;
+		}
+		else {
+			if(pastate == 'conditional'){
+				if(marker.d == 'C') {
+					return true;
+				}
+				else return false;
+			}
+			else{
+				if(pastate == 'unconditional'){
+					if(marker.d == 'U') {
+						return true;
+					}
+					else return false;
+				}
+			}
+		}
+	}
+	
+}
 
 function filterPAByYear(miny, maxy){
+	currentMinYear = miny;
+	currentMaxYear = maxy;
 	
-	if(pastateSelection == "inactive") {
+	if(pastateSelection == "inactive") { 
+		showAllMarkers();
 		for(i in currentMarkers){
 			if((currentMarkers[i].year <= miny) || (currentMarkers[i].year >= maxy)) {
 				currentMarkers[i].marker.setVisible(false);
@@ -458,59 +504,45 @@ function filterPAByYear(miny, maxy){
 			}
 		}
 	}
-	else {
-		for(i in currentMarkers){
+	else { // filter-by-state is active
+ 		for(i in currentMarkers){
 			if((currentMarkers[i].year <= miny) || (currentMarkers[i].year >= maxy)) {
 				currentMarkers[i].marker.setVisible(false);
 			}
 			else {
-				currentMarkers[i].marker.setVisible(true);
-				filterPAByState(pastateSelection);
+				if(isMarkerInSelectedState(currentMarkers[i], pastateSelection)) currentMarkers[i].marker.setVisible(true);
 			}
 		}
 	}
 }
 
 function filterPAByState(pastate){
-	if(pastate == 'incomplete or withdrawn'){
-		for(i in currentMarkers){
-			if((currentMarkers[i].d == 'N') && inArray(currentMarkers[i].s,['0', '2', '8', '11'])) {
-				currentMarkers[i].marker.setVisible(true);
-			}
-		}
-	}
-	else {
-		if(pastate == 'refused'){
-			for(i in currentMarkers){
-				if(currentMarkers[i].d == 'R') {
-					currentMarkers[i].marker.setVisible(true);
-				}
-			}
-		}
-		else {
-			if(pastate == 'conditional'){
-				for(i in currentMarkers){
-					if(currentMarkers[i].d == 'C') {
-						currentMarkers[i].marker.setVisible(true);
-					}
-				}
-			}
-			else{
-				if(pastate == 'unconditional'){
-					for(i in currentMarkers){
-						if(currentMarkers[i].d == 'U') {
-							currentMarkers[i].marker.setVisible(true);
-						}
-					}
-				}
-			}
-		}
-	}
+	hideAllMarkers();
+	pastateSelection = pastate;
 
+	for(i in currentMarkers){
+		if(isMarkerInSelectedState(currentMarkers[i], pastateSelection)) {
+			currentMarkers[i].marker.setVisible(true);
+		}
+	}
+	
+	if((currentMinYear != -1) || (currentMaxYear != -1)) { // filter-by-year is active
+		filterPAByYear(currentMinYear, currentMaxYear);
+	}
 }
 
-
-
+function resetAllFilters(){
+	currentMinYear = -1;
+	currentMaxYear = -1;
+	pastateSelection = "inactive";
+	showAllMarkers();
+	$("#appstatus-legend div").each(function(index) {
+		$(this).css("border", "0");
+	});
+	$("#yearrange").slider("values", 0, filterMinYear);
+	$("#yearrange").slider("values", 1, filterMaxYear);
+	$("#yearsel").val($("#yearrange").slider("values", 0) + " - " + $("#yearrange").slider("values", 1));
+}
 
 /////////////////////////////////////////////////////////////////////////////// 
 //  Google Maps Javascript API V3 calls
@@ -570,11 +602,17 @@ function fillPAData(data){
 	}
 }
 
+
+function loadCouncils(callback) {
+	$.getJSON(PA_API_BASE_URI + "councils", function(data) {
+		councils = data;
+		callback();
+	});
+}
+
+
 function lookupCouncil(councilID) {
-	return "GalwayCity";
-	// $.getJSON(PA_API_BASE_URI + "near?center=" + councilID, function(data) {
-	// 	return data.council_shortname;
-	// });
+	return councils[councilID].short;
 }
 
 function getNearestPAs(lat, lng, callback) {

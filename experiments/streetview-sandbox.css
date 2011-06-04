@@ -99,9 +99,14 @@ body { font-family: Verdana,Arial,sans-serif;}
 	border: 1px solid #f0f0f0;
 }
 
+.cmdbtn {
+	clear: left;
+	text-align: left;
+}
+
 #filterpan {
 	padding: .5em;
-	height: 200px;
+/*	height: 200px;*/
 }
 
 .filterlabel {
