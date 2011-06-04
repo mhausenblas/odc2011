@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__FILE__) . '/../config.inc.php');
+include dirname(__FILE__) . '/../config.inc.php';
 include dirname(__FILE__) . '/../lib/db.inc.php';
 
 echo date("Y-m-d H:i:s")." # Importing Fingal CSV\n";
