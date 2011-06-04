@@ -2,32 +2,20 @@
 
 $twitter_std_ending = "Pln";
 
-if (!file_exists("config.inc.php")) {
-  die("Copy config.inc.php.sample to config.inc.php first and insert your parameters.");
-}
+include dirname(__FILE__) . '/../config.inc.php';
+include dirname(__FILE__) . '/../lib/db.inc.php';
 
 if (!file_exists("config_twitter.inc.php")) {
   die("No config_twitter.inc.php");
 }
 
-require 'twitter-api/tmhOAuth.php';
-include("config_twitter.inc.php");
-include("config.inc.php");
+include dirname(__FILE__) . '/../config_twitter.inc.php';
+require dirname(__FILE__) . '/../lib/twitter-api/tmhOAuth.php';
 
 date_default_timezone_set('Eire');
 
 $max_tweet_length = 140;
 $max_app_details_length = 25;
-
-setup_database();
-
-function setup_database() {
-  include("config.inc.php");
-
-  $db_connection = mysql_connect($MYSQL_SERVER, $MYSQL_USER, $MYSQL_PASSWORD);
-  mysql_select_db($MYSQL_DATABASE, $db_connection) or die (mysql_error());
-  mysql_set_charset("utf8");
-}
 
 function make_bitly_url($url,$login,$appkey,$format = 'xml',$version = '2.0.1')
 {
