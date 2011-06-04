@@ -21,9 +21,9 @@ This software is Public Domain.
     mysql -u root < schema.sql
     mysql -u root gplan < import-lgcsb-applications.sql
     # Run the Fingal importer once
-    php jobs/import_fingal_csv.php
-    import-scraperwiki.php
-
+    php ../jobs/import_fingal_csv.php
+    php initial_import_scraperwiki_csv.php
+    php ../jobs/import_scraperwiki.php
 
 ## Permalinks
 
