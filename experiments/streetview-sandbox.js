@@ -21,6 +21,7 @@ var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
 
 var map; // the Google map (both for overview and street view)
 var currentMarkers = new Array(); // list of active markers in the viewport
+var pastateSelection = "inactive"; // if filter-by-status is active, overwrites filter-by-year
 
 // the planning application (PA) data a list of PA objects, 
 // filled dynamically via the JSON API - each PA object has the following layout:
@@ -123,6 +124,19 @@ $(function() {
 		}
 	});
 	
+	
+	// filter PAs by status
+	$("#appstatus-legend div").live('click', function() {
+		var targetState = $(this).text();
+		pastateSelection = targetState;
+		hideAllMarkers();
+		filterPAByState(targetState);
+		$("#appstatus-legend div").each(function(index) {
+			$(this).css("border", "0");
+		});
+		$(this).css("border", "3px solid #fff");
+	});
+	
 	// highlighting marker of selected PA
 	$(".singlepa").live('mouseenter', function() {
 		var thispa = $(this).attr('id');
@@ -215,7 +229,7 @@ function makemap() {
 
 function makelegend(){
 	$.each(PA_STATE, function(index, val){
-		$("#appstatus-legend").append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
+		$('#appstatus-legend').append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
 	});	
 }
 
@@ -293,7 +307,7 @@ function addMarker(record) {
 		});
 		
 		// remember the marker
-		currentMarkers.push({ id:r.appref, year:r.appdate, desc:r.appdesc, marker:marker });
+		currentMarkers.push({ id:r.appref, d:r.decision, s:r.appstatus, year:r.appdate, desc:r.appdesc, marker:marker });
 		
 		// for non-SV mode enable detail view
 		google.maps.event.addListener(marker, "click", function() {
@@ -355,19 +369,19 @@ function drawMarker(year, decision, status){
 }
 
 function colorCodePA(decision, status){
-	if(decision == 'N' && inArray(status,['0', '2', '8', '11'])) { // incomplete or withdrawn PA, if decision is unknown
+	if(decision == 'N' && inArray(status,['0', '2', '8', '11'])) { // incomplete or withdrawn
 		return '#9f9f9f';
 	}
 	else {
-		if(decision == 'R') { // refused PA
+		if(decision == 'R') { // refused
 			return '#660000';
 		}
 		else {
-			if(decision == 'C') { // conditional PA
+			if(decision == 'C') { // conditional
 				return '#333060';
 			}
 			else {
-				if(decision == 'U') { // unconditional PA
+				if(decision == 'U') { // unconditional
 					return '#060';
 				}
 				else { // no data or decision
@@ -410,7 +424,7 @@ function yearsel(starty, endy){
 		values: [ starty, endy ],
 		slide: function(event, ui) {
 			$("#yearsel").val(ui.values[0] + " - " + ui.values[1]);
-			filterPA(ui.values[0], ui.values[1]);
+			filterPAByYear(ui.values[0], ui.values[1]);
 		}
 	});
 	$("#yearsel").val($("#yearrange").slider("values", 0) + " - " + $("#yearrange").slider("values", 1 ));
@@ -418,16 +432,84 @@ function yearsel(starty, endy){
 	
 }
 
-function filterPA(miny, maxy){
+
+function showAllMarkers(){
 	for(i in currentMarkers){
-		if((currentMarkers[i].year >= miny) && ( currentMarkers[i].year <= maxy)) {
-			currentMarkers[i].marker.setVisible(true);
+		currentMarkers[i].marker.setVisible(true);
+	}
+}
+
+function hideAllMarkers(){
+	for(i in currentMarkers){
+		currentMarkers[i].marker.setVisible(false);
+	}
+}
+
+
+function filterPAByYear(miny, maxy){
+	
+	if(pastateSelection == "inactive") {
+		for(i in currentMarkers){
+			if((currentMarkers[i].year <= miny) || (currentMarkers[i].year >= maxy)) {
+				currentMarkers[i].marker.setVisible(false);
+			}
+			else {
+				currentMarkers[i].marker.setVisible(true);
+			}
 		}
-		else {
-			currentMarkers[i].marker.setVisible(false);
+	}
+	else {
+		for(i in currentMarkers){
+			if((currentMarkers[i].year <= miny) || (currentMarkers[i].year >= maxy)) {
+				currentMarkers[i].marker.setVisible(false);
+			}
+			else {
+				currentMarkers[i].marker.setVisible(true);
+				filterPAByState(pastateSelection);
+			}
 		}
 	}
 }
+
+function filterPAByState(pastate){
+	if(pastate == 'incomplete or withdrawn'){
+		for(i in currentMarkers){
+			if((currentMarkers[i].d == 'N') && inArray(currentMarkers[i].s,['0', '2', '8', '11'])) {
+				currentMarkers[i].marker.setVisible(true);
+			}
+		}
+	}
+	else {
+		if(pastate == 'refused'){
+			for(i in currentMarkers){
+				if(currentMarkers[i].d == 'R') {
+					currentMarkers[i].marker.setVisible(true);
+				}
+			}
+		}
+		else {
+			if(pastate == 'conditional'){
+				for(i in currentMarkers){
+					if(currentMarkers[i].d == 'C') {
+						currentMarkers[i].marker.setVisible(true);
+					}
+				}
+			}
+			else{
+				if(pastate == 'unconditional'){
+					for(i in currentMarkers){
+						if(currentMarkers[i].d == 'U') {
+							currentMarkers[i].marker.setVisible(true);
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////// 
@@ -472,7 +554,7 @@ function gotoAddress(address, options) {
 
 function fillPAData(data){
 	if(data.applications) {  
-		paData = []; // empty the PA list
+		paData = []; // make sure the PA list is empty
 		for(pa in data.applications){
 			var council = lookupCouncil(data.applications[pa].council_id); // council short name from ID
 			var appref = data.applications[pa].app_ref; // the PA reference
