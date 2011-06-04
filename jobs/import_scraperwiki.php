@@ -19,7 +19,7 @@ if (!$INITIAL_SCRAPERWIKI) {
   $max_age_days = 14;
   $start = date('Y-m-d', time() - $max_age_days * 24 * 60 * 60);
   $whereClause = " WHERE date >= '$start'";
-  $tweetid = ' tweetid = NULL';
+  $tweetid = ' tweet_id = NULL';
 }
 
 foreach ($scraper_wikis as $scraper_wiki) {
