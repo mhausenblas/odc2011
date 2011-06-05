@@ -2,10 +2,15 @@
 
 class Planning {
     var $db;
+    var $application_columns = array('app_ref', 'council_id', 'lat', 'lng',
+        'applicant1', 'applicant2', 'applicant3', 'received_date', 'decision_date',
+        'address1', 'address2', 'address3', 'address4',
+        'decision', 'status', 'details', 'url', 'tweet_id');
 
     function __construct($db) {
         $this->db = $db;
     }
+
 
     function get_latest_applications($bounds) {
         list($lat_lo, $lng_lo, $lat_hi, $lng_hi) = $bounds;
@@ -104,14 +109,10 @@ EOT;
     }
 
     function add_application($app) {
-        $columns = array('app_ref', 'council_id', 'lat', 'lng',
-            'applicant1', 'applicant2', 'applicant3', 'received_date', 'decision_date',
-            'address1', 'address2', 'address3', 'address4',
-            'decision', 'status', 'details', 'url', 'tweet_id');
         $query = "INSERT INTO applications SET";
         $clauses = array();
         foreach ($app as $key => $value) {
-            if (!in_array($key, $columns)) {
+            if (!in_array($key, $this->application_columns)) {
                 throw new DatabaseException("No column '$key' in applications table");
             }
             $clauses[] = " $key = " . $this->db->quote($value);

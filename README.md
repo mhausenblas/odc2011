@@ -55,6 +55,31 @@ Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54
 
 ## Database schema documentation
 
+### The applications table
+
+    +---------------+---------------+------+-----+---------+-------+
+    | Field         | Type          | Null | Key | Default | Extra |
+    +---------------+---------------+------+-----+---------+-------+
+    | app_ref       | varchar(20)   | NO   | PRI | NULL    |       |
+    | council_id    | int(2)        | NO   | PRI | NULL    |       |
+    | lat           | double(13,10) | YES  | MUL | NULL    |       |
+    | lng           | double(13,10) | YES  | MUL | NULL    |       |
+    | applicant1    | text          | YES  |     | NULL    |       |
+    | applicant2    | text          | YES  |     | NULL    |       |
+    | applicant3    | text          | YES  |     | NULL    |       |
+    | received_date | date          | NO   | MUL | NULL    |       |
+    | decision_date | date          | YES  |     | NULL    |       |
+    | address1      | text          | YES  |     | NULL    |       |
+    | address2      | text          | YES  |     | NULL    |       |
+    | address3      | text          | YES  |     | NULL    |       |
+    | address4      | text          | YES  |     | NULL    |       |
+    | decision      | char(1)       | NO   |     | NULL    |       |
+    | status        | tinyint(4)    | NO   |     | NULL    |       |
+    | details       | text          | YES  |     | NULL    |       |
+    | url           | text          | YES  |     | NULL    |       |
+    | tweet_id      | varchar(25)   | YES  |     | 1       |       |
+    +---------------+---------------+------+-----+---------+-------+
+
 ### Table of applications statuses and decision codes
 
 These explain the resepective columns of the application table.

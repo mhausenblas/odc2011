@@ -20,6 +20,7 @@ class DB {
     }
 
     function quote($data) {
+        if (empty($this->_conn)) $this->connect();
         $data = trim($data);
         if (isset($data) && ($data != '')) {
             return "'" . $this->_conn->real_escape_string($data) . "'";
