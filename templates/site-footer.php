@@ -19,8 +19,7 @@
 
         function initialize(){
             $.each(latlng, function(index){
-            console.log(index);
-                $('#councils_list li#'+index+' .recent_application h4').append('<div class="street_view" id="map_canvas_' + index + '">' + '</div>');
+                $('#councils_list li#'+index+' .recent_application h4').after('<div class="street_view" id="map_canvas_' + index + '">' + '</div>');
                 l = latlng[index].split(',');
                 loadMap(document.getElementById('map_canvas_'+index),new google.maps.LatLng(l[0],l[1]));
             });
@@ -37,7 +36,7 @@
                 position: place,
                 pov: {
                     heading: 170,
-                    pitch: 10,
+                    pitch: 0,
                     zoom: 1
                 },
                 scrollwheel: false,

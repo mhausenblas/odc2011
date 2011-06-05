@@ -1,41 +1,89 @@
+h1 {
+position:relative;
+z-index:9;
+}
+
 div.map {
 float:right;
 position:fixed !important;
-top:0;
-right:0;
+top:2em;
+left:45%;
 }
 
 
 #councils_list {
-width:30%;
+width:40%;
+padding-left:0;
 margin-right:2em;
 float:left;
 }
 
-#councils_list li {
-clear:both;
-position:relative;
-}
-
-#councils_list .street_view {
+#councils_list > li {
 float:left;
-width:125px;
-height:145px;
+clear:both;
+width:100%;
 position:relative;
-margin-right:1em;
+list-style-type:none;
+margin-bottom:1.5em;
 }
 
+#councils_list li h3 {
+margin:0 0 0.7em 4em;
+}
+
+#councils_list li.noapp h3 {
+margin-left:0;
+margin-bottom:0;
+}
 
 #councils_list .see_also {
 position:absolute;
 top:0;
-right:0;
+left:0;
+margin-left:0;
+padding-left:0;
 }
 #councils_list .see_also li {
 list-style-type:none;
-float:right;
+float:left;
 clear:none;
 margin-right:0.5em;
+}
+
+
+#councils_list li h4 {
+margin:0 0 0.5em 0;
+}
+
+#councils_list .recent_application {
+float:left;
+width:100%;
+}
+
+#councils_list .address,
+#councils_list .details {
+max-width:300px;
+}
+
+#councils_list .details {
+margin-bottom:0.1;
+}
+
+#councils_list .more {
+margin:0;
+max-width:290px;
+text-align:right;
+}
+
+#councils_list .street_view {
+float:right;
+width:200px;
+height:115px;
+position:relative;
+top:0;
+right:0;
+margin-left:1em;
+margin-bottom:1em;
 }
 
 .icon_feed,
@@ -52,7 +100,6 @@ background-image:url(../images/feed-icon-28x28.png);
 .icon_twitter {
 background-image:url(../images/twitter_icon.png);
 }
-
 
 #galway-logo { float: left; margin: 0 1em 1em 0; }
 #footer { clear: left; border-top: 1px solid #bbb; padding-top: 0.3em; margin-bottom: 1.4em; }
