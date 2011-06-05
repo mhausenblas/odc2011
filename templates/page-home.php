@@ -30,5 +30,5 @@ if (isset($apps[$council_id])) {
 </ul>
 <?php $councils_la_latlng = json_encode($councils_la_latlng); ?>
 
-<img class="map" src="images/ireland-map.png" usemap="#ireland">
+<img  src="images/ireland-map.png" usemap="#ireland">
 <?php include("templates/map.php"); ?>
