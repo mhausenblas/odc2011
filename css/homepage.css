@@ -27,6 +27,13 @@ list-style-type:none;
 margin-bottom:1.5em;
 }
 
+#councils_list > li:hover {
+background-color:#fcfcfc;
+border-radius:4px;
+-moz-border-radius:4px;
+-webkit-border-radius:4px;
+}
+
 #councils_list li h3 {
 margin:0 0 0.7em 4em;
 }
