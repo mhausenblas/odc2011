@@ -4,7 +4,7 @@
 
 // globally configure the PA map widget here:
 var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
-var mapArchiveModeActivateZoomFactor = 13; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
+var mapArchiveModeActivateZoomFactor = 14; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
 var filterMinYear = 1970; // min. value for the filter-by-year
@@ -19,7 +19,7 @@ var SV_DETAIL_MODE = 2; // showing nearest PAs, control panel visible
 var PA_STATE_SELECTION_INACTIVE = "inactive";
 var PA_YEAR_SELECTION_INACTIVE = -1;
 var pam = OVERVIEW_MODE; // the selected mode
-var mapInitialZoomFactor = 14; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
+var mapInitialZoomFactor = 12; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
 var mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
@@ -38,6 +38,7 @@ var mapDefaultIsStreetView = false; // start in street view mode or not
 var currentURL = document.URL; // will be used to determine the PA map widget mode
 var paData = new Array(); // the planning application (PA) data a list, filled dynamically via the JSON API
 var currentPA;
+var legendExists = false;
 
 // GPlan application status - based on GPlan_ApplicationStatus.txt
 var APPLICATION_STATUS = {
@@ -92,44 +93,7 @@ var PA_STATE = {
 
 $(function() { 
 
-	loadCouncils(function() {
-		
-		determinePAWidgetMode();
-		
-		if(pam == OVERVIEW_MODE) {
-			getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
-				fillPAData(data);
-				initUI(false, true); // no control panel, show all markers
-				centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
-			});
-		}
-	
-		if(pam == ARCHIVE_MODE) {
-			getAllPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
-				fillPAData(data);
-				initUI(true, true); // control panel, show all markers
-				centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
-			});
-		}
-	
-		if(pam == SV_DETAIL_MODE) {
-			var c = calculateBoundsCenter(mapLatLow, mapLngLow, mapLatHi, mapLngHi);
-			getNearestPAs(c.lat(), c.lng(), function(data, textStatus){
-				fillPAData(data);
-				mapDefaultIsStreetView = true;
-				mapInitialZoomFactor = 18;
-				initUI(true, false); // control panel, don't show markers
-				papos = lookupPAPos(currentPA); // have to look up PA position here because only now the PA list is available
-				if(papos) { // only if we find position for PA then re-center
-					mapCenterLat = papos.lat;
-					mapCenterLng = papos.lng;
-					console.log("[DETAIL mode] re-centering to: " + mapCenterLat + ", " +  mapCenterLng);
-					centerMapAt(mapCenterLat, mapCenterLng);
-					$("#palist-content").html(renderPADetail(lookupPA(showMarkerForPA(currentPA)))); // set the infobox as well
-				}
-			});
-		}
-	});
+	launchPAMapWidget();
 
 	// whenever window is resized, adapt size of widgets
 	$(window).resize(function() { 
@@ -141,7 +105,7 @@ $(function() {
 		showMap();
 	});	
 	$("#show-sv").click(function() {
-		showSV();
+		showSV(mapCenterLat, mapCenterLng);
 	});
 	
 	// geo-code address - look up address as soon as ENTER is hit
@@ -213,7 +177,56 @@ $(function() {
 //  PA map widget view library
 //
 
-function determinePAWidgetMode(){
+
+function launchPAMapWidget(){
+	loadCouncils(function() {
+		determinePAMapWidgetMode();
+		setPAMapWidgetMode();
+	});
+}
+
+function setPAMapWidgetMode(){
+	map = null;
+	currentMarkers = [];
+	pastateSelection = PA_STATE_SELECTION_INACTIVE; 
+	currentMinYear = PA_YEAR_SELECTION_INACTIVE; 
+	currentMaxYear = PA_YEAR_SELECTION_INACTIVE;
+	
+	if(pam == OVERVIEW_MODE) {
+		getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
+			fillPAData(data);
+			initUI(false, true); // no control panel, show all markers
+			centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
+		});
+	}
+	if(pam == ARCHIVE_MODE) {
+		getAllPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
+			fillPAData(data);
+			initUI(true, true); // control panel, show all markers
+			centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
+		});
+	}
+	if(pam == SV_DETAIL_MODE) {
+		var c = calculateBoundsCenter(mapLatLow, mapLngLow, mapLatHi, mapLngHi);
+		getNearestPAs(c.lat(), c.lng(), function(data, textStatus){
+			fillPAData(data);
+			mapDefaultIsStreetView = true;
+			mapInitialZoomFactor = 18;
+			initUI(true, false); // control panel, don't show markers
+			papos = lookupPAPos(currentPA); // have to look up PA position here because only now the PA list is available
+			if(papos) { // only if we find position for PA then re-center
+				mapCenterLat = papos.lat;
+				mapCenterLng = papos.lng;
+				console.log("[DETAIL mode] re-centering to: " + mapCenterLat + ", " +  mapCenterLng);
+				centerMapAt(mapCenterLat, mapCenterLng);
+				showSV(mapCenterLat, mapCenterLng); // show SV initially
+				$("#palist-content").html(renderPADetail(lookupPA(showMarkerForPA(currentPA)))); // set the infobox as well
+			}
+		});
+	}	
+}
+
+function determinePAMapWidgetMode(){
 	var bounds;
 	var hashPos = currentURL.indexOf("#");
 	var councilURL = currentURL.substring(0, hashPos);
@@ -252,16 +265,20 @@ function determinePAWidgetMode(){
 function initUI(showControlPanel, showMarkers){
 	makemap(showMarkers); // create the Google Map
 	if(showControlPanel) {
+		$("#controlpan").show();
+		$("#viewselpan").show();
+		$("#target-address").show();
 		makelegend(); // create the legend
 		yearsel(filterMinYear, filterMaxYear); // create the year selection slider
+		mapWidth = 0.6;
 	}
 	else {
-		$("#controlpan").html("");
-		$("#viewselpan").html("");
+		$("#controlpan").hide();
+		$("#viewselpan").hide();
+		$("#target-address").hide();
 		mapWidth = 0.95;
 	}
 	fitPAAWidgets(); // initial sizing of the widgets (map, year selection slider, etc.)
-	if(mapDefaultIsStreetView) showSV(); // show SV initially
 }
 
 function fitPAAWidgets(){
@@ -284,6 +301,24 @@ function makemap(showMarkers) {
 
 	// create the map with options from above
 	map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	
+	
+	google.maps.event.addListener(map, 'zoom_changed', function() {
+		var cZoom = map.getZoom();
+		mapInitialZoomFactor = cZoom;
+		console.log("PA map widget zoom level: " + cZoom);
+		if(cZoom < mapArchiveModeActivateZoomFactor) { // we are zoomed out far enough ...
+			pam = OVERVIEW_MODE; // ... just show latest PAs
+			console.log("PA map widget changing to OVERVIEW mode showing latest PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
+			setPAMapWidgetMode();
+		}
+		else { // we are zoomed in enought ...
+			pam = ARCHIVE_MODE; // ... so, show the archive PAs in its entire beauty
+			console.log("PA map widget changing to ARCHIVE mode showing all PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
+			setPAMapWidgetMode();
+		}
+	});
+	
 	
 	// handle SV visibility
 	google.maps.event.addListener(map.getStreetView(), 'visible_changed', function() {	
@@ -317,18 +352,26 @@ function makemap(showMarkers) {
 	}
 }
 
-function makelegend(){
-	$.each(PA_STATE, function(index, val){
-		$('#appstatus-legend').append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
-	});	
+function makelegend() {
+	if(!legendExists){
+		$.each(PA_STATE, function(index, val){
+			$('#appstatus-legend').append("<div style='padding: 2px; color: #f0f0f0; background:" + PA_STATE[index] +";'>" + index + "</div>");	
+		});
+		legendExists = true;
+	}	
 }
 
-function showSV() {
+function showSV(lat, lng) {
+	var pos;
+	
+	if(lat && lng) pos = new google.maps.LatLng(lat, lng);
+	else pos = mapCenter;
+	
 	var svmap = map.getStreetView();
 	var panoOptions = {
-		position: map.getCenter(),
-			pov: {
-			heading: -10,
+		position: pos,
+		pov: {
+			heading: 0,
 			pitch: 0,
 			zoom: 1
 		},
@@ -350,6 +393,10 @@ function showSV() {
 	$("#palist-cloud").html("");
 	$("#show-map").removeClass('viewsel-tab-selected');
 	$("#show-sv").addClass('viewsel-tab-selected');
+	
+	adjustAddressFromPos(pos.lat(), pos.lng());
+	
+	
 	
 	// TODO: implement TOP-k based on distance
 	// for (var i = 0; i < currentMarkers.length; i++){
@@ -389,11 +436,14 @@ function addMarker(record, showMarkers) {
 		var pos = getDisplayPosition(r.lat, r.lng);
 		var year = (new Date(Date.parse(r.appdate))).getFullYear();
 		var yMarkerImage = new google.maps.MarkerImage(drawMarker(year, r.decision, r.appstatus));
+		var md = DECISION_CODE[r.decision].toLowerCase();
+		var ma = APPLICATION_STATUS[r.appstatus].toLowerCase();
+		
 		var marker = new google.maps.Marker({
 			position: pos,
 			map: map,
 			icon: yMarkerImage,
-			title: APPLICATION_STATUS[r.appstatus]
+			title: r.address + " (" + ma + " - decision " + md + ")"
 		});
 		
 		// remember the marker
@@ -406,6 +456,7 @@ function addMarker(record, showMarkers) {
 			}
 		});
 		if(!showMarkers) marker.setVisible(false);
+		else marker.setVisible(true);
 	})({
 		'council': record.council, // council ID
 		'appref': record.appref, // the PA reference
@@ -424,12 +475,13 @@ function renderPADetail(r){
 	var year = (new Date(Date.parse(r.appdate))).getFullYear();
 	var mimg = "<img src='" + drawMarker(year, r.decision, r.appstatus) + "' alt='application status' style='vertical-align:text-top; float: right;' />";
 	var b = "<div class='singlepa' id='pa_" + r.appref  +"'>";
-    b += "<h3><a href='" + PA_API_BASE_URI + r.council + "#" + r.appref + "'>" + r.address + "</a></h3>";
-    b += mimg;
- 	b +=  "<p>Date of application: " + r.appdate + "</p>";
- 	b +=  "<p>Details: " + r.appdesc.toLowerCase() + "</p>";
+	b +=  "<p style='color:#909090'>Council: " + lookupCouncil(r.council).name + "</p>";
+	b += "<h3><a href='" + PA_API_BASE_URI + lookupCouncil(r.council).short + "#" + r.appref + "'>" + r.address + "</a></h3>";
+	b += mimg;
+	b +=  "<p>Date of application: " + r.appdate + "</p>";
+	b +=  "<p>Details: " + r.appdesc.toLowerCase() + "</p>";
 	if(r.url) b +=  "<p>File: <a href='" + r.url + "' target='_new'>"+ r.appref + "</a></p>";
- 	b +=  "</div>";
+	b +=  "</div>";
 	return b;
 
 }
@@ -653,7 +705,7 @@ function fillPAData(data){
 	if(data.applications) {  
 		paData = []; // make sure the PA list is empty
 		for(pa in data.applications){
-			var council = lookupCouncil(data.applications[pa].council_id); // council short name from ID
+			var council = data.applications[pa].council_id; // council ID
 			var appref = data.applications[pa].app_ref; // the PA reference
 			var lat = data.applications[pa].lat; // the PA's latitude
 			var lng = data.applications[pa].lng; // the PA's longitude
@@ -701,7 +753,7 @@ function lookupPAPos(appref) {
 }
 
 function lookupCouncil(councilID) {
-	return councils[councilID].short;
+	return councils[councilID];
 }
 
 function lookupCouncilBounds(councilShortName) {
@@ -760,7 +812,7 @@ function gotoAddress(address, options) {
 	var options = $.extend(defaults, options);
 	
 	$.getJSON("http://maps.google.com/maps/geo?q="+ address+"&sensor=false&output=json&callback=?", function(data, textStatus){
-		if(data.Status.code==200) {  
+		if(data.Status.code == 200) {  
 			var latitude = data.Placemark[0].Point.coordinates[1];  
 			var longitude = data.Placemark[0].Point.coordinates[0];  
 			//console.log("got lat:" + latitude + " long: " + longitude + " for address: " + address);
@@ -779,3 +831,17 @@ function gotoAddress(address, options) {
 		}
 	});
 }
+
+
+// performs a reverse geo-coding, trying to find an address for a position
+function adjustAddressFromPos(lat, lng) {
+	$.getJSON("http://maps.google.com/maps/geo?q="+ lat + "," + lng +"&sensor=false&output=json&callback=?", function(data, textStatus){
+		if(data.Status.code == 200) {  
+			$("#target-address").val(data.Placemark[0].address);  
+		}
+		else {
+			$("#target-address").val("Sorry, I didn't find an address for " +  lat + "," + lng);
+		}
+	});
+}
+
