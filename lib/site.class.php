@@ -54,6 +54,7 @@ class Site {
                 "title" => "Statistics on data coverage",
                 "data" => $data,
                 "first_year" => $this->planning->get_first_year(),
+                "councils" => $this->planning->get_council_list(),
         );
         $this->response->render("stats", $options);
     }
