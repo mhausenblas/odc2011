@@ -14,32 +14,30 @@ var mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
-var mapCenterLat = 53.2796; // for SV_DETAIL_MODE
+var mapCenterLat = 53.15; // for SV_DETAIL_MODE
 var mapCenterLng = -8.0392; // for SV_DETAIL_MODE
-var mapInitialZoomFactor = 7; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
+var mapInitialZoomFactor = 12; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
 var mapDefaultIsStreetView = false; // start in street view mode or not
-var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
-
-
 var filterMinYear = 1970; // min. value for the filter-by-year
 var filterMaxYear = 2010; // max. value for the filter-by-year
-
 
 // configure the PA API here:
 var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
 
-
 //////////////////////////////////
 // internal globals - don't touch:
+var PA_STATE_SELECTION_INACTIVE = "inactive";
+var PA_YEAR_SELECTION_INACTIVE = -1;
 
+var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
 var map; // the Google map (both for overview and street view)
 var councils; // the council look-up table
 var currentMarkers = new Array(); // list of active markers in the viewport
-var pastateSelection = "inactive"; // the filter-by-status 
-var currentMinYear = -1; // filter-by-year
-var currentMaxYear = -1; // filter-by-year
+var pastateSelection = PA_STATE_SELECTION_INACTIVE; // the filter-by-status 
+var currentMinYear = PA_YEAR_SELECTION_INACTIVE; // filter-by-year
+var currentMaxYear = PA_YEAR_SELECTION_INACTIVE; // filter-by-year
 
 // the planning application (PA) data a list of PA objects, 
 // filled dynamically via the JSON API
@@ -159,12 +157,25 @@ $(function() {
 	// filter PAs by status
 	$("#appstatus-legend div").live('click', function() {
 		var targetState = $(this).text();
-		pastateSelection = targetState;
-		filterPAByState(targetState);
-		$("#appstatus-legend div").each(function(index) {
+
+		if(pastateSelection == targetState) { // deactivation request for filter-by-state
+			pastateSelection = PA_STATE_SELECTION_INACTIVE;
 			$(this).css("border", "0");
-		});
-		$(this).css("border", "3px solid #fff");
+			if((currentMinYear != PA_YEAR_SELECTION_INACTIVE) || (currentMaxYear != PA_YEAR_SELECTION_INACTIVE)) { // filter-by-year is active
+				filterPAByYear(currentMinYear, currentMaxYear);
+			}
+			else {
+				showAllMarkers();
+			}
+		}
+		else { // activation or change request for filter-by-state
+			pastateSelection = targetState;
+			filterPAByState(targetState);
+			$("#appstatus-legend div").each(function(index) {
+				$(this).css("border", "0");
+			});
+			$(this).css("border", "3px solid #fff");	
+		}
 	});
 	
 	// highlighting marker of selected PA
@@ -530,7 +541,7 @@ function filterPAByYear(miny, maxy){
 	currentMinYear = miny;
 	currentMaxYear = maxy;
 	
-	if(pastateSelection == "inactive") { 
+	if(pastateSelection == PA_STATE_SELECTION_INACTIVE) { 
 		showAllMarkers();
 		for(i in currentMarkers){
 			if((currentMarkers[i].year <= miny) || (currentMarkers[i].year >= maxy)) {
@@ -563,15 +574,15 @@ function filterPAByState(pastate){
 		}
 	}
 	
-	if((currentMinYear != -1) || (currentMaxYear != -1)) { // filter-by-year is active
+	if((currentMinYear != PA_YEAR_SELECTION_INACTIVE) || (currentMaxYear != PA_YEAR_SELECTION_INACTIVE)) { // filter-by-year is active
 		filterPAByYear(currentMinYear, currentMaxYear);
 	}
 }
 
 function resetAllFilters(){
-	currentMinYear = -1;
-	currentMaxYear = -1;
-	pastateSelection = "inactive";
+	currentMinYear = PA_YEAR_SELECTION_INACTIVE;
+	currentMaxYear = PA_YEAR_SELECTION_INACTIVE;
+	pastateSelection = PA_STATE_SELECTION_INACTIVE;
 	showAllMarkers();
 	$("#appstatus-legend div").each(function(index) {
 		$(this).css("border", "0");
