@@ -69,7 +69,7 @@ INSERT INTO `counties` (`id`, `name`) VALUES
 -- 2011-06-03 21:22:50
 
 
-CREATE TABLE `councils` IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS `councils` (
   `id` int(2) NOT NULL,
   `name` varchar(100) NOT NULL,
   `county_id` int(2) NOT NULL,
