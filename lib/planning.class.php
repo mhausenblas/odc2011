@@ -61,25 +61,23 @@ class Planning {
             SELECT count(*) AS count,
                    YEAR(received_date) AS year,
                    IF(lat IS NOT NULL AND lng IS NOT NULL, 1, 0) AS coordinates,
-                   council_id, councils.name
-            FROM applications, councils
-            WHERE applications.council_id = councils.id
+                   council_id
+            FROM applications
             GROUP BY year(received_date), council_id, lat IS NOT NULL AND lng IS NOT NULL
 EOT;
         $yearly_data = $this->db->select_rows($query);
         $query = <<<EOT
             SELECT count(*) AS count,
                    IF(lat IS NOT NULL AND lng IS NOT NULL, 1, 0) AS coordinates,
-                   council_id, councils.name
-            FROM applications, councils
-            WHERE applications.council_id = councils.id
-              AND applications.received_date > DATE_SUB(NOW(), INTERVAL 7 DAY)
+                   council_id
+            FROM applications
+            WHERE applications.received_date > DATE_SUB(NOW(), INTERVAL 7 DAY)
             GROUP BY council_id, lat IS NOT NULL AND lng IS NOT NULL
 EOT;
         $recent_data = $this->db->select_rows($query);
         $result = array();
         $first_year = $this->get_first_year();
-        foreach ($this->db->select_list('SELECT name FROM councils ORDER BY name') as $council) {
+        foreach ($this->db->select_list('SELECT id FROM councils ORDER BY name') as $council) {
             $result[$council] = array();
             for ($year = $first_year; $year <= date('Y'); $year++) {
                 $result[$council][$year] = array(0, 0);
@@ -87,20 +85,20 @@ EOT;
             $result[$council]['recent'] = array(0, 0);
         }
         foreach ($yearly_data as $row) {
-            $result[$row['name']][$row['year']][$row['coordinates']] = $row['count'];
+            $result[$row['council_id']][$row['year']][$row['coordinates']] = $row['count'];
         }
         foreach ($recent_data as $row) {
-            $result[$row['name']]['recent'][$row['coordinates']] = $row['count'];
+            $result[$row['council_id']]['recent'][$row['coordinates']] = $row['count'];
         }
         return $result;
     }
 
     function get_council_list() {
         if (!$this->council_list) {
-            $rows = $this->db->select_rows("SELECT id, short_name, name, lat_lo, lng_lo, lat_hi, lng_hi, website_home, website_lookup, googlemaps_lowres FROM councils ORDER BY name");
+            $rows = $this->db->select_rows("SELECT * FROM councils ORDER BY name");
             $result = array();
             foreach ($rows as $row) {
-                $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name'], 'website' => $row['website_home'], 'lowres' => (bool) $row['googlemaps_lowres'], 'lookup' => $row['website_lookup']);
+                $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name'], 'website' => $row['website_home'], 'lowres' => (bool) $row['googlemaps_lowres'], 'lookup' => $row['website_lookup'], 'system' => $row['website_system']);
                 if (@$row['lat_lo']) {
                     $result[$row['id']]['lat_lo'] = $row['lat_lo'];
                     $result[$row['id']]['lat_hi'] = $row['lat_hi'];
@@ -118,10 +116,10 @@ EOT;
 FROM applications JOIN (
 SELECT MAX(applications.received_date) as latest_date, applications.council_id
 FROM applications
-WHERE lat IS NOT NULL AND lng IS NOT NULL AND lng > -10
+WHERE lat IS NOT NULL AND lng IS NOT NULL AND lng > -10.7
 GROUP BY applications.council_id) as t1
 ON applications.council_id = t1.council_id AND applications.received_date = t1.latest_date
-WHERE applications.lat IS NOT NULL and lng IS NOT NULL AND lng > -10
+WHERE applications.lat IS NOT NULL and lng IS NOT NULL AND lng > -10.7
 ORDER BY app_ref DESC";
         $apps = $this->get_applications($sql);
         //We reverse for now so that the most recent app_ref code will be treated as latest for a council.
@@ -194,9 +192,9 @@ ORDER BY app_ref DESC";
         if ($app['address2']) $addr[] = $app['address2'];
         if ($app['address3']) $addr[] = $app['address3'];
         $app['address'] = join("\n", $addr);
-        if (empty($app['lat']) || empty($app['lng']) || $app['lng'] < -10) {
+        if (empty($app['lat']) || empty($app['lng']) || $app['lng'] < -10.7) {
             // Bad data where "unknown coordinate" was interpreted as "Irish Grid Reference 0,0",
-            // which when translated to WGS84 ends up as lat=-10.something
+            // which when translated to WGS84 ends up as lat=-10.9
             $app['lat'] = null;
             $app['lng'] = null;
         } else {

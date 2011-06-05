@@ -12,23 +12,27 @@
   <thead>
     <tr>
       <th>County / Year</th>
-<?php for ($year = $first_year; $year <= date('Y'); $year++) { ?>
+      <th>Last 7 days</th>
+<?php for ($year = date('Y'); $year >= $first_year; $year--) { ?>
       <th><?php e($year); ?></th>
 <?php } ?>
-      <th>Last 7 days</th>
     </tr>
   </thead>
   <tbody>
-<?php foreach ($data as $council => $details) { ?>
+<?php foreach ($data as $id => $details) { ?>
     <tr class="coordinates">
-      <th rowspan="2"><?php e($council); ?></th>
-<?php for ($year = $first_year; $year <= date('Y'); $year++) { ?>
+      <th class="council" rowspan="2"><?php e($councils[$id]['name']); ?>
+<?php if (@$councils[$id]['system']) { ?>
+        <small><br/><a href="<?php e($councils[$id]['website']); ?>">Planning website</a> (<?php e($councils[$id]['system']); ?>)</small>
+<?php } ?>
+      </th>
+      <td><?php e($details['recent'][1]); ?></td>
+<?php for ($year = date('Y'); $year >= $first_year; $year--) { ?>
       <td><?php e($details[$year][1]); ?></td>
 <?php } ?>
-      <td><?php e($details['recent'][1]); ?></td>
     </tr>
     <tr class="no-coordinates">
-<?php for ($year = $first_year; $year <= date('Y'); $year++) { ?>
+<?php for ($year = date('Y'); $year >= $first_year; $year--) { ?>
       <td><?php e($details[$year][0]); ?></td>
 <?php } ?>
       <td><?php e($details['recent'][0]); ?></td>
