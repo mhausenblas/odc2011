@@ -7,22 +7,40 @@ A joint submission to the [Open Data Challenge 2011](http://opendatachallenge.or
 * Fingal County Council, Ireland (main contact: Dominic Byrne)
 * Freie Universitaet Berlin, Germany (main contact: Anja Jentzsch)
 
+
 ## What is the app about?
 
 Allows to be notified about planning applications throughout Ireland (via feed or Twitter) as well as to understand historical developments.
+
 
 ## License
 
 This software is Public Domain.
 
+
 ## Application Setup
 
+    cd setup
     clean-applications.rb GPlan_Metadata.txt > applications.csv
-    mysql -u root < schema.sql
-    mysql -u root gplan < import-lgcsb-applications.sql
+    mysql -u root -p < schema.sql
+    mysql -u root -p gplan < import-lgcsb-applications.sql
+
     # Run the Fingal importer once
-    php ../jobs/import_fingal_csv.php
-    php ../jobs/import_scraperwiki.php --initial
+    cd ../jobs
+    php import_fingal_csv.php
+    php import_scraperwiki.php --initial
+
+    cd ../data
+    mysql -u root -p gplan < import-DublinCity.sql
+
+
+## Cronjobs
+
+    # Daily
+    php jobs/import_fingal_csv.php
+    php jobs/import_scraperwiki.php
+    php jobs/scrape_DublinCity.php --import
+
 
 ## Permalinks
 
@@ -62,6 +80,7 @@ Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54
 ### Get list of all councils as JSON
 
     http://planning-apps.opendata.ie/councils
+
 
 ## Database schema documentation
 
@@ -165,7 +184,7 @@ These explain the resepective columns of the application table.
     +----+--------------+---------------------------------------+-----------+
 
 
-## What's in here?
+## Directory structure
 
 ### Stuff in /setup
 
