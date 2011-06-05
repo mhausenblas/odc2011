@@ -6,6 +6,7 @@ class Planning {
         'applicant1', 'applicant2', 'applicant3', 'received_date', 'decision_date',
         'address1', 'address2', 'address3', 'address4',
         'decision', 'status', 'details', 'url', 'tweet_id');
+    var $council_list;
 
     function __construct($db) {
         $this->db = $db;
@@ -95,12 +96,21 @@ EOT;
     }
 
     function get_council_list() {
-        $rows = $this->db->select_rows("SELECT id, short_name, name FROM councils ORDER BY name");
-        $result = array();
-        foreach ($rows as $row) {
-            $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name']);
+        if (!$this->council_list) {
+            $rows = $this->db->select_rows("SELECT id, short_name, name, lat_lo, lng_lo, lat_hi, lng_hi, website_home, googlemaps_lowres FROM councils ORDER BY name");
+            $result = array();
+            foreach ($rows as $row) {
+                $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name'], 'website' => $row['website_home'], 'lowres' => (bool) $row['googlemaps_lowres'], 'lookup' => $row['website_lookup']);
+                if (@$row['lat_lo']) {
+                    $result[$row['id']]['lat_lo'] = $row['lat_lo'];
+                    $result[$row['id']]['lat_hi'] = $row['lat_hi'];
+                    $result[$row['id']]['lng_lo'] = $row['lng_lo'];
+                    $result[$row['id']]['lng_hi'] = $row['lng_hi'];
+                }
+            }
+            $this->council_list = $result;
         }
-        return $result;
+        return $this->council_list;
     }
 
     function get_latest_application_per_council() {
@@ -121,6 +131,18 @@ ORDER BY app_ref DESC";
             $result[$app['council_id']] = $app;
         }
         return $result;
+    }
+
+    function get_recent_applications($council_shortname = null) {
+        $max_age_days = 28;
+        $max_entries = 50;
+        $start = date('Y-m-d', time() - $max_age_days * 24 * 60 * 60);
+        $query = "SELECT * FROM applications WHERE received_date >= '$start'";
+        if (!empty($council_shortname)) {
+            $query .= " AND council_id=" . $this->get_council_id($council_shortname);
+        }
+        $query .= " ORDER BY received_date DESC, app_ref DESC LIMIT $max_entries";
+        return $this->get_applications($query);
     }
 
     function get_council_id($shortname) {
@@ -156,11 +178,11 @@ ORDER BY app_ref DESC";
         $s = preg_replace('/[ \t]+/', ' ', $s);
         $s = trim($s);
         if (preg_match('/[a-z]/', $s)) {
-          // Capitalize very first character
-          $s = strtoupper(substr($s, 0, 1)) . substr($s, 1);
+            // Capitalize very first character
+            $s = strtoupper(substr($s, 0, 1)) . substr($s, 1);
         } else {
-          // This is all-caps text -- looks better if lowercased
-          $s = $this->remove_all_caps($s);
+            // This is all-caps text -- looks better if lowercased
+            $s = $this->remove_all_caps($s);
         }
         $app['details'] = $s;
         $app['address1'] = $this->clean_address($app['address1']);
@@ -172,13 +194,26 @@ ORDER BY app_ref DESC";
         if ($app['address2']) $addr[] = $app['address2'];
         if ($app['address3']) $addr[] = $app['address3'];
         $app['address'] = join("\n", $addr);
+        if (empty($app['lat']) || empty($app['lng']) || $app['lng'] < -10) {
+            // Bad data where "unknown coordinate" was interpreted as "Irish Grid Reference 0,0",
+            // which when translated to WGS84 ends up as lat=-10.something
+            $app['lat'] = null;
+            $app['lng'] = null;
+        } else {
+            $app['lat'] = (float) $app['lat'];
+            $app['lng'] = (float) $app['lng'];
+        }
+        if (empty($app['url'])) {
+            $lookup = @$this->council_list[$app['council_li']]['lookup'];
+            if ($lookup) $app['url'] = $lookup . $app['app_ref'];
+        }
         return $app;
     }
 
     function clean_address($s) {
         $s = $this->fix_html($s);
         $s = $this->remove_all_caps($s, true);
-        $s = preg_replace('/,+/', ',', $s);
+        $s = preg_replace('/ *,+/', ',', $s);
         $s = preg_replace('/^\s*(.*?)[,.\s]*$/', '\1', $s);
         return $s;
     }

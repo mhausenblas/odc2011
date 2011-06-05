@@ -101,4 +101,22 @@ class Site {
     function action_council_details($shortname) {
         $this->response->render('streetview', null, false);
     }
+
+    function action_feed($shortname = null) {
+        $all = !$shortname;
+        $apps = $this->planning->get_recent_applications($shortname);
+        $max_date = date('Y-m-d', time() - 7 * 24 * 60 * 60);
+        foreach ($apps as $app) {
+          if ($app['received_date'] > $max_date) $max_date = $app['received_date'];
+        }
+        $options = array(
+            'title' => 'Planning Applications',
+            'url' => $this->response->absolute('feed' . ($all ? '' : "/$shortname")),
+            'apps' => $apps,
+            'all' => $all,
+            'max_date' => $max_date,
+            'councils' => $this->planning->get_council_list(),
+        );
+        $this->response->render('feed', $options, false);
+    }
 }

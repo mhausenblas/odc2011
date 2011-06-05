@@ -54,8 +54,9 @@ This software is Public Domain.
 
 {council_short} is a value from the councils.short_name table. See table below.
 
-### Per-council Atom feed
+### Atom feeds
 
+    http://planning-apps.opendata.ie/feed
     http://planning-apps.opendata.ie/feed/{council_short}
 
 

@@ -36,6 +36,10 @@ if ($request->matches('/^$/')) {
   $site->action_council_list();
 } else if (($q = $request->matches('/^([A-Za-z]+)$/')) && $planning->is_council_shortname($q[1])) {
   $site->action_council_details($q[1]);
+} else if (($q = $request->matches('/^feed$/'))) {
+  $site->action_feed();
+} else if (($q = $request->matches('/^feed\/([A-Za-z]+)$/')) && $planning->is_council_shortname($q[1])) {
+  $site->action_feed($q[1]);
 } else {
   $response->error(404);
 }
