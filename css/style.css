@@ -1,4 +1,4 @@
-body { color: #330; margin: 1.5em 2em; font-family: Georgia; background-image:url('/images/beta.jpeg'); background-repeat: no-repeat; background-position: 53em 58px; }
+body { color: #330; margin: 1.5em auto; width:960px; font-family: Georgia; background-image:url('/images/beta.jpeg'); background-repeat: no-repeat; background-position: 53em 58px; }
 body { background-position: -3px -12px; }
 h1 { font-size: 180%; font-weight: normal; margin: 0 0 0.5em; }
 h2 { font-size: 130%; font-weight: normal; margin: 0 0 0.7em 0; padding-top: 1em; }

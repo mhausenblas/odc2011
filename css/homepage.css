@@ -3,44 +3,41 @@ position:relative;
 z-index:9;
 }
 
-div.map {
+#ireland_map {
 float:right;
-position:fixed !important;
-top:2em;
-left:45%;
+position:relative;
+top:-60px;
+right:-20px;
+margin-left:-40px;
+width:475px;
 }
 
+#ireland_map .notes {
+margin-top:-15px;
+margin-left:3em;
+}
 
 #councils_list {
-width:40%;
+position:relative;
+z-index:9;
 padding-left:0;
-margin-right:2em;
+margin-right:1em;
 float:left;
+width:500px;
 }
 
 #councils_list > li {
 float:left;
-clear:both;
 width:100%;
+clear:both;
 position:relative;
 list-style-type:none;
-margin-bottom:1.5em;
+margin-bottom:1em;
 }
 
-#councils_list > li:hover {
-background-color:#fcfcfc;
-border-radius:4px;
--moz-border-radius:4px;
--webkit-border-radius:4px;
-}
 
 #councils_list li h3 {
-margin:0 0 0.7em 4em;
-}
-
-#councils_list li.noapp h3 {
-margin-left:0;
-margin-bottom:0;
+margin:0 0 0.5em 4em;
 }
 
 #councils_list .see_also {
@@ -63,13 +60,23 @@ margin:0 0 0.5em 0;
 }
 
 #councils_list .recent_application {
+position:relative;
 float:left;
-width:100%;
+width:490px;
+background-color:#e7e7e7;
+border-radius:4px;
+-moz-border-radius:4px;
+-webkit-border-radius:4px;
+padding:10px;
+}
+
+#councils_list .recent_application p {
+margin:0.5em 0;
 }
 
 #councils_list .address,
 #councils_list .details {
-max-width:300px;
+max-width:280px;
 }
 
 #councils_list .details {
@@ -78,19 +85,20 @@ margin-bottom:0.1;
 
 #councils_list .more {
 margin:0;
-max-width:290px;
+width:275px;
 text-align:right;
+position:absolute;
+bottom:0;
 }
 
 #councils_list .street_view {
 float:right;
 width:200px;
-height:115px;
-position:relative;
-top:0;
-right:0;
+height:105px;
+position:absolute;
+top:10px;
+right:10px;
 margin-left:1em;
-margin-bottom:1em;
 }
 
 .icon_feed,
