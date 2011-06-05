@@ -30,6 +30,8 @@ http://planning-apps.opendata.ie/{council_short}#{appref}
 
 {council_short} is a value from the councils.short_name table. See table below.
 
+http://planning-apps.opendata.ie/feed/{council_short}
+
 
 ## API documentation
 

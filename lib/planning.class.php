@@ -93,6 +93,23 @@ EOT;
         return $result;
     }
 
+    function get_latest_application_per_council() {
+        $rows = $this->db->select_rows("SELECT applications.*
+FROM applications JOIN (
+SELECT MAX(applications.received_date) as latest_date, applications.council_id
+FROM applications
+WHERE lat IS NOT NULL AND lng IS NOT NULL
+GROUP BY applications.council_id) as t1
+ON applications.council_id = t1.council_id AND applications.received_date = t1.latest_date
+WHERE applications.lat IS NOT NULL and lng IS NOT NULL
+ORDER BY app_ref DESC");
+        $result = array();
+        foreach ($rows as $row) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
     function get_council_id($shortname) {
         $query = sprintf("SELECT id from councils WHERE short_name = '%s'", $this->db->escape($shortname));
         return $this->db->select_value($query);
