@@ -1,15 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>ODC2011 - All-Ireland planning application</title>
-	<link rel="stylesheet" href="jquery/css/overcast/jquery-ui-1.8.13.custom.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="streetview-sandbox.css" type="text/css" media="screen" />
-    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-	<script src="jquery/js/jquery-1.5.1.min.js"></script>
-	<script src="jquery/js/jquery-ui-1.8.13.custom.min.js"></script>
-	<script src="jquery/js/jimpl_cloud.js"></script>
-    <script src="streetview-sandbox.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>ODC2011 - All-Ireland planning application</title>
+	<link rel="stylesheet" href="/css/overcast/jquery-ui-1.8.13.custom.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="/css/streetview.css" type="text/css" media="screen" />
+	<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script src="/js/jquery-ui-1.8.13.custom.min.js"></script>
+	<script src="/js/jimpl_cloud.js"></script>
+	<script src="/js/streetview.js"></script>
 </head>
 
 <body>

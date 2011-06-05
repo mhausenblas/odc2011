@@ -19,6 +19,7 @@ class Response {
     );
 
     var $page_messages = array(
+            400 => "Looks like you stumbled into a dead end.",
             405 => "Try HTTP GET.",
             500 => "Something went horribly wrong.",
     );
@@ -47,6 +48,20 @@ class Response {
         $this->error($code, $options);
     }
 
+    function message($title = null, $options = array()) {
+        if ($title && empty($options['title'])) {
+            $options['title'] = $title;
+        }
+        if (empty($options['template'])) {
+            $options['template'] = 'message';
+        }
+        if (isset($options['plaintext'])) {
+            $this->plaintext($options['plaintext']);
+        }
+        $this->render($options['template'], $options);
+        die();
+    }
+
     function error($code = 500, $options = array()) {
         if (empty($options['title'])) {
             $options['title'] = $this->get_status_message($code);
@@ -54,15 +69,8 @@ class Response {
         if (empty($options['message']) && !empty($this->page_messages[$code])) {
             $options['message'] = $this->page_messages[$code];
         }
-        if (empty($options['template'])) {
-            $options['template'] = 'message';
-        }
         $this->status($code);
-        if (isset($options['plaintext'])) {
-            $this->plaintext($options['plaintext']);
-        }
-        $this->render($options['template'], $options);
-        die();
+        $this->message(null, $options);
     }
 
     function plaintext($text) {
@@ -82,6 +90,7 @@ class Response {
     }
 
     function render($template, $options = array(), $as_page = true) {
+        $options = (array) $options;
         // Let's be super careful
         if (!preg_match("![a-zA-Z0-9/_-]+!", $template)) {
             die("Bad template name: $template");

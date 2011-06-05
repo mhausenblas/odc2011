@@ -43,7 +43,12 @@ class Planning {
     }
 
     function get_applications($sql) {
-        return $this->db->select_rows($sql);
+        $apps = $this->db->select_rows($sql);
+        $result = array();
+        foreach ($apps as $app) {
+            $result[] = $this->clean_application($app);
+        }
+        return $result;
     }
 
     function get_first_year() {
@@ -90,7 +95,7 @@ EOT;
     }
 
     function get_council_list() {
-        $rows = $this->db->select_rows("SELECT id, short_name, name FROM councils");
+        $rows = $this->db->select_rows("SELECT id, short_name, name FROM councils ORDER BY name");
         $result = array();
         foreach ($rows as $row) {
             $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name']);
@@ -99,7 +104,7 @@ EOT;
     }
 
     function get_latest_application_per_council() {
-        $rows = $this->db->select_rows("SELECT applications.*
+        $sql = "SELECT applications.*
 FROM applications JOIN (
 SELECT MAX(applications.received_date) as latest_date, applications.council_id
 FROM applications
@@ -107,10 +112,13 @@ WHERE lat IS NOT NULL AND lng IS NOT NULL
 GROUP BY applications.council_id) as t1
 ON applications.council_id = t1.council_id AND applications.received_date = t1.latest_date
 WHERE applications.lat IS NOT NULL and lng IS NOT NULL
-ORDER BY app_ref DESC");
+ORDER BY app_ref DESC";
+        $apps = $this->get_applications($sql);
+        //We reverse for now so that the most recent app_ref code will be treated as latest for a council.
+        $apps = array_reverse($apps);
         $result = array();
-        foreach ($rows as $row) {
-            $result[] = $row;
+        foreach($apps as $app) {
+            $result[$app['council_id']] = $app;
         }
         return $result;
     }
@@ -118,6 +126,10 @@ ORDER BY app_ref DESC");
     function get_council_id($shortname) {
         $query = sprintf("SELECT id from councils WHERE short_name = '%s'", $this->db->escape($shortname));
         return $this->db->select_value($query);
+    }
+
+    function is_council_shortname($shortname) {
+        return (bool) $this->get_council_id($shortname);
     }
 
     function application_exists($app) {
@@ -136,5 +148,57 @@ ORDER BY app_ref DESC");
         }
         $query .= join(', ', $clauses);
         return $this->db->execute($query);
+    }
+
+    function clean_application($app) {
+        $s = $app['details'];
+        $s = $this->fix_html($s);
+        $s = preg_replace('/[ \t]+/', ' ', $s);
+        $s = trim($s);
+        if (preg_match('/[a-z]/', $s)) {
+          // Capitalize very first character
+          $s = strtoupper(substr($s, 0, 1)) . substr($s, 1);
+        } else {
+          // This is all-caps text -- looks better if lowercased
+          $s = $this->remove_all_caps($s);
+        }
+        $app['details'] = $s;
+        $app['address1'] = $this->clean_address($app['address1']);
+        $app['address2'] = $this->clean_address($app['address2']);
+        $app['address3'] = $this->clean_address($app['address3']);
+        $app['address4'] = $this->clean_address($app['address4']);
+        $addr = array();
+        if ($app['address1']) $addr[] = $app['address1'];
+        if ($app['address2']) $addr[] = $app['address2'];
+        if ($app['address3']) $addr[] = $app['address3'];
+        $app['address'] = join("\n", $addr);
+        return $app;
+    }
+
+    function clean_address($s) {
+        $s = $this->fix_html($s);
+        $s = $this->remove_all_caps($s, true);
+        $s = preg_replace('/,+/', ',', $s);
+        $s = preg_replace('/^\s*(.*?)[,.\s]*$/', '\1', $s);
+        return $s;
+    }
+
+    function fix_html($s) {
+        $s = str_replace('&nbsp;', ' ', $s);
+        $s = str_replace('&amp;', '&', $s);
+        return $s;
+    }
+
+    function remove_all_caps($s, $to_title_case = false) {
+        if (preg_match('/^[^a-z]*[A-Z][^a-z]*$/', $s)) {
+            // There are no lowercase chars, but at least one uppercase
+            if ($to_title_case) {
+                return ucwords(strtolower($s));
+            } else {
+                return substr($s, 0, 1) . strtolower(substr($s, 1));
+            }
+        } else {
+            return $s;
+        }
     }
 }

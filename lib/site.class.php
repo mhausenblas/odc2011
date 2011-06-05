@@ -32,7 +32,7 @@ class Site {
                 ),
                 "css" => "/css/homepage.css",
                 "councils" => $this->planning->get_council_list(),
-                "councils_la" => $this->planning->get_latest_application_per_council()
+                "apps" => $this->planning->get_latest_application_per_council(),
         );
         $this->response->render("page-home", $options);
     }
@@ -96,5 +96,9 @@ class Site {
 
     function action_council_list() {
         $this->response->json($this->planning->get_council_list());
+    }
+
+    function action_council_details($shortname) {
+        $this->response->render('streetview', null, false);
     }
 }
