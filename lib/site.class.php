@@ -34,7 +34,6 @@ class Site {
                 ),
                 "css" => array(
                     "/css/homepage.css",
-                    "http://code.google.com/apis/maps/documentation/javascript/examples/default.css"
                 ),
                 "councils" => $this->planning->get_council_list(),
                 "apps" => $this->planning->get_latest_application_per_council(),

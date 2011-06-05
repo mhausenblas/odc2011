@@ -28,3 +28,6 @@ img.inline { position: relative; top: 2px; }
 .stats { border-collapse: collapse; }
 .stats .coordinates td { border-bottom: none; color: #575; }
 .stats .no-coordinates td { border-top: none; color: #f99; }
+#footer .site_nav_global, #footer .note { float:left; padding-left:0; margin-top:1em;}
+#footer .site_nav_global li { float:left; margin:0 1em 0 0; padding:0 1em 0 0; border-right:1px solid #bbb; list-style-type:none; }
+

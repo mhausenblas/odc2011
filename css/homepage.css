@@ -1,4 +1,4 @@
-.map {
+div.map {
 float:right;
 position:fixed !important;
 top:0;
@@ -53,22 +53,9 @@ background-image:url(../images/feed-icon-28x28.png);
 background-image:url(../images/twitter_icon.png);
 }
 
-.site_nav_global li {
-float:left;
-margin:0 1em 0 0;
-padding:0 1em 0 0;
-border-right:1px solid #ccc;
-list-style-type:none;
-}
-.site_nav_global li:last-child {
-border-right:0;
-}
-
 
 #galway-logo { float: left; margin: 0 1em 1em 0; }
 #footer { clear: left; border-top: 1px solid #bbb; padding-top: 0.3em; margin-bottom: 1.4em; }
 #footer a {text-decoration:none;font-size:1em;}
 #footer td{padding:10px;}
 #deri-logo { float: right; }
-
-
