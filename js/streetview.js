@@ -7,8 +7,8 @@ var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
 var mapArchiveModeActivateZoomFactor = 14; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
-var filterMinYear = 1970; // min. value for the filter-by-year
-var filterMaxYear = 2010; // max. value for the filter-by-year
+var filterMinYear = 1960; // min. value for the filter-by-year
+var filterMaxYear = 2011; // max. value for the filter-by-year
 
 //////////////////////////////////
 // internal globals - don't touch:
@@ -395,13 +395,10 @@ function showSV(lat, lng) {
 	$("#show-sv").addClass('viewsel-tab-selected');
 	
 	adjustAddressFromPos(pos.lat(), pos.lng());
-	
-	
-	
-	// TODO: implement TOP-k based on distance
-	// for (var i = 0; i < currentMarkers.length; i++){
-	// 	$("#palist-content").append("<div class='singlepa' id='pa_" + currentMarkers[i].id  +"'>" + currentMarkers[i].year +": <a href='#" + currentMarkers[i].id + "'>" + currentMarkers[i].desc + "</a></div>");
-	// }	
+		
+	for (var i = 0; i < currentMarkers.length; i++){
+	 	$("#palist-content").append(renderPADetail(lookupPA(currentMarkers[i].id)));
+	}	
 }
 
 function showMap() {
