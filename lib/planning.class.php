@@ -290,6 +290,9 @@ ORDER BY app_ref DESC";
 
     function tweet_application($app, $twitter, $bitly = null, $force = true) {
         $tweet_id = $this->db->select_value(sprintf("SELECT tweet_id FROM applications WHERE app_ref='%s' AND council_id=%d", $app['app_ref'], $app['council_id']));
+if (preg_match('/^Teach /', $app['address'])) {
+var_dump($tweet_id); die();
+}
         if ($force && $tweet_id > 1) return false;
         if (!$force && $tweet_id != 0) return false;
         $link = $bitly ? $this->get_bitly_link($app, $bitly) : $app['permalink'];
