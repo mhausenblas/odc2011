@@ -1,5 +1,5 @@
 <map name="ireland">
-  <area href="/GalwayCity" title="Galway City" id="Galwayarea" shape="poly"
+  <area href="/GalwayCity" title="Galway City" id="GalwayCityarea" shape="poly"
   coords="167,312,157,312,157,321,167,321"></area>
   <area href="/Buncrana" id="Buncranaarea" title="Buncrana Town"
   shape="poly" coords="293,70,293,80,284,80,284,70"></area>
