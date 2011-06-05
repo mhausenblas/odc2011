@@ -49,17 +49,23 @@ $cocos = array(
         'rss' => 'Donegal',
 		'code'=> 'Donegal',
     ),
-	'Dublin' => array(
+	'MidDublin' => array(
         'name' => 'Dublin City Council',
         'twiter' => 'http://twitter.com/DublinCityPln',
         'rss' => 'Dublin',
-		'code'=> 'Dublin',
+		'code'=> 'MidDublin',
     ),
 	'SouthDublin' => array(
         'name' => 'South Dublin City Council',
         'twiter' => 'http://twitter.com/SouthDublinPln',
         'rss' => 'SouthDublin',
 		'code'=> 'SouthDublin',
+    ),
+	'NorthDublin' => array(
+        'name' => 'North Dublin -Fingal- City Council',
+        'twiter' => 'http://twitter.com/NorthDublinPln',
+        'rss' => 'NorthDublin',
+		'code'=> 'NorthDublin',
     ),
    'Bundoran' => array(
         'name' => 'Bundoran Twon Council',
@@ -178,8 +184,8 @@ $cocos = array(
 	'STipperary' => array(
         'name' => 'South Tipperary County Council',
         'twiter' => 'http://twitter.com/STipperaryPln',
-        'rss' => 'Tipperary',
-		'code'=> 'Tipperary',
+        'rss' => 'STipperary',
+		'code'=> 'STipperary',
     ),  	
 	'Offaly' => array(
         'name' => 'Offaly County Council',
