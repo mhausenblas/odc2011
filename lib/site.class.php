@@ -31,6 +31,8 @@ class Site {
                     "/js/home-map.js",
                 ),
                 "css" => "/css/homepage.css",
+                "councils" => $this->planning->get_council_list(),
+                "councils_la" => $this->planning->get_latest_application_per_council()
         );
         $this->response->render("page-home", $options);
     }
