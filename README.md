@@ -23,6 +23,7 @@ This software is Public Domain.
     cd setup
     clean-applications.rb GPlan_Metadata.txt > applications.csv
     mysql -u root -p < schema.sql
+    mysql -u root -p < councils.sql
     mysql -u root -p gplan < import-lgcsb-applications.sql
 
     # Run the Fingal importer once
