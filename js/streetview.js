@@ -2,35 +2,30 @@
 //  PA map widget view globals
 //
 
+// globally configure the PA map widget here:
+var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
+var mapArchiveModeActivateZoomFactor = 16; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
+var mapWidth = 0.6; // the preferred width of the map
+var mapHeight = 0.8; // the preferred height of the map
+var filterMinYear = 1970; // min. value for the filter-by-year
+var filterMaxYear = 2010; // max. value for the filter-by-year
+
+//////////////////////////////////
+// internal globals - don't touch:
 // the following are the PA map widget's supported modes:
 var OVERVIEW_MODE = 0; // showing the latest PAs in a certain area, no control panel visible
 var ARCHIVE_MODE = 1; // showing all PAs in a certain area, control panel visible
 var SV_DETAIL_MODE = 2; // showing nearest PAs, control panel visible
-
-
-// globally configure the PA map widget here:
-var pam = ARCHIVE_MODE; // the selected mode
+var PA_STATE_SELECTION_INACTIVE = "inactive";
+var PA_YEAR_SELECTION_INACTIVE = -1;
+var pam = OVERVIEW_MODE; // the selected mode
+var mapInitialZoomFactor = 12; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
 var mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapCenterLat = 53.15; // for SV_DETAIL_MODE
 var mapCenterLng = -8.0392; // for SV_DETAIL_MODE
-var mapInitialZoomFactor = 12; // the default zoom factor ( 7 ~ all Ireland, 10 - 12 ~ county-level, > 12 ~ village-level)
-var mapWidth = 0.6; // the preferred width of the map
-var mapHeight = 0.8; // the preferred height of the map
-var mapDefaultIsStreetView = false; // start in street view mode or not
-var filterMinYear = 1970; // min. value for the filter-by-year
-var filterMaxYear = 2010; // max. value for the filter-by-year
-
-// configure the PA API here:
-var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
-
-//////////////////////////////////
-// internal globals - don't touch:
-var PA_STATE_SELECTION_INACTIVE = "inactive";
-var PA_YEAR_SELECTION_INACTIVE = -1;
-
 var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
 var map; // the Google map (both for overview and street view)
 var councils; // the council look-up table
@@ -38,10 +33,10 @@ var currentMarkers = new Array(); // list of active markers in the viewport
 var pastateSelection = PA_STATE_SELECTION_INACTIVE; // the filter-by-status 
 var currentMinYear = PA_YEAR_SELECTION_INACTIVE; // filter-by-year
 var currentMaxYear = PA_YEAR_SELECTION_INACTIVE; // filter-by-year
+var mapDefaultIsStreetView = false; // start in street view mode or not
+var currentURL = document.URL; // will be used to determine the PA map widget mode
+var paData = new Array(); // the planning application (PA) data a list, filled dynamically via the JSON API
 
-// the planning application (PA) data a list of PA objects, 
-// filled dynamically via the JSON API
-var paData = new Array();
 
 // GPlan application status - based on GPlan_ApplicationStatus.txt
 var APPLICATION_STATUS = {
@@ -95,6 +90,8 @@ var PA_STATE = {
 //
 
 $(function() { 
+	
+	determinePAWidgetMode();
 		
 	if(pam == OVERVIEW_MODE) {
 		getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
@@ -205,6 +202,31 @@ $(function() {
 /////////////////////////////////////////////////////////////////////////////// 
 //  PA map widget view library
 //
+
+function determinePAWidgetMode(){
+	var zoomLevel = 18;
+	
+	if(currentURL.indexOf("#") >= 0){ // a hash URI such as http://localhost:8888/Offaly#10136
+		pam = SV_DETAIL_MODE;
+		mapCenterLat = 53.15; // for SV_DETAIL_MODE
+		mapCenterLng = -8.0392; // for SV_DETAIL_MODE
+		console.log("PA map widget opening in DETAIL mode showing PAs in near:");
+	}
+	else {
+		mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
+		mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
+		mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
+		mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
+		if(zoomLevel < mapArchiveModeActivateZoomFactor) { // we are zoomed out far enough ...
+			pam = OVERVIEW_MODE; // ... just show latest PAs
+			console.log("PA map widget opening in OVERVIEW mode showing latest PAs in bounds:");
+		}
+		else { // we are zoomed in enought ...
+			pam = ARCHIVE_MODE; // ... so, show the archive PAs in its entire beauty
+			console.log("PA map widget opening in ARCHIVE mode showing latest PAs in bounds:");
+		}
+	}
+}
 
 function initUI(showControlPanel){
 	makemap(); // create the Google Map
