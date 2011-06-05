@@ -143,9 +143,18 @@ ORDER BY app_ref DESC";
         return $this->get_applications($query);
     }
 
+    function get_county_list() {
+        return $this->db->select_list("SELECT name FROM counties ORDER BY name");
+    }
+
     function get_council_id($shortname) {
         $query = sprintf("SELECT id from councils WHERE short_name = '%s'", $this->db->escape($shortname));
         return $this->db->select_value($query);
+    }
+
+    function get_council_shortname($id) {
+        $councils = $this->get_council_list();
+        return $councils[$id]['short'];
     }
 
     function is_council_shortname($shortname) {
@@ -205,6 +214,10 @@ ORDER BY app_ref DESC";
             $lookup = @$this->council_list[$app['council_li']]['lookup'];
             if ($lookup) $app['url'] = $lookup . $app['app_ref'];
         }
+        $app['permalink'] = 'http://planning-apps.opendata.ie/'
+                . $this->get_council_shortname($app['council_id'])
+                . '#' . $app['app_ref'];
+        if (empty($app['decision'])) $app['decision'] = 'N';
         return $app;
     }
 
@@ -212,7 +225,7 @@ ORDER BY app_ref DESC";
         $s = $this->fix_html($s);
         $s = $this->remove_all_caps($s, true);
         $s = preg_replace('/ *,+/', ',', $s);
-        $s = preg_replace('/^\s*(.*?)[,.\s]*$/', '\1', $s);
+        $s = preg_replace('/^\s*(.*?)[;,.\s]*$/', '\1', $s);
         return $s;
     }
 
@@ -233,5 +246,58 @@ ORDER BY app_ref DESC";
         } else {
             return $s;
         }
+    }
+
+    function strip_county_name($address) {
+        $terms = join("|", $this->get_county_list());
+        if (preg_match("/^(.*?)(\s*[;,.])?\s+(Co(unty|\.)?\s+)?($terms)$/is", $address, $match)) {
+            return $match[1];
+        }
+        return $address;
+    }
+
+    function _shorten($s, $max_length) {
+        return substr($s, 0, $max_length -1) . '…';
+    }
+
+    function to_tweet($app, $link = null) {
+        $tweet = ' ' . ($link ? $link : $app['permalink']);
+        $chars_remaining = 140 - strlen($tweet);
+
+        $address = $this->strip_county_name(str_replace("\n", ', ', @$app['address']));
+        $address = preg_replace('/\s+\(.*?\)\s+/', ' ', $address);
+        $details = $app['details'];
+        $min_details_length = 40;
+
+        if (strlen($address) + 2 + $min_details_length > $chars_remaining) {
+            return $this->_shorten($address, $chars_remaining - 2 - $min_details_length) . ': ' . $this->_shorten($details, $min_details_length) . $tweet;
+        }
+        if (strlen($address) + 2 + strlen($details) > $chars_remaining) {
+            return $address . ': ' . $this->_shorten($details, $chars_remaining - strlen($address) - 2) . $tweet;
+        }
+        return $address . ': ' . $details . $tweet;
+    }
+
+    function get_bitly_link($app, $bitly = null) {
+        $l = $this->db->select_value(sprintf("SELECT bitly FROM bitly WHERE app_ref='%s' AND council_id=%d", $app['app_ref'], $app['council_id']));
+        if ($l) return $l;
+        if (!$bitly) return null;
+        $l = $bitly->shorten($app['permalink']);
+        if (!$l) return null;
+        $this->db->execute(sprintf("INSERT INTO bitly SET bitly='%s', app_ref='%s', council_id=%d", $l, $app['app_ref'], $app['council_id']));
+        return $l;
+    }
+
+    function tweet_application($app, $twitter, $bitly = null, $force = true) {
+        $tweet_id = $this->db->select_value(sprintf("SELECT tweet_id FROM applications WHERE app_ref='%s' AND council_id=%d", $app['app_ref'], $app['council_id']));
+        if ($force && $tweet_id > 1) return false;
+        if (!$force && $tweet_id != 0) return false;
+        $link = $bitly ? $this->get_bitly_link($app, $bitly) : $app['permalink'];
+        $tweet = $this->to_tweet($app, $link);
+        $twitter_account = $this->get_council_shortname($app['council_id']) . 'Pln';
+        $tweet_id = $twitter->tweet($tweet, $twitter_account);
+        $query = sprintf("UPDATE applications SET tweet_id='%s' WHERE app_ref='%s' AND council_id=%d", $tweet_id, $app['app_ref'], $app['council_id']);
+        $this->db->execute($query);
+        return $tweet;
     }
 }
