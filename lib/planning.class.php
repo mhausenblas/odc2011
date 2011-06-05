@@ -118,10 +118,10 @@ EOT;
 FROM applications JOIN (
 SELECT MAX(applications.received_date) as latest_date, applications.council_id
 FROM applications
-WHERE lat IS NOT NULL AND lng IS NOT NULL
+WHERE lat IS NOT NULL AND lng IS NOT NULL AND lng > -10
 GROUP BY applications.council_id) as t1
 ON applications.council_id = t1.council_id AND applications.received_date = t1.latest_date
-WHERE applications.lat IS NOT NULL and lng IS NOT NULL
+WHERE applications.lat IS NOT NULL and lng IS NOT NULL AND lng > -10
 ORDER BY app_ref DESC";
         $apps = $this->get_applications($sql);
         //We reverse for now so that the most recent app_ref code will be treated as latest for a council.
