@@ -3,10 +3,10 @@
 <input type="text" name="search_address" class="sreach" id="search_address" value="Search Address" />
 </form>
 
-<ul id="councils_list">
+<ul id="councils_list" class="cocolist">
 <?php foreach ($councils as $council_id => $council_d) { ?>
-    <li id="<?php e($council_d['short']); ?>">
-        <h3><a href="/<?php e($council_d['short']); ?>"><?php e($council_d['name']); ?></a></h3>
+    <li id="<?php e($council_d['short']); ?>" class="cocoitem">
+        <h3 class="cocotitle"><a href="/<?php e($council_d['short']); ?>"><?php e($council_d['name']); ?></a></h3>
 <?php
 if (isset($apps[$council_id])) {
   $app = $apps[$council_id];
@@ -21,5 +21,5 @@ if (isset($apps[$council_id])) {
 <?php } ?>
 </ul>
 
-<img class="map" src="images/demo_ireland.png" usemap="#ireland">
+<img class="map" src="images/ireland-map.png" usemap="#ireland">
 <?php include("templates/map.php"); ?>

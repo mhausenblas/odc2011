@@ -97,7 +97,7 @@ EOT;
 
     function get_council_list() {
         if (!$this->council_list) {
-            $rows = $this->db->select_rows("SELECT id, short_name, name, lat_lo, lng_lo, lat_hi, lng_hi, website_home, googlemaps_lowres FROM councils ORDER BY name");
+            $rows = $this->db->select_rows("SELECT id, short_name, name, lat_lo, lng_lo, lat_hi, lng_hi, website_home, website_lookup, googlemaps_lowres FROM councils ORDER BY name");
             $result = array();
             foreach ($rows as $row) {
                 $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name'], 'website' => $row['website_home'], 'lowres' => (bool) $row['googlemaps_lowres'], 'lookup' => $row['website_lookup']);
