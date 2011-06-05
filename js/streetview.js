@@ -99,7 +99,7 @@ $(function() {
 		if(pam == OVERVIEW_MODE) {
 			getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 				fillPAData(data);
-				initUI(false); // no control panel, show all markers
+				initUI(false, true); // no control panel, show all markers
 				centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
 			});
 		}
@@ -107,7 +107,7 @@ $(function() {
 		if(pam == ARCHIVE_MODE) {
 			getAllPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 				fillPAData(data);
-				initUI(true); // control panel, show all markers
+				initUI(true, true); // control panel, show all markers
 				centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
 			});
 		}
@@ -216,13 +216,13 @@ $(function() {
 function determinePAWidgetMode(){
 	var bounds;
 	var hashPos = currentURL.indexOf("#");
-	var lastSlashPos = currentURL.lastIndexOf("/");
+	var councilURL = currentURL.substring(0, hashPos);
 	var councilShortName = "";	
 	
-	if(hashPos >= 0){ // a hash URI such as http://planning-apps.opendata.ie/Offaly#10136
+	if(hashPos >= 0){ // a hash URI such as http://planning-apps.opendata.ie/CorkCity#11/34881
 		pam = SV_DETAIL_MODE;
 		currentPA = currentURL.substring(hashPos + 1);
-		councilShortName = currentURL.substring(lastSlashPos + 1, hashPos);
+		councilShortName = councilURL.substring(councilURL.lastIndexOf("/") + 1);
 		// OK, the following is a hack as we don't have the PA list details not yet and need to center the map:
 		bounds = lookupCouncilBounds(councilShortName);
 		mapLatLow = bounds.latLow ; // set bounding box for SV_DETAIL_MODE
@@ -232,7 +232,7 @@ function determinePAWidgetMode(){
 		console.log("PA map widget opening in DETAIL mode showing PAs near: "); // + mapCenterLat + ", " +  mapCenterLng);
 	}
 	else { // a URI such as http://planning-apps.opendata.ie/Offaly
-		councilShortName = currentURL.substring(lastSlashPos + 1);
+		councilShortName = currentURL.substring(currentURL.lastIndexOf("/") + 1);
 		bounds = lookupCouncilBounds(councilShortName);
 		mapLatLow = bounds.latLow ; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
 		mapLngLow = bounds.lngLow; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
@@ -428,7 +428,7 @@ function renderPADetail(r){
     b += mimg;
  	b +=  "<p>Date of application: " + r.appdate + "</p>";
  	b +=  "<p>Details: " + r.appdesc.toLowerCase() + "</p>";
-	if(r.url) b +=  "<p>File: <a href='" + r.url + "'>"+ r.appref + "</a></p>";
+	if(r.url) b +=  "<p>File: <a href='" + r.url + "' target='_new'>"+ r.appref + "</a></p>";
  	b +=  "</div>";
 	return b;
 
