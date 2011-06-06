@@ -115,6 +115,10 @@ background-image:url(../images/feed-icon-28x28.png);
 .icon_twitter {
 background-image:url(../images/twitter_icon.png);
 }
+.icon_feed:active,
+.icon_twitter:active {
+outline:none;
+}
 
 #galway-logo { float: left; margin: 0 1em 1em 0; }
 #footer { clear: left; border-top: 1px solid #bbb; padding-top: 0.3em; margin-bottom: 1.4em; }
