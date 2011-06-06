@@ -73,6 +73,11 @@ foreach ($scraper_wikis as $scraper_wiki) {
         'details' => $app->details,
         'tweet_id' => $initial_mode ? 1 : null,
     );
+    // @@@ TODO push this back to the ePlan41 scraper ... it happens when converting 0/0 easting/northing to WGS84
+    if ($application['lng'] < -10.6) {
+      $application['lat'] = null;
+      $application['lng'] = null;
+    }
     // @@@ TODO Should actually update the record
     if ($planning->application_exists($application)) {
       $rows_skipped++;
