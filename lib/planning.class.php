@@ -104,7 +104,15 @@ EOT;
             $rows = $this->db->select_rows("SELECT * FROM councils ORDER BY name");
             $result = array();
             foreach ($rows as $row) {
-                $result[$row['id']] = array('short' => $row['short_name'], 'name' => $row['name'], 'website' => $row['website_home'], 'lowres' => (bool) $row['googlemaps_lowres'], 'lookup' => $row['website_lookup'], 'system' => $row['website_system']);
+                $result[$row['id']] = array(
+                    'short' => $row['short_name'],
+                    'name' => $row['name'],
+                    'region' => $row['region'],
+                    'website' => $row['website_home'],
+                    'lowres' => (bool) $row['googlemaps_lowres'],
+                    'lookup' => $row['website_lookup'],
+                    'system' => $row['website_system']
+                );
                 if (@$row['lat_lo']) {
                     $result[$row['id']]['lat_lo'] = $row['lat_lo'];
                     $result[$row['id']]['lat_hi'] = $row['lat_hi'];

@@ -3,7 +3,7 @@
 //
 
 // globally configure the PA map widget here:
-var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
+var PA_API_BASE_URI = "/";
 var mapArchiveModeActivateZoomFactor = 12; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
@@ -62,7 +62,8 @@ var DECISION_CODE = {
 	"N":"UNKNOWN",
 	"C":"CONDITIONAL",
 	"U":"UNCONDITIONAL",
-	"R":"REFUSED"
+	"R":"REFUSED",
+    "D":"DECISION MADE BUT UNKNOWN TO US"
 };
 
 // color-coded marker corresponding to the GPlan status above
@@ -193,7 +194,13 @@ function setPAMapWidgetMode(){
 	pastateSelection = PA_STATE_SELECTION_INACTIVE; 
 	currentMinYear = PA_YEAR_SELECTION_INACTIVE; 
 	currentMaxYear = PA_YEAR_SELECTION_INACTIVE;
-	
+
+    if (currentCouncil) {
+        $('#target-address').val(revcouncils[currentCouncil].region);
+    } else {
+        $('#target-address').val('');
+    }
+
 	if(pam == OVERVIEW_MODE) {
 		getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 			fillPAData(data);
@@ -210,6 +217,7 @@ function setPAMapWidgetMode(){
 	}
 	if(pam == SV_DETAIL_MODE) {
 		getPA(currentCouncil, currentPA, function(padata, textStatus){
+			$("#target-address").val(padata.address.replace(/\n/g, ", "));
 			mapCenterLat = padata.lat;
 			mapCenterLng = padata.lng;
 			getNearestPAs(mapCenterLat, mapCenterLng, function(data, textStatus){
@@ -645,9 +653,12 @@ function isMarkerInSelectedState(marker, pastate){
 				if(pastate == 'unconditional'){
 					if(marker.d == 'U') {
 						return true;
-					}
-					else return false;
-				}
+                    } else {
+                        return false;
+                    }
+				} else if (pastate == 'no data or decision') {
+                    return (marker.d == 'D');
+                }
 			}
 		}
 	}
@@ -745,7 +756,8 @@ function loadCouncils(callback) {
 				latLow: councils[c].lat_lo,
 				lngLow: councils[c].lng_lo,
 				latHi: councils[c].lat_hi,
-				lngHi: councils[c].lng_hi
+				lngHi: councils[c].lng_hi,
+                region: councils[c].region
 			};
 		};
 		callback();
@@ -854,9 +866,6 @@ function adjustAddressFromPos(lat, lng) {
 	$.getJSON("http://maps.google.com/maps/geo?q="+ lat + "," + lng +"&sensor=false&output=json&callback=?", function(data, textStatus){
 		if(data.Status.code == 200) {  
 			$("#target-address").val(data.Placemark[0].address);  
-		}
-		else {
-			$("#target-address").val("Sorry, I didn't find an address for " +  lat + "," + lng);
 		}
 	});
 }
