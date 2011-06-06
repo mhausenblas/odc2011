@@ -72,6 +72,7 @@ INSERT INTO `counties` (`id`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `councils` (
   `id` int(2) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `region` varchar(100) NOT NULL,
   `county_id` int(2) NOT NULL,
   `short_name` varchar(15) NOT NULL,
   `website_home` varchar(200) DEFAULT NULL,
