@@ -807,14 +807,13 @@ function gotoAddress(address, options) {
 		reportresult: true // by default show a dialg that informs the user of invalid address
 	};  
 	var options = $.extend(defaults, options);
-	
-	$.getJSON("http://maps.google.com/maps/geo?q="+ address+"&sensor=false&output=json&callback=?", function(data, textStatus){
-		if(data.Status.code == 200) {  
-			var latitude = data.Placemark[0].Point.coordinates[1];  
-			var longitude = data.Placemark[0].Point.coordinates[0];  
+	var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': address, 'region': 'ie'}, function(data, status) {
+		if(status == google.maps.GeocoderStatus.OK) {  
+			var location = data[0].geometry.location;
 			//console.log("got lat:" + latitude + " long: " + longitude + " for address: " + address);
-			if(latitude && longitude) { // we have both values
-				centerMapAt(latitude, longitude);
+			if(location) { // we have both values
+				centerMapAt(location.lat(), location.lng());
 				if(options.showsv && map.getStreetView().getVisible()) { // the SV is currently visible
 					showSV();
 				}
