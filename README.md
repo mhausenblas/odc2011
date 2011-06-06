@@ -65,6 +65,10 @@ This software is Public Domain.
 
 Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54.429541,-4.03653
 
+### Look up application details
+
+    http://planning-apps.opendata.ie/CorkCity/app?ref=11/34881
+
 ### Get TOP 50 applications near a point
 
     http://planning-apps.opendata.ie/near?center=53.270,-9.104

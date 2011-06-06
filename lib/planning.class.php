@@ -12,6 +12,12 @@ class Planning {
         $this->db = $db;
     }
 
+    function get_application($app_ref, $council_id) {
+        $row = $this->db->select_row(
+            sprintf("SELECT * FROM applications WHERE app_ref='%s' AND council_id=%d", $this->db->escape($app_ref), $council_id));
+        if (!$row) return null;
+        return $this->clean_application($row);
+    }
 
     function get_latest_applications($bounds) {
         list($lat_lo, $lng_lo, $lat_hi, $lng_hi) = $bounds;

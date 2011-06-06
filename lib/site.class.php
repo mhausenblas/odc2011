@@ -83,7 +83,7 @@ class Site {
         $this->response->json(array('applications' => $applications));
     }
 
-    //Input: near?center=lat,long
+    //Input: /near?center=lat,long
     //Output: The top 50 planning applications near these coordinates, ordered by distance descending (nearest first)
     function action_api_near($centre) {
         $centre = explode(',', $centre);
@@ -97,6 +97,16 @@ class Site {
         }
         $applications = $this->planning->get_applications_near($centre);
         $this->response->json(array('applications' => $applications));
+    }
+
+    // Input: /CorkCity/app?ref=11/34881
+    // Output: App details as JSON array
+    function action_api_app($app_ref, $council) {
+        $app = $this->planning->get_application($app_ref, $this->planning->get_council_id($council));
+        if (!$app) {
+            $this->response->error(404, array('plaintext' => 'Application reference not found in DB'));
+        }
+        $this->response->json($app);
     }
 
     function action_council_list() {
