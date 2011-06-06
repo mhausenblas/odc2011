@@ -193,6 +193,17 @@ ORDER BY app_ref DESC";
         return $this->db->execute($query);
     }
 
+    function update_application($app) {
+        $query = "UPDATE applications SET";
+        $clauses = array();
+        foreach ($this->application_columns as $column) {
+            $clauses[] = " $column = " . $this->db->quote(@$app[$column]);
+        }
+        $query .= join(', ', $clauses);
+        $query .= sprintf(" WHERE app_ref='%s' AND council_id=%d", $this->db->escape($app['app_ref']), $app['council_id']);
+        return $this->db->execute($query);
+    }
+
     function clean_application($app) {
         $s = $app['details'];
         $s = $this->fix_html($s);
@@ -316,5 +327,14 @@ var_dump($tweet_id); die();
         $query = sprintf("UPDATE applications SET tweet_id='%s' WHERE app_ref='%s' AND council_id=%d", $tweet_id, $app['app_ref'], $app['council_id']);
         $this->db->execute($query);
         return $tweet;
+    }
+
+    function geocode_application(&$app) {
+        require_once dirname(__FILE__) . '/geocoder.class.php';
+        $location = Geocoder::geocode(str_replace("\n", ", ", $app['address']));
+        if (!$location) return false;
+        $app['lat'] = $location['lat'];
+        $app['lng'] = $location['lng'];
+        return true;
     }
 }

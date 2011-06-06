@@ -10,6 +10,7 @@ require_once dirname(__FILE__) . '/../lib/simplehtmldom/simple_html_dom.php';
 require_once dirname(__FILE__) . '/../config.inc.php';
 require_once dirname(__FILE__) . '/../lib/db.class.php';
 require_once dirname(__FILE__) . '/../lib/planning.class.php';
+require_once dirname(__FILE__) . '/../lib/geocoder.class.php';
 $db = new DB($config);
 $planning = new Planning($db);
 
@@ -89,16 +90,6 @@ function get_applications_in_period($date1, $date2) {
   return $apps;
 }
 
-function geocode($address) {
-  $encoded = urlencode($address);
-  $url = "http://maps.googleapis.com/maps/api/geocode/json?address=$encoded&region=ie&sensor=false";
-  $response = json_decode(file_get_contents($url), true);
-  if (!$response || $response['status'] != 'OK') return false;
-  $geo = $response['results'][0]['geometry'];
-  if ($geo['location_type'] != "RANGE_INTERPOLATED" && $geo['location_type'] != "ROOFTOP") return false;
-  return $geo['location'];
-}
-
 function get_decision_and_status($s) {
   if (preg_match('/(grant|approved)/i', $s)) return array('C', 9);
   if (preg_match('/invalid/i', $s)) return array('N', 0);
@@ -157,7 +148,7 @@ function get_application_details($appref) {
       $app['status'] = $status[1];
     }
   }
-  $location = geocode($app['address1']);
+  $location = Geocoder::geocode($app['address1']);
   if ($location) {
     $app['lat'] = $location['lat'];
     $app['lng'] = $location['lng'];
