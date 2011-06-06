@@ -27,6 +27,7 @@ var mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapCenterLat = 53.15; // for SV_DETAIL_MODE
 var mapCenterLng = -8.0392; // for SV_DETAIL_MODE
 var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
+var povDetached = false; // If true, don't auto center the SV camera on the current PA
 var map; // the Google map (both for overview and street view)
 var councils; // the council look-up table (key is council ID)
 var revcouncils; // the reverse council look-up table (key is council short name)
@@ -345,6 +346,15 @@ function makemap(showMarkers) {
 	
 	// handle current position in SV
 	google.maps.event.addListener(map.getStreetView(), 'position_changed', function() {
+        var pos = map.getStreetView().getPosition();
+        var dlat = pos.lat() - mapCenterLat;
+        var dlng = pos.lng() - mapCenterLng;
+        if (!povDetached && (Math.abs(dlat) > 1e-12 || Math.abs(dlng) > 1e-12)) {
+            var bearing = getBearing(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
+            var pitch = getPitch(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
+            if (pitch < -25.0) pitch = -25.0;
+            map.getStreetView().setPov({'heading': bearing, 'pitch': pitch, 'zoom': 1});
+        }
 		var lat = Math.floor(map.getStreetView().getPosition().lat()*10000+1)/10000;
 		var lng = Math.floor(map.getStreetView().getPosition().lng()*10000+1)/10000;
 		$("#sv-current-pos").html("latitude: " + lat + " <span style ='color: #cfcfcf'>|</span> longitude: " + lng);
@@ -353,6 +363,7 @@ function makemap(showMarkers) {
 
 	// handle point of view in SV
 	google.maps.event.addListener(map.getStreetView(), 'pov_changed', function() {
+        povDetached = true;
 		var heading = Math.floor(map.getStreetView().getPov().heading);
 		var pitch = Math.floor(map.getStreetView().getPov().pitch*100+1)/100;
 		$("#sv-pov").html("heading: " +  heading + " <span style ='color: #cfcfcf'>|</span> pitch: " + pitch);
@@ -361,6 +372,32 @@ function makemap(showMarkers) {
 	for (i=0; i < paData.length; i++) {
 		addMarker(paData[i], showMarkers);
 	}
+}
+
+function getBearing(pos1, pos2) {
+    var dlat = pos2.lat() - pos1.lat();
+    var dlng = pos2.lng() - pos1.lng();
+    if (dlat < 0) {
+        if (dlng > 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI + 180.0;
+        if (dlng < 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI + 180.0;
+        return 180.0;
+    } else if (dlat > 0) {
+        if (dlng > 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI;
+        if (dlng < 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI;
+        return 0.0;
+    } else {
+        if (dlng < 0) return -90.0;
+        if (dlng > 0) return 90.0;
+        return Number.NaN;
+    }
+}
+
+function getPitch(pos1, pos2) {
+    var dlat = pos2.lat() - pos1.lat();
+    var dlng = pos2.lng() - pos1.lng();
+    var distance = Math.sqrt(dlat*dlat + dlng*dlng);
+    var height = 0.00003;
+    return -Math.atan(height/distance) * 180.0 / Math.PI;
 }
 
 function makelegend() {
@@ -375,18 +412,14 @@ function makelegend() {
 function showSV(lat, lng) {
 	var pos;
 	var topN = 5;
-	
+	povDetached = false;
+
 	if(lat && lng) pos = new google.maps.LatLng(lat, lng);
 	else pos = mapCenter;
 	
 	var svmap = map.getStreetView();
 	var panoOptions = {
 		position: pos,
-		pov: {
-			heading: 0,
-			pitch: 0,
-			zoom: 1
-		},
 		addressControlOptions: {
 			position: google.maps.ControlPosition.BOTTOM
 		},
