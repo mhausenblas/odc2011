@@ -28,12 +28,11 @@ class Site {
                 "scripts" => array(
                     "http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js",
                     "/js/jquery.maphilight.min.js",
-                    "/js/home-map.js",
                     "http://maps.google.com/maps/api/js?sensor=false",
                     "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
                 ),
                 "css" => array(
-                    "/css/homepage.css",
+                    "/css/homepage.css"
                 ),
                 "councils" => $this->planning->get_council_list(),
                 "apps" => $this->planning->get_latest_application_per_council(),

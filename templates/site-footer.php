@@ -17,11 +17,18 @@
         var panorama;
         var str;
 
-        function initialize(){
+        function initializeStreetView(){
             $.each(latlng, function(index){
                 $('#councils_list li#'+index+' .recent_application h4').after('<div class="street_view" id="map_canvas_' + index + '">' + '</div>');
                 l = latlng[index].split(',');
                 loadMap(document.getElementById('map_canvas_'+index),new google.maps.LatLng(l[0],l[1]));
+                $('#map_canvas_'+index).click(function() {
+                    app_ref = $('#councils_list li#'+index+' .more a').attr('href');
+                    if (app_ref[0] == '/') {
+                        app_ref = app_ref.substring(1);
+                    }
+                    window.location.href = window.location.href + app_ref;
+                });
             });
         }
 
@@ -49,7 +56,9 @@
             map.setStreetView(panorama);
         }
 
-        initialize();
+        $('.map').maphilight();
+
+        initializeStreetView();
     </script>
 <?php include 'templates/google-analytics.html'; ?>
 </body>
