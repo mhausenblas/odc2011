@@ -23,6 +23,7 @@ This software is Public Domain.
     cd setup
     clean-applications.rb GPlan_Metadata.txt > applications.csv
     mysql -u root -p < schema.sql
+    mysql -u root -p < councils.sql
     mysql -u root -p gplan < import-lgcsb-applications.sql
 
     # Run the Fingal importer once
@@ -63,6 +64,10 @@ This software is Public Domain.
 ## API documentation
 
 Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54.429541,-4.03653
+
+### Look up application details
+
+    http://planning-apps.opendata.ie/CorkCity/app?ref=11/34881
 
 ### Get TOP 50 applications near a point
 

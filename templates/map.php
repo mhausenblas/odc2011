@@ -5,13 +5,13 @@
   shape="poly" coords="293,70,293,80,284,80,284,70"></area>
   <area href="/Bundoran" title="Bundoran Town" id="Bundoranarea"
   shape="poly" coords="233,145,233,154,223,154,223,145"></area>
-  <area href="/DublinCity" title="Dublin City" id="Dublinarea" shape="poly"
+  <area href="/DublinCity" title="Dublin City" id="DublinCityarea" shape="poly"
   coords="398,317,389,317,389,325,398,325"></area>
-  <area href="/LimerickCity" title="Limerick City" id="Limerickarea"
+  <area href="/LimerickCity" title="Limerick City" id="LimerickCityarea"
   shape="poly" coords="202,404,192,404,192,414,202,414"></area>
   <area href="/Waterford" title="Waterford City" id="Waterfordarea"
   shape="poly" coords="316,465,306,465,306,475,316,475"></area>
-  <area href="/CorkCity" title="Cork City" shape="poly" id="Corkarea"
+  <area href="/CorkCity" title="Cork City" shape="poly" id="CorkCityarea"
   coords="212,510,202,510,202,520,212,520"></area>
   <area href="/Letterkenny" title="Letterkenny Town" id="Letterkennyarea"
   shape="poly" coords="265,83,255,83,255,93,265,93"></area>
@@ -21,7 +21,7 @@
   
 <area shape="poly" title="STipperary" id="STipperaryarea" coords="272,388,275,400,282,402,285,409,286,411,291,417,288,423,291,427,289,432,292,439,298,442,297,449,291,451,283,450,280,451,274,452,267,454,265,455,265,460,264,464,267,467,265,471,258,471,256,471,247,468,244,469,237,471,232,470,231,466,232,463,232,460,232,456,233,453,228,451,225,447,225,444,220,443,219,439,232,432,239,422,250,408,263,396,266,395,270,388" href="/STipperary" ></area>
   
-<area shape="poly" title="DublinCity" id="DublinCityarea" coords="399,309,393,304,385,307,381,309,381,324,387,324,390,325,397,318,394,314,396,310,398,310" href="/DublinCity" ></area>
+<area shape="poly" title="Dublin" id="Dublinarea" coords="399,309,393,304,385,307,381,309,381,324,387,324,390,325,397,318,394,314,396,310,398,310" href="/DublinCity" ></area>
   
   
 <area shape="poly" title="Fingal" id="Fingalarea" coords="384,307,376,304,383,296,383,291,376,283,381,277,388,278,390,279,391,273,393,270,400,279,405,286,400,287,399,289,401,292,397,296,400,302,400,304,408,309,408,310,399,309,399,312,394,304" href="/Fingal" ></area>

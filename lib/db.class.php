@@ -42,6 +42,14 @@ class DB {
         return $this->_conn->affected_rows;
     }
 
+    function select_row($sql) {
+        $result = $this->query($sql);
+        $row = $result->fetch_assoc();
+        $result->close();
+        if (!$row) return null;
+        return $row;
+    }
+
     function select_rows($sql) {
         $result = $this->query($sql);
         $rows = array();
@@ -74,8 +82,9 @@ class DB {
 
     function select_value($sql) {
         $result = $this->query($sql);
-        $list = array();
-        if (!($row = $result->fetch_row())) return null;
+        $row = $result->fetch_row();
+        $result->close();
+        if (!$row) return null;
         return $row[0];
     }
 

@@ -27,3 +27,4 @@ foreach ($planning->get_council_list() as $council_id => $details) {
     }
   }
 }
+$db->execute("UPDATE applications SET tweet_id = '-1'  WHERE tweet_id IS NULL");

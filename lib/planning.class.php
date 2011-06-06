@@ -12,6 +12,12 @@ class Planning {
         $this->db = $db;
     }
 
+    function get_application($app_ref, $council_id) {
+        $row = $this->db->select_row(
+            sprintf("SELECT * FROM applications WHERE app_ref='%s' AND council_id=%d", $this->db->escape($app_ref), $council_id));
+        if (!$row) return null;
+        return $this->clean_application($row);
+    }
 
     function get_latest_applications($bounds) {
         list($lat_lo, $lng_lo, $lat_hi, $lng_hi) = $bounds;
@@ -290,6 +296,9 @@ ORDER BY app_ref DESC";
 
     function tweet_application($app, $twitter, $bitly = null, $force = true) {
         $tweet_id = $this->db->select_value(sprintf("SELECT tweet_id FROM applications WHERE app_ref='%s' AND council_id=%d", $app['app_ref'], $app['council_id']));
+if (preg_match('/^Teach /', $app['address'])) {
+var_dump($tweet_id); die();
+}
         if ($force && $tweet_id > 1) return false;
         if (!$force && $tweet_id != 0) return false;
         $link = $bitly ? $this->get_bitly_link($app, $bitly) : $app['permalink'];
