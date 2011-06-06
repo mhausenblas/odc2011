@@ -4,7 +4,7 @@
 
 // globally configure the PA map widget here:
 var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";
-var mapArchiveModeActivateZoomFactor = 14; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
+var mapArchiveModeActivateZoomFactor = 12; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
 var filterMinYear = 1960; // min. value for the filter-by-year
@@ -195,7 +195,7 @@ function setPAMapWidgetMode(){
 	if(pam == OVERVIEW_MODE) {
 		getLatestPAsIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi, function(data, textStatus){
 			fillPAData(data);
-			initUI(false, true); // no control panel, show all markers
+			initUI(true, true); // no control panel, show all markers
 			centerMapIn(mapLatLow, mapLngLow, mapLatHi, mapLngHi); // center map around center of bounding box
 		});
 	}
@@ -319,6 +319,17 @@ function makemap(showMarkers) {
 		}
 	});
 	
+	google.maps.event.addListener(map, 'center_changed', function() {
+		var cent = map.getCenter();
+		var bnds = map.getBounds();
+		// if(bnds){
+		// 	mapLatLow = bnds.getSouthWest().lat() ; 
+		// 	mapLngLow = bnds.getSouthWest().lng(); 
+		// 	mapLatHi = bnds.getNorthEast().lat(); 
+		// 	mapLngHi = bnds.getNorthEast().lng();
+		// }
+		console.log("map center at: " + cent.lat() + "," + cent.lng());
+	});
 	
 	// handle SV visibility
 	google.maps.event.addListener(map.getStreetView(), 'visible_changed', function() {	
@@ -396,7 +407,7 @@ function showSV(lat, lng) {
 	
 	adjustAddressFromPos(pos.lat(), pos.lng());
 		
-	for (var i = 0; i < currentMarkers.length; i++){
+	for (var i = 0; i < currentMarkers.length; i++) {
 	 	$("#palist-content").append(renderPADetail(lookupPA(currentMarkers[i].id)));
 	}	
 }
@@ -405,26 +416,26 @@ function showMap() {
 	map.getStreetView().setVisible(false);
 	$("#show-sv").removeClass('viewsel-tab-selected');
 	$("#show-map").addClass('viewsel-tab-selected');
-	$("#palist-content").html("");
+	// $("#palist-content").html("");
 	$("#sv-current-pos").html("");
 	$("#sv-pov").html("");
 	
 	// tag cloud based on visible PAs:
-	$("#palist-cloud").html("");
-	$.each(currentMarkers, function(index, val){ // add the words from the visible PA descriptions to the cloud div
-		$.each(currentMarkers[index].desc.split(' '), function(windex, word){
-			word = word.replace(",", "");
-			if(word.trim() != "" || word.trim() != "an" || word.trim() != "to"  || word.trim() != "and"  || word.trim() != "of" ) {
-				if (index < currentMarkers.length - 1) $("#palist-cloud").append(word + " , ");
-				else $("#palist-cloud").append(word.toLowerCase());
-			}
-		});
-	});
-	$("#palist-cloud").tagCloud({
-		separator: ',',
-		randomize: true,
-		sizefactor: 3
-	});
+	// $("#palist-cloud").html("");
+	// $.each(currentMarkers, function(index, val){ // add the words from the visible PA descriptions to the cloud div
+	// 	$.each(currentMarkers[index].desc.split(' '), function(windex, word){
+	// 		word = word.replace(",", "");
+	// 		if(word.trim() != "" || word.trim() != "an" || word.trim() != "to"  || word.trim() != "and"  || word.trim() != "of" ) {
+	// 			if (index < currentMarkers.length - 1) $("#palist-cloud").append(word + " , ");
+	// 			else $("#palist-cloud").append(word.toLowerCase());
+	// 		}
+	// 	});
+	// });
+	// $("#palist-cloud").tagCloud({
+	// 	separator: ',',
+	// 	randomize: true,
+	// 	sizefactor: 3
+	// });
 	
 }
 
@@ -492,7 +503,7 @@ function drawMarker(year, decision, status){
 	var context = canvas.getContext('2d');
 	context.font = "9pt Arial";
 	context.lineWidth = 1;
-	context.strokeStyle = "#fff";
+	context.strokeStyle = "#f93";
 
 	// create the semi-circle
 	context.beginPath();
@@ -783,6 +794,7 @@ function getLatestPAsIn(latLow, lngLow, latHi, lngHi, callback) {
 // centers the map around the given position
 function centerMapAt(lat, lng) {
 	map.setCenter(new google.maps.LatLng(lat, lng));
+	console.log("PA map widget current center is: " + lat + "," + lng);
 }
 
 // calculates the center of the bounding box
@@ -816,7 +828,7 @@ function gotoAddress(address, options) {
 			if(latitude && longitude) { // we have both values
 				centerMapAt(latitude, longitude);
 				if(options.showsv && map.getStreetView().getVisible()) { // the SV is currently visible
-					showSV();
+					showSV(latitude, longitude);
 				}
 				else {
 					showMap();
