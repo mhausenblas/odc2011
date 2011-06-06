@@ -1,4 +1,4 @@
-# All-Irish Planning Applications
+# Local Planning Explorer Ireland
 
 A joint submission to the [Open Data Challenge 2011](http://opendatachallenge.org/) by:
 

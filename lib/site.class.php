@@ -24,7 +24,7 @@ class Site {
 
     function action_home() {
         $options = array(
-                "title" => "Planning Applications to Local Councils in Ireland",
+                "title" => "Local Planning Explorer Ireland",
                 "scripts" => array(
                     "http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js",
                     "/js/jquery.maphilight.min.js",
