@@ -35,6 +35,7 @@ if (strlen($details) > 85) {
 <?php } ?>
 </ul>
 <?php $councils_la_latlng = json_encode($councils_la_latlng); ?>
+<script>var latlng = <?php echo $councils_la_latlng; ?></script>
 
 <div id="ireland_map">
     <img class="map" src="images/ireland-map.png" usemap="#ireland">
