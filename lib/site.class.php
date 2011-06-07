@@ -116,6 +116,12 @@ class Site {
         $this->response->render('streetview', null, false);
     }
 
+    function action_search($query) {
+        // Actually we just show the standard streetview template,
+        // the query is interpreted in JS
+        $this->response->render('streetview', null, false);
+    }
+
     function action_feed($shortname = null) {
         $all = !$shortname;
         $apps = $this->planning->get_recent_applications($shortname);

@@ -1,6 +1,6 @@
-<form action="">
-<input type="submit" name="search_btn" class="sreachbtn" id="search_btn" value="Search" />
-<input type="text" name="search_address" class="sreach" id="search_address" value="Search Address" />
+<form action="/search" id="search">
+<input type="text" name="q" id="q" value="Search Address" />
+<input type="submit" id="submit" value="Search" />
 </form>
 
 <?php $councils_la_latlng = array(); ?>

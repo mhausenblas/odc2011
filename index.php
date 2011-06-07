@@ -34,6 +34,8 @@ if ($request->matches('/^$/')) {
   $site->action_api_near($q['center']);
 } else if ($q = $request->matches('/^councils$/')) {
   $site->action_council_list();
+} else if ($q = $request->matches('/^search$/', array('q'))) {
+  $site->action_search($q['q']);
 } else if (($q = $request->matches('/^([A-Za-z]+)$/')) && $planning->is_council_shortname($q[1])) {
   $site->action_council_details($q[1]);
 } else if (($q = $request->matches('/^([A-Za-z]+)\/app$/', array('ref'))) && $planning->is_council_shortname($q[1])) {
