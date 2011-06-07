@@ -35,6 +35,15 @@ This software is Public Domain.
     mysql -u root -p gplan < import-DublinCity.sql
 
 
+## Deploying to the live server
+
+Only for admins obviously … You need to be in the DERI VPN.
+
+    ssh planning-apps.opendata.ie
+    cd /var/www/planning-apps.opendata.ie
+    git pull
+
+
 ## Cronjobs
 
     # Daily

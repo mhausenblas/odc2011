@@ -31,7 +31,12 @@ CREATE TABLE IF NOT EXISTS `applications` (
   KEY `lng` (`lng`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+CREATE TABLE IF NOT EXISTS `bitly` (
+  `app_ref` varchar(20) NOT NULL,
+  `council_id` int(2) NOT NULL,
+  `bitly` varchar(25) NOT NULL,
+  PRIMARY KEY (`app_ref`,`council_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `counties` (
   `id` tinyint(4) NOT NULL,

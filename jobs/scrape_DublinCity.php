@@ -36,6 +36,8 @@ if ($argc == 3) {
   $date1 = date('Y-m-d', time() - 7 * 24 * 60 * 60);
   $applications = get_applications_in_period($date1, $date2);
   foreach ($applications as $app) {
+    // @@@ TODO should probably update rather than just skip?
+    if ($planning->application_exists($app)) continue;
     $app['tweet_id'] = null;
     $planning->add_application($app);
   }
