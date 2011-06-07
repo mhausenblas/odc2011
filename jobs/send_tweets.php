@@ -21,9 +21,9 @@ foreach ($planning->get_council_list() as $council_id => $details) {
   foreach ($apps as $app) {
     $result = $planning->tweet_application($app, $twitter, $bitly, false);
     if (!$result) {
-      echo "# Skipped $twitter_account: " . $app['app_ref'] . "\n";
+      echo date("Y-m-d H:i:s")." # Skipped $twitter_account: " . $app['app_ref'] . "\n";
     } else {
-      echo "# Tweeted to $twitter_account: $result\n";
+      echo date("Y-m-d H:i:s")." # Tweeted to $twitter_account: $result\n";
     }
   }
 }

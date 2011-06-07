@@ -100,7 +100,7 @@ function get_decision_and_status($s) {
 }
 
 function get_application_details($appref) {
-  echo "# Fetching app #$appref\n";
+  echo date("Y-m-d H:i:s")." # Fetching app #$appref\n";
   $url = "http://www.dublincity.ie/swiftlg/apas/run/WPHAPPDETAIL.DisplayUrl?theApnID=$appref";
   $html = file_get_html($url . '&theTabNo=2');  // Tab 2 has the decision
   $app = array();
@@ -152,9 +152,9 @@ function get_application_details($appref) {
   if ($location) {
     $app['lat'] = $location['lat'];
     $app['lng'] = $location['lng'];
-    echo "#   Geocoding OK\n";
+    echo date("Y-m-d H:i:s")." # Geocoding OK\n";
   } else {
-    echo "#   Geocoding failed\n";
+    echo date("Y-m-d H:i:s")." # Geocoding failed\n";
   }
   return $app;
 }
@@ -207,8 +207,8 @@ function get_application_ids($date1, $date2) {
     polite_delay();
     $html = file_get_html(array_shift($next_pages));
     $done++;
-    echo "#   Fetching page $done\n";
+    echo date("Y-m-d H:i:s")." #   Fetching page $done\n";
   }
-  echo "#   Found " . count($ids) . " applications\n";
+  echo date("Y-m-d H:i:s")." #   Found " . count($ids) . " applications\n";
   return $ids;
 }
