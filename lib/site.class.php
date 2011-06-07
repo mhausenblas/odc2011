@@ -29,7 +29,8 @@ class Site {
                     "http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js",
                     "/js/jquery.maphilight.min.js",
                     "http://maps.google.com/maps/api/js?sensor=false",
-                    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"
+                    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js",
+                    "js/homepage.js"
                 ),
                 "css" => array(
                     "/css/homepage.css"

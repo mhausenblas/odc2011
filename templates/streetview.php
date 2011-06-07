@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>ODC2011 - All-Ireland planning application</title>
+	<title>Local Planning Explorer Ireland</title>
 	<link rel="stylesheet" href="/css/overcast/jquery-ui-1.8.13.custom.css" type="text/css" media="all" />
 	<link rel="stylesheet" href="/css/streetview.css" type="text/css" media="screen" />
 	<script src="http://maps.google.com/maps/api/js?sensor=false"></script>

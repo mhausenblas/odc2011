@@ -3,7 +3,8 @@
 //
 
 // globally configure the PA map widget here:
-var PA_API_BASE_URI = "/";
+var PA_API_BASE_URI = "http://planning-apps.opendata.ie/";//"/";
+var SEARCH_ADDRESS_PATTERN = "search?q=";
 var mapArchiveModeActivateZoomFactor = 12; // for zoom factors greater than this, ARCHIVE_MODE is used, otherwise OVERVIEW_MODE
 var mapWidth = 0.6; // the preferred width of the map
 var mapHeight = 0.8; // the preferred height of the map
@@ -16,6 +17,7 @@ var filterMaxYear = 2011; // max. value for the filter-by-year
 var OVERVIEW_MODE = 0; // showing the latest PAs in a certain area, no control panel visible
 var ARCHIVE_MODE = 1; // showing all PAs in a certain area, control panel visible
 var SV_DETAIL_MODE = 2; // showing nearest PAs, control panel visible
+var SV_DETAIL_SEARCH_MODE = 3; // showing nearest PAs from search, control panel visible 
 var PA_STATE_SELECTION_INACTIVE = "inactive";
 var PA_YEAR_SELECTION_INACTIVE = -1;
 var pam = OVERVIEW_MODE; // the selected mode
@@ -24,8 +26,8 @@ var mapLatLow = 53.1; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngLow = -8.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLatHi = 53.2; // for OVERVIEW_MODE and ARCHIVE_MODE
 var mapLngHi = -8; // for OVERVIEW_MODE and ARCHIVE_MODE
-var mapCenterLat = 53.15; // for SV_DETAIL_MODE
-var mapCenterLng = -8.0392; // for SV_DETAIL_MODE
+var mapCenterLat; // for SV_DETAIL_MODE
+var mapCenterLng; // for SV_DETAIL_MODE
 var mapCenter = new google.maps.LatLng(mapCenterLat, mapCenterLng);
 var povDetached = false; // If true, don't auto center the SV camera on the current PA
 var map; // the Google map (both for overview and street view)
@@ -41,7 +43,8 @@ var paData = new Array(); // the planning application (PA) data a list, filled d
 var currentPA;
 var currentCouncil;
 var legendExists = false;
-var councilShortName
+var councilShortName;
+var currentAddress = "";
 
 // GPlan application status - based on GPlan_ApplicationStatus.txt
 var APPLICATION_STATUS = {
@@ -199,7 +202,12 @@ function setPAMapWidgetMode(){
     if (currentCouncil) {
         $('#target-address').val(revcouncils[currentCouncil].region);
     } else {
-        $('#target-address').val('');
+		if (currentAddress) {
+		    $('#target-address').val(currentAddress);
+			
+		} else {
+		    $('#target-address').val('');
+		}
     }
 
 	if(pam == OVERVIEW_MODE) {
@@ -232,34 +240,58 @@ function setPAMapWidgetMode(){
 			});
 		});
 	}
+	
+	if(pam == SV_DETAIL_SEARCH_MODE) {
+		getPositionForAddress(currentAddress, function(){
+			getNearestPAs(mapCenterLat, mapCenterLng, function(data, textStatus){
+				fillPAData(data);
+				mapDefaultIsStreetView = true;
+				mapInitialZoomFactor = 18;
+				initUI(true, true); // control panel, show markers
+				centerMapAt(mapCenterLat, mapCenterLng);
+				showSV(mapCenterLat, mapCenterLng); // show SV initially
+				console.log("PA map widget DETAIL SEARCH mode showing PAs near: " + mapCenterLat + ", " +  mapCenterLng);
+			});
+		});
+	}
+
 }
 
 function determinePAMapWidgetMode(){
 	var bounds;
 	var hashPos = currentURL.indexOf("#");
 	var councilURL = currentURL.substring(0, hashPos);
+	var searchAddress = currentURL.indexOf(SEARCH_ADDRESS_PATTERN);
 	
-	if(hashPos >= 0){ // a hash URI such as http://planning-apps.opendata.ie/CorkCity#11/34881
-		pam = SV_DETAIL_MODE;
-		currentPA = currentURL.substring(hashPos + 1);
-		currentCouncil = councilURL.substring(councilURL.lastIndexOf("/") + 1);
-		console.log("PA map widget opening in DETAIL mode ..."); 
+	if( searchAddress > 0) { // a address search call such as http://planning-apps.opendata.ie/search?q=32+Bushypark+Lawn+Galway
+		currentAddress = currentURL.substring(currentURL.indexOf(SEARCH_ADDRESS_PATTERN) + SEARCH_ADDRESS_PATTERN.length);
+		currentAddress = currentAddress.replace(/\+/g, " ");
+		pam = SV_DETAIL_SEARCH_MODE;
+		console.log("PA map widget opening in DETAIL SEARCH mode ..."); 
 	}
-	else { // a URI such as http://planning-apps.opendata.ie/Offaly
-		currentCouncil = currentURL.substring(currentURL.lastIndexOf("/") + 1);
-		bounds = lookupCouncilBounds(currentCouncil);
-		mapLatLow = bounds.latLow ; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
-		mapLngLow = bounds.lngLow; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
-		mapLatHi = bounds.latHi; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
-		mapLngHi = bounds.lngHi; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
-		if(mapInitialZoomFactor < mapArchiveModeActivateZoomFactor) { // we are zoomed out far enough ...
-			pam = OVERVIEW_MODE; // ... just show latest PAs
-			console.log("PA map widget opening in OVERVIEW mode showing latest PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
+	else {
+		if(hashPos >= 0){ // trigger detail streetview mode via hash URI such as http://planning-apps.opendata.ie/CorkCity#11/34881
+			pam = SV_DETAIL_MODE;
+			currentPA = currentURL.substring(hashPos + 1);
+			currentCouncil = councilURL.substring(councilURL.lastIndexOf("/") + 1);
+			console.log("PA map widget opening in DETAIL mode ..."); 
 		}
-		else { // we are zoomed in enought ...
-			pam = ARCHIVE_MODE; // ... so, show the archive PAs in its entire beauty
-			console.log("PA map widget opening in ARCHIVE mode showing all PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
-		}
+		else { // trigger overview/archive mode via URI such as http://planning-apps.opendata.ie/Offaly
+			currentCouncil = currentURL.substring(currentURL.lastIndexOf("/") + 1);
+			bounds = lookupCouncilBounds(currentCouncil);
+			mapLatLow = bounds.latLow ; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
+			mapLngLow = bounds.lngLow; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
+			mapLatHi = bounds.latHi; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
+			mapLngHi = bounds.lngHi; // set bounding box for OVERVIEW_MODE and ARCHIVE_MODE
+			if(mapInitialZoomFactor < mapArchiveModeActivateZoomFactor) { // we are zoomed out far enough ...
+				pam = OVERVIEW_MODE; // ... just show latest PAs
+				console.log("PA map widget opening in OVERVIEW mode showing latest PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
+			}
+			else { // we are zoomed in enought ...
+				pam = ARCHIVE_MODE; // ... so, show the archive PAs in its entire beauty
+				console.log("PA map widget opening in ARCHIVE mode showing all PAs in bounds: " + mapLatLow  + ", " +  mapLngLow + ", " + mapLatHi + ", " + mapLngHi);
+			}
+		}	
 	}
 }
 
@@ -439,12 +471,14 @@ function showSV(lat, lng) {
 	$("#show-map").removeClass('viewsel-tab-selected');
 	$("#show-sv").addClass('viewsel-tab-selected');
 	
-	adjustAddressFromPos(pos.lat(), pos.lng());
 	
-	$("#palist-content").html(renderPADetail(lookupPA(showMarkerForPA(currentPA)))); // set the infobox as well
-	$("#palist-content").append("<div style='border-top: 1px solid #e0e0e0; color: #a0a0a0; font-size:90%; margin: 5px; padding-top: 5px;'>Nearby: </div>");
+	if(pam != SV_DETAIL_SEARCH_MODE) { // only for pure DETAIL mode, as in SEARCH DETAIL mode we have no PA
+		adjustAddressFromPos(pos.lat(), pos.lng());
+		$("#palist-content").html(renderPADetail(lookupPA(showMarkerForPA(currentPA)))); // set the infobox as well
+		$("#palist-content").append("<div style='border-top: 1px solid #e0e0e0; color: #a0a0a0; font-size:90%; margin: 5px; padding-top: 5px;'>Nearby: </div>");		
+	}
 
-	 if (currentMarkers.length < topN) topN = currentMarkers.length;
+	if (currentMarkers.length < topN) topN = currentMarkers.length;
 	for (var i = 0; i < topN; i++) {
 	 	$("#palist-content").append(renderPAShortLink(lookupPA(currentMarkers[i].id)));
 		// currentMarkers[i].setVisible(true);
@@ -863,6 +897,28 @@ function centerMapIn(latLow, lngLow, latHi, lngHi) {
 	centerMapAt(c.lat(), c.lng());
 }
 
+
+// simple geo-coding for address
+function getPositionForAddress(address, callback){
+	var geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': address, 'region': 'ie'}, function(data, status) {
+		if(status == google.maps.GeocoderStatus.OK) {  
+			var location = data[0].geometry.location;
+			//console.log("got lat:" + latitude + " long: " + longitude + " for address: " + address);
+			if(location) { // we have both values
+				mapCenterLat = location.lat();
+				mapCenterLng = location.lng();
+				callback();
+			}
+		}
+		else {
+			alert("Sorry, I didn't find the address you've provided. Try again, please ...");
+			$("#archive-widget").hide();
+		}
+	});
+}
+
+
 // the address can either be a postal address such as 'Shannonbridge, Galway' 
 // or a lat/lng position, for example, '53.2791,-8.0482' - the effect of the call
 // is that the map will be centered around this address.
@@ -873,6 +929,7 @@ function gotoAddress(address, options) {
 	};  
 	var options = $.extend(defaults, options);
 	var geocoder = new google.maps.Geocoder();
+	$("#archive-widget").show();
     geocoder.geocode({'address': address, 'region': 'ie'}, function(data, status) {
 		if(status == google.maps.GeocoderStatus.OK) {  
 			var location = data[0].geometry.location;
