@@ -17,7 +17,7 @@ foreach ($planning->get_council_list() as $council_id => $details) {
   if ($council == 'GalwayCity') continue;  // That one's been running for a while already
   echo "# COUNCIL: ".$council.PHP_EOL;
   $twitter_account = $council . 'Pln';
-  $apps = $planning->get_applications("SELECT * from applications WHERE council_id = $council_id ORDER BY received_date DESC, app_ref DESC LIMIT 10");
+  $apps = $planning->get_applications("SELECT * from applications WHERE council_id = $council_id ORDER BY received_date DESC, app_ref ASC LIMIT 10");
   foreach ($apps as $app) {
     $result = $planning->tweet_application($app, $twitter, $bitly, true);
     if (!$result) {
