@@ -51,15 +51,7 @@ $(document).ready(function(){
         google.maps.event.addListener(panorama, 'position_changed', function() {
             var pos = panorama.getPosition();
             var bearing = getBearing(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
-            var pitch = getPitch(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
-            if (pitch < -25.0) pitch = -25.0;
-            panorama.setPov({'heading': bearing, 'pitch': pitch, 'zoom': 1});
-        });
-
-        // handle point of view in SV
-        google.maps.event.addListener(panorama, 'pov_changed', function() {
-            var heading = Math.floor(panorama.getPov().heading);
-            var pitch = Math.floor(panorama.getPov().pitch*100+1)/100;
+            panorama.setPov({'heading': bearing, 'pitch': 0, 'zoom': 1});
         });
 
         map.setStreetView(panorama);
@@ -81,14 +73,6 @@ $(document).ready(function(){
             if (dlng > 0) return 90.0;
             return Number.NaN;
         }
-    }
-
-    function getPitch(pos1, pos2) {
-        var dlat = pos2.lat() - pos1.lat();
-        var dlng = pos2.lng() - pos1.lng();
-        var distance = Math.sqrt(dlat*dlat + dlng*dlng);
-        var height = 0.00003;
-        return -Math.atan(height/distance) * 180.0 / Math.PI;
     }
 
     $('.map').maphilight();
