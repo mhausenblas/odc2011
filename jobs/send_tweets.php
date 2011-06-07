@@ -14,10 +14,9 @@ $twitter = new Twitter($config['twitter']);
 
 foreach ($planning->get_council_list() as $council_id => $details) {
   $council = $details['short'];
-  if ($council == 'GalwayCity') continue;  // That one's been running for a while already
   echo "# COUNCIL: ".$council.PHP_EOL;
   $twitter_account = $council . 'Pln';
-  $apps = $planning->get_applications("SELECT * from applications WHERE council_id = $council_id AND tweet_id IS NULL ORDER BY received_date ASC, app_ref ASC LIMIT 1");
+  $apps = $planning->get_applications("SELECT * from applications WHERE council_id = $council_id AND tweet_id IS NULL AND received_date > DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY received_date ASC, app_ref ASC LIMIT 1");
   foreach ($apps as $app) {
     $result = $planning->tweet_application($app, $twitter, $bitly, false);
     if (!$result) {

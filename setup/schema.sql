@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `applications` (
   `status` tinyint(4) NOT NULL,
   `details` text,
   `url` text,
-  `tweet_id` varchar(25) DEFAULT '1',
+  `tweet_id` varchar(25) DEFAULT NULL,
   PRIMARY KEY `council_id` (`app_ref`,`council_id`),
   KEY `received_date` (`received_date`),
   KEY `lat` (`lat`),

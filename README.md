@@ -18,20 +18,28 @@ Allows to be notified about planning applications throughout Ireland (via feed o
 This software is Public Domain.
 
 
+## Data preparation
+
+    # Scrape DublinCity
+    @@@ jobs/scrape_DublinCity.php -- need to script it
+    # Scrape GalwayCo
+    @@@ jobs/scrape_GalwayCo.php -- need to script it
+    # Clean LGCSB dump
+    setup/clean-applications.rb data/GPlan_Metadata.txt > data/applications.csv
+
+
 ## Application Setup
 
-    cd setup
-    clean-applications.rb GPlan_Metadata.txt > applications.csv
+    # Initialize database
     mysql -u root -p < schema.sql
     mysql -u root -p < councils.sql
+
+    # Import archive data
+    php jobs/import_fingal_csv.php
+    php jobs/import_scraperwiki.php --initial
+    find data -name "GalwayCo*.csv" | xargs -n 1 jobs/import_GalwayCo.php
+    cd data
     mysql -u root -p gplan < import-lgcsb-applications.sql
-
-    # Run the Fingal importer once
-    cd ../jobs
-    php import_fingal_csv.php
-    php import_scraperwiki.php --initial
-
-    cd ../data
     mysql -u root -p gplan < import-DublinCity.sql
 
 
@@ -142,6 +150,8 @@ These explain the resepective columns of the application table.
     | 10 | PRE-VALIDATION          |
     | 11 | DEEMED WITHDRAWN        |
     | 12 | APPEALED FINANCIAL      |
+    | 13 | PENDING DECISION        |
+    | 14 | UNKNOWN                 |
     +----+-------------------------+
 
     +----+---------------------------------+

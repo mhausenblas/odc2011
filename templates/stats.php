@@ -32,10 +32,10 @@
 <?php } ?>
     </tr>
     <tr class="no-coordinates">
+      <td><?php e($details['recent'][0]); ?></td>
 <?php for ($year = date('Y'); $year >= $first_year; $year--) { ?>
       <td><?php e($details[$year][0]); ?></td>
 <?php } ?>
-      <td><?php e($details['recent'][0]); ?></td>
     </tr>
 <?php } ?>
   </tbody>

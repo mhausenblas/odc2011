@@ -323,9 +323,11 @@ var_dump($tweet_id); die();
         $link = $bitly ? $this->get_bitly_link($app, $bitly) : $app['permalink'];
         $tweet = $this->to_tweet($app, $link);
         $twitter_account = $this->get_council_shortname($app['council_id']) . 'Pln';
+/*
         $tweet_id = $twitter->tweet($tweet, $twitter_account);
         $query = sprintf("UPDATE applications SET tweet_id='%s' WHERE app_ref='%s' AND council_id=%d", $tweet_id, $app['app_ref'], $app['council_id']);
         $this->db->execute($query);
+*/
         return $tweet;
     }
 
@@ -336,5 +338,19 @@ var_dump($tweet_id); die();
         $app['lat'] = $location['lat'];
         $app['lng'] = $location['lng'];
         return true;
+    }
+
+    function import_apps($apps) {
+        $report = array('added' => 0, 'skipped' => 0);
+        foreach ($apps as $app) {
+            // @@@ TODO should update rather than just ignore?
+            if ($this->application_exists($app)) {
+                $report['skipped']++;
+                continue;
+            }
+            $this->add_application($app);
+            $report['added']++;
+        }
+        return $report;
     }
 }
