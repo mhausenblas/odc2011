@@ -19,6 +19,9 @@ $(document).ready(function(){
     }
 
     function loadMap(id, place) {
+        var mapCenterLat = place.lat();
+        var mapCenterLng = place.lng();
+
         var mapOptions = {
             center: place,
             zoom: 14,
@@ -38,8 +41,54 @@ $(document).ready(function(){
             linksControl: false,
             panControl: false
         };
+
         var panorama = new  google.maps.StreetViewPanorama(id,panoramaOptions);
+
+        //FIXME: event listeners below, getBearing and get getPitch are copied from streetview.js.
+        // Only streetview.js should be used when it is refactored.
+
+        // handle current position in SV
+        google.maps.event.addListener(panorama, 'position_changed', function() {
+            var pos = panorama.getPosition();
+            var bearing = getBearing(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
+            var pitch = getPitch(pos, new google.maps.LatLng(mapCenterLat, mapCenterLng));
+            if (pitch < -25.0) pitch = -25.0;
+            panorama.setPov({'heading': bearing, 'pitch': pitch, 'zoom': 1});
+        });
+
+        // handle point of view in SV
+        google.maps.event.addListener(panorama, 'pov_changed', function() {
+            var heading = Math.floor(panorama.getPov().heading);
+            var pitch = Math.floor(panorama.getPov().pitch*100+1)/100;
+        });
+
         map.setStreetView(panorama);
+    }
+
+    function getBearing(pos1, pos2) {
+        var dlat = pos2.lat() - pos1.lat();
+        var dlng = pos2.lng() - pos1.lng();
+        if (dlat < 0) {
+            if (dlng > 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI + 180.0;
+            if (dlng < 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI + 180.0;
+            return 180.0;
+        } else if (dlat > 0) {
+            if (dlng > 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI;
+            if (dlng < 0) return Math.atan(dlng/dlat) * 180.0 / Math.PI;
+            return 0.0;
+        } else {
+            if (dlng < 0) return -90.0;
+            if (dlng > 0) return 90.0;
+            return Number.NaN;
+        }
+    }
+
+    function getPitch(pos1, pos2) {
+        var dlat = pos2.lat() - pos1.lat();
+        var dlng = pos2.lng() - pos1.lng();
+        var distance = Math.sqrt(dlat*dlat + dlng*dlng);
+        var height = 0.00003;
+        return -Math.atan(height/distance) * 180.0 / Math.PI;
     }
 
     $('.map').maphilight();
