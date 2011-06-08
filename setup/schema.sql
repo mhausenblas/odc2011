@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS `applications` (
   `status` tinyint(4) NOT NULL,
   `details` text,
   `url` text,
-  `tweet_id` varchar(25) DEFAULT NULL,
   PRIMARY KEY `council_id` (`app_ref`,`council_id`),
   KEY `received_date` (`received_date`),
   KEY `lat` (`lat`),
@@ -90,4 +89,13 @@ CREATE TABLE IF NOT EXISTS `councils` (
   `lng_hi` float NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+ 
+CREATE TABLE `tweets` (
+  `app_ref` varchar(20) COLLATE utf8_bin NOT NULL,
+  `council_id` int(2) NOT NULL,
+  `text` varchar(140) COLLATE utf8_bin NOT NULL,
+  `tweet_id` varchar(25) COLLATE utf8_bin NOT NULL,
+  `time` datetime NOT NULL,
+  PRIMARY KEY (`app_ref`,`council_id`),
+  KEY `time` (`time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

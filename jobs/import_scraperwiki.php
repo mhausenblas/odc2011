@@ -12,10 +12,8 @@ date_default_timezone_set('Eire');
 
 if ($argc > 2 || ($argc == 2 && $argv[1] != '--initial')) {
   echo "Usage: import_scraperwiki.php [--initial]\n";
-  echo "  By default, only recent applicaitons will be imported and\n";
-  echo "  will be set as tweetable.\n";
-  echo "  In --initial mode, all applications will be imported and set\n";
-  echo "  as untweetable.\n";
+  echo "  By default, only recent applicaitons will be imported.\n";
+  echo "  In --initial mode, all applications will be imported.\n";
 }
 
 $initial_mode = ($argc == 2 && $argv[1] == '--initial');
@@ -71,7 +69,6 @@ foreach ($scraper_wikis as $scraper_wiki) {
         'address1' => $app->address,
         'applicant1' => $app->applicant,
         'details' => $app->details,
-        'tweet_id' => $initial_mode ? 1 : null,
     );
     // @@@ TODO push this back to the ePlan41 scraper ... it happens when converting 0/0 easting/northing to WGS84
     if ($application['lng'] < -10.6) {

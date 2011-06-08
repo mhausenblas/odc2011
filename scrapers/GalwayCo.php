@@ -1,59 +1,32 @@
 <?php
 
-require_once dirname(__FILE__) . '/simple_html_dom.php';
+require_once dirname(__FILE__) . '/common.php';
 
-ini_set('memory_limit', '1000M');
+$scraper_name = 'GalwayCo';
 $site_url = 'http://www.galway.ie/PlanningSearch';
 $crawl_delay = 3;
+$extra_help = 
+    "  php $scraper_name.php --old\n" .
+    "    Scrapes all old applications 1960-1991 (few)\n";
 
-if ($argc == 2 && $argv[1] == '--recent') {
-    $week_ago = date('Y-m-d', time() - 7 * 24 * 60 * 60);
-    $today = date('Y-m-d');
-    $apps = get_applications($week_ago, $today, 'Received');
-    sleep($crawl_delay);
-    $apps += get_applications($week_ago, $today, 'Validated');
-    sleep($crawl_delay);
-    $apps += get_applications($week_ago, $today, 'Decided');
-    write_csv($apps);
-} else if ($argc == 4 && $argv[1] == '--month' && is_numeric($argv[2]) && is_numeric($argv[3])) {
-    $year = $argv[2];
-    $month = str_pad($argv[3], 2, '0', STR_PAD_LEFT);
-    $lastday = date('t', strtotime("$year-$month-01"));
-    $apps = get_applications("$year-$month-01", "$year-$month-$lastday", 'Received');
-    write_csv(&$apps);
-} else if ($argc == 2 && $argv[1] == '--old') {
-    $apps = get_applications("1960-01-01", "1991-12-31", 'Received');
+if ($argc == 2 && $argv[1] == '--old') {
+    $apps = get_applications("1960-01-01", "1991-12-31");
     write_csv($apps); 
 } else {
-    echo "Usage:\n";
-    echo "  scrape_GalwayCo.php --recent\n";
-    echo "    Scrapes this week's applications\n";
-    echo "  scrape_GalwayCo.php --month YYYY MM\n";
-    echo "    Scrapes one month; recommended back to 1992\n";
-    echo "  scrape_GalwayCo.php --old\n";
-    echo "    Scrapes old applications 1960-1991 (few)\n";
-    die();
+    run();
 }
 
-function write_csv(&$apps) {
-    $fields = null;
-    foreach ($apps as $app) {
-        if (!$fields) {
-            // If we're at very beginning of file, write out a header row
-            $fields = array_keys($app);
-            fputcsv(STDOUT, $fields);
-        }
-        $row = array();
-        foreach ($fields as $key) {
-            $row[] = @$app[$key];
-        }
-        fputcsv(STDOUT, $row);
-        foreach ($app as $key => $value) {
-            if (!in_array($key, $fields)) {
-                trigger_error("Application field not in field list: $key", E_USER_WARNING);
-            }
-        }
-    }
+/**
+ * Executes a search and returns all modified applications.
+ * @param $start_date Inclusive, in YYYY-MM-DD format
+ * @param $end_date Inclusive, in YYYY-MM-DD format
+ * @return Array of applications
+ */
+function &get_changed_applications($start_date, $end_date) {
+    $apps = get_applications($start_date, $end_date);
+    $apps += get_applications($start_date, $end_date, 'Validated');
+    $apps += get_applications($start_date, $end_date, 'Decided');
+    return $apps;
 }
 
 /**
@@ -87,7 +60,7 @@ function &get_applications($start_date, $end_date, $status = 'Received') {
         'date1' => "$d1[3]/$d1[2]/$d1[1]",
         'date2' => "$d2[3]/$d2[2]/$d2[1]",
     );
-    $html = http_request($url, $postvars);
+    $html = http_get_post_response($url, $postvars);
     $dom = str_get_html($html);
     $results = array();
     $rowcount = 0;
@@ -125,37 +98,6 @@ function &get_applications($start_date, $end_date, $status = 'Received') {
     $dom->clear();
     unset($dom);
     unset($html);
+    polite_delay();
     return $results;
-}
-
-function clean_html($s) {
-    return trim(html_entity_decode($s, ENT_QUOTES, 'UTF-8'));
-}
-
-/**
- * A function to use instead of scraperwiki::scrape for performing POST
- * requests and for dealing with cookies
- *
- * Arguments:
- * $url - a URL to which we will post form variables
- * $postvars - if not null, an array of keys and values containing form variables for POSTing
- */
-function http_request($url, $postvars=NULL) {
-    static $curl;
-    if (empty($curl)) {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Planning Explorer (http://planning-apps.opendata.ie)');
-    }
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_POST, !empty($postvars));
-    if ($postvars) {
-        $fields = array();
-        foreach($postvars as $key=>$value) {
-            $fields[] = $key.'='.$value;
-        }
-        curl_setopt($curl, CURLOPT_POSTFIELDS, join($fields, '&'));
-    }
-    $html = curl_exec($curl);
-    return $html;
 }

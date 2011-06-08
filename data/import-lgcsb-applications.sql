@@ -7,4 +7,3 @@ IGNORE 1 LINES;
 
 UPDATE applications SET lat = NULL WHERE lat = 0;
 UPDATE applications SET lng = NULL WHERE lng = 0;
-UPDATE applications SET tweet_id = '1';

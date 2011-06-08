@@ -129,7 +129,6 @@ Note, that 'all' Ireland has the following bounding box: 51.779126,-12.045563,54
     | status        | tinyint(4)    | NO   |     | NULL    |       |
     | details       | text          | YES  |     | NULL    |       |
     | url           | text          | YES  |     | NULL    |       |
-    | tweet_id      | varchar(25)   | YES  |     | 1       |       |
     +---------------+---------------+------+-----+---------+-------+
 
 ### Table of applications statuses and decision codes

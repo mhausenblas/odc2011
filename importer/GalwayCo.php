@@ -1,53 +1,28 @@
 <?php
 
-include dirname(__FILE__) . '/../config.inc.php';
-require_once dirname(__FILE__) . '/../lib/db.class.php';
-require_once dirname(__FILE__) . '/../lib/planning.class.php';
+include dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/../lib/geotools.class.php';
 
-if ($argc != 2) {
-    echo "Usage: import_GalwayCo.php dump.csv\n";
-    die();
-}
-$filename = $argv[1];
-$apps = read_GalwayCo_csv($filename);
-$planning = new Planning(new DB($config));
-$report = $planning->import_apps($apps);
-echo date('c') . " Added $report[added] and skipped $report[skipped] applications from $filename\n";
+$importer_name = 'GalwayCo';
+run();
 
-function read_GalwayCo_csv($filename) {
-    $apps = array();
-    $f = fopen($filename, 'r');
-    $header = fgetcsv($f, 0, ',', '"', '"');
-    while ($row = fgetcsv($f, 0, ',', '"', '"')) {
-        $raw_app = array();
-        foreach ($row as $i => $value) {
-            $raw_app[$header[$i]] = $value;
-        }
-        $app = clean_GalwayCo_app($raw_app);
-        $apps[] = $app;
-    }
-    fclose($f);
-    return $apps;
-}
-
-function clean_GalwayCo_app($raw_app) {
-    if (empty($raw_app['AppNo'])) return false;
-    if (empty($raw_app['ReceivedDate'])) return false;
-    $location = GeoTools::grid_to_lat_lng($raw_app['LocationEasting'], $raw_app['LocationNorthing']);
+function create_app($row) {
+    if (empty($row['AppNo'])) return false;
+    if (empty($row['ReceivedDate'])) return false;
+    $location = GeoTools::grid_to_lat_lng($row['LocationEasting'], $row['LocationNorthing']);
     return array(
-        'app_ref' => $raw_app['AppNo'],
+        'app_ref' => $row['AppNo'],
         'council_id' => 18,
         'lat' => $location ? $location[0] : null,
         'lng' => $location ? $location[1] : null,
-        'applicant1' => fix_GalwayCo_applicant($raw_app['Applicant']),
-        'received_date' => fix_GalwayCo_date($raw_app['ReceivedDate']),
-        'decision_date' => fix_GalwayCo_date($raw_app['FinalDecisionDate']),
-        'address1' => fix_GalwayCo_address($raw_app['Location']),
-        'decision' => get_decision_code($raw_app['FinalDecision']),
-        'status' => get_status_code($raw_app['Status']),
-        'details' => fix_GalwayCo_details($raw_app['Description']),
-        'url' => $raw_app['Link'],
+        'applicant1' => fix_GalwayCo_applicant($row['Applicant']),
+        'received_date' => fix_GalwayCo_date($row['ReceivedDate']),
+        'decision_date' => fix_GalwayCo_date($row['FinalDecisionDate']),
+        'address1' => fix_GalwayCo_address($row['Location']),
+        'decision' => get_decision_code($row['FinalDecision']),
+        'status' => get_status_code($row['Status']),
+        'details' => fix_GalwayCo_details($row['Description']),
+        'url' => $row['Link'],
     );
 }
 

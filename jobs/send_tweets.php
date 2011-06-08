@@ -16,7 +16,8 @@ foreach ($planning->get_council_list() as $council_id => $details) {
   $council = $details['short'];
   echo "# COUNCIL: ".$council.PHP_EOL;
   $twitter_account = $council . 'Pln';
-  $apps = $planning->get_applications("SELECT * from applications WHERE council_id = $council_id AND tweet_id IS NULL AND received_date > DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY received_date ASC, app_ref ASC LIMIT 1");
+  $sql = sprintf("SELECT * FROM applications WHERE council_id=%d AND received_date > DATE_SUB(NOW(), INTERVAL 7 DAY) AND (app_ref, council_id) NOT IN (SELECT app_ref, council_id FROM tweets) ORDER BY received_date ASC, applications.app_ref ASC LIMIT 1", $council_id);
+  $apps = $planning->get_applications($sql);
   foreach ($apps as $app) {
     $result = $planning->tweet_application($app, $twitter, $bitly, false);
     if (!$result) {
