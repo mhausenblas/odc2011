@@ -355,6 +355,7 @@ function makemap(showMarkers) {
 	google.maps.event.addListener(map, 'center_changed', function() {
 		var cent = map.getCenter();
 		var bnds = map.getBounds();
+		// TODO: fix this to make sure map center changes (zoom or pan) are synced with bb/API calls
 		// if(bnds){
 		// 	mapLatLow = bnds.getSouthWest().lat() ; 
 		// 	mapLngLow = bnds.getSouthWest().lng(); 
