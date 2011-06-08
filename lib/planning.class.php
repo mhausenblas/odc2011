@@ -336,11 +336,11 @@ ORDER BY app_ref DESC";
     }
 
     function import_apps($apps, $geocode = false) {
-        $report = array('added' => 0, 'skipped' => 0, 'geocode_success' => 0, 'geocode_fail' => 0);
+        $report = array('added' => 0, 'skipped' => 0, 'updated' => 0, 'geocode_success' => 0, 'geocode_fail' => 0);
         foreach ($apps as $app) {
-            // @@@ TODO should update rather than just ignore?
             if ($this->application_exists($app)) {
-                $report['skipped']++;
+                $this->update_application($app);
+                $report['updated']++;
                 continue;
             }
             if ($geocode) {

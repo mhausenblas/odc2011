@@ -21,7 +21,7 @@ function run() {
     }
     $apps = read_csv($filename);
     $report = $planning->import_apps($apps, $geocode);
-    echo date('c') . " Added $report[added] and skipped $report[skipped] applications from $filename\n";
+    echo date('c') . " Added $report[added] and updated $report[updated] applications from $filename\n";
     if ($geocode) {
         echo date('c') . "   Geocoding succeeded for $report[geocode_success] and failed for $report[geocode_fail]\n";
     }
