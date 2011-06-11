@@ -17,6 +17,10 @@ function run() {
         $lastday = date('t', strtotime("$year-$month-01"));
         $apps = get_applications("$year-$month-01", "$year-$month-$lastday");
         write_csv(&$apps);
+    } else if ($argc == 3 && $argv[1] == '--year' && is_numeric($argv[2])) {
+        $year = (int) $argv[2];
+        $apps = get_applications("$year-01-01", "$year-12-31");
+        write_csv(&$apps);
     } else {
         global $scraper_name;
         echo "Usage:\n";
@@ -76,5 +80,5 @@ function http_get_post_response($url, $postvars=NULL) {
 }
 
 function clean_html($s) {
-    return trim(html_entity_decode($s, ENT_QUOTES, 'UTF-8'));
+    return trim(html_entity_decode(str_replace('&nbsp;', ' ', $s), ENT_QUOTES, 'UTF-8'));
 }

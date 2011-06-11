@@ -12,8 +12,3 @@ require_once APP_ROOT . 'lib/http_exception.class.php';
 
 $db = new DB($config);
 $planning = new Planning($db);
-if (php_sapi_name() != 'cli') {
-    $request = new Request();
-    $response = new Response($config['site_base'], $request->uri);
-    set_exception_handler(array($site, 'exception_handler'));
-}

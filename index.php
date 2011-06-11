@@ -2,7 +2,10 @@
 
 include 'init.php';
 
+$request = new Request();
+$response = new Response($config['site_base'], $request->uri);
 $site = new Site($request->uri, $response, $planning);
+set_exception_handler(array($site, 'exception_handler'));
 
 if ($request->matches('/^$/')) {
   $site->action_home();
