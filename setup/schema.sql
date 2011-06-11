@@ -99,3 +99,13 @@ CREATE TABLE `tweets` (
   PRIMARY KEY (`app_ref`,`council_id`),
   KEY `time` (`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `geocoding` (
+  `app_ref` varchar(20) NOT NULL,
+  `council_id` int(11) NOT NULL,
+  `request` text NOT NULL,
+  `response` varchar(20) NOT NULL,
+  `lat` double DEFAULT NULL,
+  `lng` double DEFAULT NULL,
+  PRIMARY KEY (`app_ref`,`council_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -181,16 +181,12 @@ ORDER BY app_ref DESC";
     }
 
     function add_application($app) {
-        $query = "INSERT INTO applications SET";
-        $clauses = array();
-        foreach ($app as $key => $value) {
-            if (!in_array($key, $this->application_columns)) {
-                throw new DatabaseException("No column '$key' in applications table");
-            }
-            $clauses[] = " $key = " . $this->db->quote($value);
+        $keys = array_keys($app);
+        $diff = array_diff($keys, $this->application_columns);
+        if (!empty($diff)) {
+            throw new DatabaseException("No column '$diff[0]' in applications table");
         }
-        $query .= join(', ', $clauses);
-        return $this->db->execute($query);
+        $this->db->insert('applications', $app);
     }
 
     function update_application($app) {
@@ -200,7 +196,7 @@ ORDER BY app_ref DESC";
             $clauses[] = " $column = " . $this->db->quote(@$app[$column]);
         }
         $query .= join(', ', $clauses);
-        $query .= sprintf(" WHERE app_ref='%s' AND council_id=%d", $this->db->escape($app['app_ref']), $app['council_id']);
+        $query .= ' WHERE ' . $this->select_condition($app);
         return $this->db->execute($query);
     }
 
@@ -309,7 +305,7 @@ ORDER BY app_ref DESC";
         if (!$bitly) return null;
         $l = $bitly->shorten($app['permalink']);
         if (!$l) return null;
-        $this->db->execute(sprintf("INSERT INTO bitly SET bitly='%s', app_ref='%s', council_id=%d", $l, $app['app_ref'], $app['council_id']));
+        $this->db->insert('bitly', array('bitly' => $l, 'app_ref' => $app['app_ref'], 'council_id' => $app['council_id']));
         return $l;
     }
 
@@ -326,13 +322,35 @@ ORDER BY app_ref DESC";
         return $tweet;
     }
 
-    function geocode_application(&$app) {
-        require_once dirname(__FILE__) . '/geocoder.class.php';
-        $location = Geocoder::geocode(str_replace("\n", ", ", $app['address']));
-        if (!$location) return false;
-        $app['lat'] = $location['lat'];
-        $app['lng'] = $location['lng'];
-        return true;
+    function select_condition($app) {
+        return sprintf("app_ref='%s' AND council_id=%d", $this->db->escape($app['app_ref']), $app['council_id']);
+    }
+
+    function geocode_application(&$app, $force = false) {
+        if ($force) {
+            // Delete any existing location from the DB and ignore any location already on the app
+            $this->db->execute("DELETE FROM geocoding WHERE " . $this->select_condition($app));
+            $result = null;
+        } else {
+            // Check if the app alrady has a location, and check the DB
+            if ($app['lat'] || $app['lng']) return true;  // This one already has a location
+            $sql = sprintf("SELECT * FROM geocoding WHERE " . $this->select_condition($app));
+            $result = $this->db->select_row($sql);
+        }
+        if (!$result) {
+            require_once dirname(__FILE__) . '/geocoder.class.php';
+            $result = Geocoder::geocode(str_replace("\n", ", ", $app['address']));
+            $result['app_ref'] = $app['app_ref'];
+            $result['council_id'] = $app['council_id'];
+            $this->db->insert('geocoding', $result);
+        }
+        $good_responses = array('RANGE_INTERPOLATED', 'ROOFTOP');
+        if (($result['lat'] || $result['lng']) && in_array($result['response'], $good_responses)) {
+            $app['lat'] = $result['lat'];
+            $app['lng'] = $result['lng'];
+            return true;
+        }
+        return false;
     }
 
     function import_apps($apps, $geocode = false) {

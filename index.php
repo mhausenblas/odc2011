@@ -1,21 +1,8 @@
 <?php
-ini_set('display_errors', '1');
 
-include 'config.inc.php';
+include 'init.php';
 
-require_once 'lib/db.class.php';
-require_once 'lib/planning.class.php';
-require_once 'lib/response.class.php';
-require_once 'lib/request.class.php';
-require_once 'lib/site.class.php';
-require_once 'lib/http_exception.class.php';
-
-$db = new DB($config);
-$planning = new Planning($db);
-$request = new Request();
-$response = new Response($config['site_base'], $request->uri);
 $site = new Site($request->uri, $response, $planning);
-set_exception_handler(array($site, 'exception_handler'));
 
 if ($request->matches('/^$/')) {
   $site->action_home();
@@ -47,5 +34,3 @@ if ($request->matches('/^$/')) {
 } else {
   $response->error(404);
 }
-
-?>

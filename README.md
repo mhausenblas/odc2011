@@ -58,6 +58,7 @@ Only for admins obviously … You need to be in the DERI VPN.
     php jobs/import_fingal_csv.php
     php jobs/import_scraperwiki.php
     php jobs/scrape_DublinCity.php --import
+    php jobs/geocode.php 2000
 
 
 ## Permalinks

@@ -35,13 +35,13 @@ function polite_delay() {
 }
 
 function write_csv(&$apps) {
-    $fields = null;
+    if (!$apps) return;
+    $fields = array();
     foreach ($apps as $app) {
-        if (!$fields) {
-            // If we're at very beginning of file, write out a header row
-            $fields = array_keys($app);
-            fputcsv(STDOUT, $fields);
-        }
+        $fields += array_keys($app);
+    }
+    fputcsv(STDOUT, $fields);
+    foreach ($apps as $app) {
         $row = array();
         foreach ($fields as $key) {
             $row[] = @$app[$key];

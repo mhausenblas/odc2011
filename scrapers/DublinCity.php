@@ -31,6 +31,8 @@ function get_applications($start_date, $end_date, $status = 'Registered') {
     $app_urls = get_application_urls($start_date, $end_date, ($status == 'Registered') ? 'reg' : 'dec');
     $apps = array();
     foreach ($app_urls as $url) {
+        fputs(STDERR, "Fetching application " . (count($apps) + 1) .
+                " of " . count($app_urls) . "\n");
         $apps[] = get_application_details($url);
         polite_delay();
     }
@@ -38,6 +40,7 @@ function get_applications($start_date, $end_date, $status = 'Registered') {
 }
 
 function get_application_urls($date1, $date2, $datefield_prefix = 'reg') {
+    fputs(STDERR, "Searching for applications between $date1 and $date2 with status '$datefield_prefix'\n");
     global $site_url;
     $date1 = get_formatted_date($date1);
     $date2 = get_formatted_date($date2);
@@ -51,17 +54,19 @@ function get_application_urls($date1, $date2, $datefield_prefix = 'reg') {
     }
     $urls = array();
     $done = 1;
+    $total = count($next_pages) + 1;
     while (true) {
         foreach ($html->find("td[class='tablebody'] a") as $link) {
             if (!preg_match('/^(.*?theApnID=.*?)&/', $link->href, $match)) {
                 throw new Exception("Bad detail URL $link->href --- found on page $url");
             }
-            $urls[] = "$site_url/$match[1]";
+            $urls[] = "$site_url/" . str_replace(' ', '%20', $match[1]);
         }
         if (!$next_pages) break;
         polite_delay();
-        $html = file_get_html(array_shift($next_pages));
         $done++;
+        fputs(STDERR, "Fetching result page $done of $total\n");
+        $html = file_get_html(array_shift($next_pages));
     }
     return $urls;
 }

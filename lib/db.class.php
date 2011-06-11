@@ -21,11 +21,10 @@ class DB {
 
     function quote($data) {
         if (empty($this->_conn)) $this->connect();
-        $data = trim($data);
-        if (isset($data) && ($data != '')) {
-            return "'" . $this->_conn->real_escape_string($data) . "'";
-        }
-        return "NULL";
+        if (is_null($data)) return "NULL";
+        if (is_numeric($data)) return (string) $data;
+        if (is_string($data)) return "'" . $this->escape($data) . "'";
+        throw new DatabaseException("Cannot quote value of type " . gettype($data));
     }
 
     function query($sql) {
@@ -88,6 +87,13 @@ class DB {
         return $row[0];
     }
 
+    function insert($table, $values) {
+        foreach ($values as $key => $value) {
+            $clauses[] = "$key=" . $this->quote($value);
+        }
+        return $this->execute("INSERT INTO $table SET " . join(', ', $clauses));
+    }
+    
     function connect() {
         $this->_conn = @new mysqli($this->db_host, $this->db_user, $this->db_password, $this->db_name);
         if (mysqli_connect_errno()) {
