@@ -226,7 +226,7 @@ clean-applications.rb
 
 schema.sql
   The database schema, including data for some of the small 
-  auxilliary tables.
+  auxiliary tables.
 
 import-lgcsb-applications.sql
   A SQL script that imports the LGCSB application dump. Input
